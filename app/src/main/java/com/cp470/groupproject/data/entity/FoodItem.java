@@ -31,44 +31,44 @@ public class FoodItem implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     public long id;
 
-    /** name as entered by the user or returned by the scanner, e.g. "2% Milk 1L". */
+    /** name as entered by the user or returned by the scanner, e.g. "2% Milk 1L" */
     @NonNull
     public String name = "";
 
-    /** canonical name for comparing with recipes, e.g. "milk". Calculated by the repository. */
+    /** canonical name for comparing with recipes, e.g. "milk". Calculated by the repository */
     @NonNull
     public String normalizedName = "";
 
     public double quantity;
 
-    /** unit of measurement: "pcs", "g", "L", etc. */
+    /** unit of measurement: "pcs", "g", "L", etc */
     @NonNull
     public String unit = "";
 
-    /** category ID (categories table). */
+    /** category ID (categories table) */
     public long categoryId;
 
-    /** storage location ID (storage_locations table). */
+    /** storage location ID (storage_locations table) */
     public long storageLocationId;
 
-    /** purchase date in milliseconds (0 = unknown). */
+    /** purchase date in milliseconds (0 = unknown) */
     public long purchaseDate;
 
-    /** expiration date in milliseconds (0 = unknown). */
+    /** expiration date in milliseconds (0 = unknown) */
     public long expirationDate;
 
-    /** one of the {@link ItemStatus} constants; ACTIVE while in inventory. */
+    /** one of the {@link ItemStatus} constants; ACTIVE while in inventory */
     @NonNull
     public String status = ItemStatus.ACTIVE;
 
-    /** barcode if scanned; otherwise, null. */
+    /** barcode if scanned; otherwise, null */
     @Nullable
     public String barcode;
 
-    /** empty constructor required by Room. */
+    /** empty constructor required by Room */
     public FoodItem() { }
 
-    /** convenience constructor for the UI, tests, and autofill. */
+    /** convenience constructor for the UI, tests, and autofill */
     @Ignore
     public FoodItem(@NonNull String name, double quantity, @NonNull String unit,
                     long categoryId, long storageLocationId,
@@ -89,7 +89,7 @@ public class FoodItem implements Parcelable {
 
     // ------------------------------------------------------------ Parcelable
 
-    /** rebuilds the object from a Parcel. Order MUST match writeToParcel. */
+    /** rebuilds the object from a Parcel. Order MUST match writeToParcel */
     @Ignore
     protected FoodItem(Parcel in) {
         id = in.readLong();
@@ -105,7 +105,7 @@ public class FoodItem implements Parcelable {
         barcode = in.readString();
     }
 
-    /** flattens the object into a Parcel. Order MUST match the Parcel constructor. */
+    /** flattens the object into a Parcel. Order MUST match the Parcel constructor */
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeLong(id);
@@ -121,13 +121,13 @@ public class FoodItem implements Parcelable {
         dest.writeString(barcode);
     }
 
-    /** no file descriptors or special objects are packaged. */
+    /** no file descriptors or special objects are packaged */
     @Override
     public int describeContents() {
         return 0;
     }
 
-    /** static factory used by Android to recreate the object. */
+    /** static factory used by Android to recreate the object */
     public static final Creator<FoodItem> CREATOR = new Creator<FoodItem>() {
         @Override
         public FoodItem createFromParcel(Parcel in) {

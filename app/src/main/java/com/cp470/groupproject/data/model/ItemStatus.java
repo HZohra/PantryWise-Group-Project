@@ -7,6 +7,7 @@ package com.cp470.groupproject.data.model;
  * They get stored as text in Room so that the db es legible and the values don't change
  * if an enum gets reordered between versions of the app.
  */
+
 public final class ItemStatus {
     /** Item is in inventory */
     public static final String ACTIVE = "ACTIVE";
