@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/txtItemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            tools:text="Item name" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_quantity"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edtQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="none"
+            android:hint="@string/hint_quantity"
+            android:inputType="numberDecimal" />
+
+        <Button
+            android:id="@+id/btnUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_update_quantity" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="24dp"
+            android:paddingBottom="8dp"
+            android:text="@string/label_record_disposition"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnConsumed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_consumed" />
+
+        <Button
+            android:id="@+id/btnWasted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_wasted" />
+
+        <Button
+            android:id="@+id/btnExpired"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_expired" />
+
+        <Button
+            android:id="@+id/btnDonated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_donated" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_delete_item" />
+
+    </LinearLayout>
+
+</ScrollView>
