@@ -1,0 +1,29 @@
+<resources>
+    <string name="title_item_detail">Detalles del alimento</string>
+    <string name="label_quantity">Cantidad</string>
+    <string name="hint_quantity">Introduce la cantidad</string>
+    <string name="action_update_quantity">Actualizar cantidad</string>
+    <string name="label_record_disposition">Registrar qué pasó con el alimento</string>
+    <string name="action_consumed">Consumido</string>
+    <string name="action_wasted">Desperdiciado</string>
+    <string name="action_expired">Caducado</string>
+    <string name="action_donated">Donado</string>
+    <string name="action_delete_item">Eliminar alimento</string>
+    <string name="dialog_delete_title">Eliminar alimento</string>
+    <string name="dialog_delete_message">¿Seguro que quieres eliminar este alimento?</string>
+    <string name="action_delete">Eliminar</string>
+
+    <string name="error_quantity_required">La cantidad es obligatoria</string>
+    <string name="error_quantity_positive">La cantidad debe ser positiva</string>
+    <string name="error_quantity_invalid">Cantidad no válida</string>
+
+    <string name="msg_load_error">No se pudo cargar el alimento</string>
+    <string name="msg_item_not_found">Alimento no encontrado</string>
+    <string name="msg_item_updated">Alimento actualizado correctamente</string>
+    <string name="msg_update_failed">Error al actualizar</string>
+    <string name="msg_disposition_recorded">Resultado registrado correctamente</string>
+    <string name="msg_disposition_failed">No se pudo registrar el resultado</string>
+    <string name="msg_invalid_disposition">Resultado no válido</string>
+    <string name="msg_item_deleted">Alimento eliminado correctamente</string>
+    <string name="msg_delete_failed">Error al eliminar</string>
+</resources>
