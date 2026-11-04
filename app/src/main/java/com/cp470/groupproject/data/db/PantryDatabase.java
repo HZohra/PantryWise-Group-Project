@@ -13,12 +13,14 @@ import com.cp470.groupproject.data.dao.CategoryDao;
 import com.cp470.groupproject.data.dao.ConsumptionHistoryDao;
 import com.cp470.groupproject.data.dao.FavoriteRecipeDao;
 import com.cp470.groupproject.data.dao.FoodItemDao;
+import com.cp470.groupproject.data.dao.MealPlanDao;
 import com.cp470.groupproject.data.dao.ShoppingItemDao;
 import com.cp470.groupproject.data.dao.StorageLocationDao;
 import com.cp470.groupproject.data.entity.Category;
 import com.cp470.groupproject.data.entity.ConsumptionHistory;
 import com.cp470.groupproject.data.entity.FavoriteRecipe;
 import com.cp470.groupproject.data.entity.FoodItem;
+import com.cp470.groupproject.data.entity.MealPlan;
 import com.cp470.groupproject.data.entity.ShoppingItem;
 import com.cp470.groupproject.data.entity.StorageLocation;
 
@@ -31,9 +33,9 @@ import java.util.concurrent.Executors;
  * storage locations and categories.
  */
 
-@Database(entities = {FoodItem.class, Category.class, StorageLocation.class,
-        ShoppingItem.class, FavoriteRecipe.class, ConsumptionHistory.class},
-        version = 1, exportSchema = true)
+@Database(entities = {FoodItem.class, Category.class, StorageLocation.class, ShoppingItem.class,
+        FavoriteRecipe.class, ConsumptionHistory.class, MealPlan.class},
+        version = 2, exportSchema = true)
 @TypeConverters(Converters.class)
 public abstract class PantryDatabase extends RoomDatabase {
 
@@ -59,6 +61,8 @@ public abstract class PantryDatabase extends RoomDatabase {
     public abstract FavoriteRecipeDao favoriteRecipeDao();
 
     public abstract ConsumptionHistoryDao consumptionHistoryDao();
+
+    public abstract MealPlanDao mealPlanDao();
 
     /** @return the process-wide database, created on first use */
     public static PantryDatabase getInstance(@NonNull Context context) {

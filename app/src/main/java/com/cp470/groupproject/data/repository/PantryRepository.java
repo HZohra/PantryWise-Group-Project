@@ -11,6 +11,7 @@ import com.cp470.groupproject.data.dao.CategoryDao;
 import com.cp470.groupproject.data.dao.ConsumptionHistoryDao;
 import com.cp470.groupproject.data.dao.FavoriteRecipeDao;
 import com.cp470.groupproject.data.dao.FoodItemDao;
+import com.cp470.groupproject.data.dao.MealPlanDao;
 import com.cp470.groupproject.data.dao.ShoppingItemDao;
 import com.cp470.groupproject.data.dao.StorageLocationDao;
 import com.cp470.groupproject.data.db.PantryDatabase;
@@ -18,6 +19,7 @@ import com.cp470.groupproject.data.entity.Category;
 import com.cp470.groupproject.data.entity.ConsumptionHistory;
 import com.cp470.groupproject.data.entity.FavoriteRecipe;
 import com.cp470.groupproject.data.entity.FoodItem;
+import com.cp470.groupproject.data.entity.MealPlan;
 import com.cp470.groupproject.data.entity.ShoppingItem;
 import com.cp470.groupproject.data.entity.StorageLocation;
 import com.cp470.groupproject.data.model.ItemStatus;
@@ -27,6 +29,8 @@ import com.cp470.groupproject.util.ExpiryUtils;
 import com.cp470.groupproject.util.IngredientNormalizer;
 import com.cp470.groupproject.util.WasteStatsCalculator;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -55,6 +59,7 @@ public class PantryRepository {
     private final ShoppingItemDao shoppingDao;
     private final FavoriteRecipeDao favoriteDao;
     private final ConsumptionHistoryDao historyDao;
+    private final MealPlanDao mealPlanDao;
     private final Executor executor;
 
     /** production constructor */
@@ -71,6 +76,7 @@ public class PantryRepository {
         this.shoppingDao = database.shoppingItemDao();
         this.favoriteDao = database.favoriteRecipeDao();
         this.historyDao = database.consumptionHistoryDao();
+        this.mealPlanDao = database.mealPlanDao();
         this.executor = executor;
     }
 
@@ -325,5 +331,61 @@ public class PantryRepository {
     public LiveData<WasteStats> getWasteStats(long since) {
         return Transformations.map(historyDao.observeCountsSince(since),
                 WasteStatsCalculator::fromCounts);
+    }
+
+
+
+
+
+    // ============================================================== meal plan
+
+    /** observable planned meals between two days (both included) */
+    public LiveData<List<MealPlan>> getMealPlans(long from, long to) {
+        return mealPlanDao.observeBetween(from, to);
+    }
+
+    /** snapshot of the planned meals between two days. background thread only */
+    public List<MealPlan> getMealPlansSync(long from, long to) {
+        return mealPlanDao.getBetweenSync(from, to);
+    }
+
+    /** adds a planned meal, the callback receives the new id (may be null) */
+    public void addMealPlan(@NonNull MealPlan plan, @Nullable ResultCallback<Long> callback) {
+        executor.execute(() -> {
+            long id = mealPlanDao.insert(plan);
+            if (callback != null) callback.onResult(id);
+        });
+    }
+
+    /** updates a planned meal */
+    public void updateMealPlan(@NonNull MealPlan plan) {
+        executor.execute(() -> mealPlanDao.update(plan));
+    }
+
+    /** deletes a planned meal */
+    public void deleteMealPlan(@NonNull MealPlan plan) {
+        executor.execute(() -> mealPlanDao.delete(plan));
+    }
+
+    /** marks a planned meal as cooked or not cooked */
+    public void setMealPlanCompleted(long id, boolean completed) {
+        executor.execute(() -> mealPlanDao.setCompleted(id, completed));
+    }
+
+    /**
+     * normalized names of the ingredients needed by the meals that are not cooked yet
+     * the shopping list can compare them with {@link #getStockSummarySync()}
+     * background thread only
+     */
+    public List<String> getPlannedIngredientsSync(long from, long to) {
+        LinkedHashSet<String> names = new LinkedHashSet<>();
+        for (MealPlan plan : mealPlanDao.getBetweenSync(from, to)) {
+            if (plan.completed) continue;
+            for (String ingredient : plan.ingredients) {
+                String normalized = IngredientNormalizer.normalize(ingredient);
+                if (!normalized.isEmpty()) names.add(normalized);
+            }
+        }
+        return new ArrayList<>(names);
     }
 }
