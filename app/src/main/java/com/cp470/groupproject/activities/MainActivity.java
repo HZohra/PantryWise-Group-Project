@@ -22,5 +22,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // temporary test code, do not commit
+        startActivity(new android.content.Intent(this,
+                com.cp470.groupproject.ui.wastesummary.WasteSummaryActivity.class));
     }
 }

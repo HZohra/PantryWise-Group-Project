@@ -1,4 +1,6 @@
 <resources>
+    <string name="app_name">CP470GroupProject</string>
+
     <string name="title_item_detail">Detalles del alimento</string>
     <string name="label_quantity">Cantidad</string>
     <string name="hint_quantity">Introduce la cantidad</string>
@@ -26,4 +28,19 @@
     <string name="msg_invalid_disposition">Resultado no válido</string>
     <string name="msg_item_deleted">Alimento eliminado correctamente</string>
     <string name="msg_delete_failed">Error al eliminar</string>
+
+    <string name="title_waste_summary">Resumen de desperdicio</string>
+    <string name="waste_empty">Aún no hay alimentos registrados en este periodo.</string>
+    <string name="waste_total">Alimentos registrados: %1$d</string>
+    <string name="waste_consumed">Consumidos: %1$d</string>
+    <string name="waste_wasted">Desperdiciados: %1$d</string>
+    <string name="waste_expired">Caducados: %1$d</string>
+    <string name="waste_donated">Donados: %1$d</string>
+    <string name="waste_percent">Tasa de desperdicio: %1$.1f%%</string>
+
+    <string-array name="period_labels">
+        <item>Últimos 7 días</item>
+        <item>Últimos 30 días</item>
+        <item>Todo el tiempo</item>
+    </string-array>
 </resources>

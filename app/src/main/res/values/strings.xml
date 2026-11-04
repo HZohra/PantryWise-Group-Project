@@ -28,4 +28,20 @@
     <string name="msg_invalid_disposition">Invalid disposition</string>
     <string name="msg_item_deleted">Item deleted successfully</string>
     <string name="msg_delete_failed">Delete failed</string>
+
+    <string name="title_waste_summary">Waste summary</string>
+    <string name="waste_empty">No items tracked in this period yet.</string>
+    <string name="waste_total">Items tracked: %1$d</string>
+    <string name="waste_consumed">Consumed: %1$d</string>
+    <string name="waste_wasted">Wasted: %1$d</string>
+    <string name="waste_expired">Expired: %1$d</string>
+    <string name="waste_donated">Donated: %1$d</string>
+    <string name="waste_percent">Waste rate: %1$.1f%%</string>
+
+    <!-- order must match PERIOD_DAYS in WasteSummaryActivity: 7 days, 30 days, all time -->
+    <string-array name="period_labels">
+        <item>Last 7 days</item>
+        <item>Last 30 days</item>
+        <item>All time</item>
+    </string-array>
 </resources>
