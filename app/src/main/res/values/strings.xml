@@ -1,3 +1,47 @@
 <resources>
     <string name="app_name">CP470GroupProject</string>
+
+    <string name="title_item_detail">Item details</string>
+    <string name="label_quantity">Quantity</string>
+    <string name="hint_quantity">Enter quantity</string>
+    <string name="action_update_quantity">Update quantity</string>
+    <string name="label_record_disposition">Record item disposition</string>
+    <string name="action_consumed">Consumed</string>
+    <string name="action_wasted">Wasted</string>
+    <string name="action_expired">Expired</string>
+    <string name="action_donated">Donated</string>
+    <string name="action_delete_item">Delete item</string>
+    <string name="dialog_delete_title">Delete item</string>
+    <string name="dialog_delete_message">Are you sure you want to delete this item?</string>
+    <string name="action_delete">Delete</string>
+
+    <string name="error_quantity_required">Quantity is required</string>
+    <string name="error_quantity_positive">Quantity must be positive</string>
+    <string name="error_quantity_invalid">Invalid quantity</string>
+
+    <string name="msg_load_error">Unable to load item</string>
+    <string name="msg_item_not_found">Item not found</string>
+    <string name="msg_item_updated">Item updated successfully</string>
+    <string name="msg_update_failed">Update failed</string>
+    <string name="msg_disposition_recorded">Disposition recorded successfully</string>
+    <string name="msg_disposition_failed">Could not record disposition</string>
+    <string name="msg_invalid_disposition">Invalid disposition</string>
+    <string name="msg_item_deleted">Item deleted successfully</string>
+    <string name="msg_delete_failed">Delete failed</string>
+
+    <string name="title_waste_summary">Waste summary</string>
+    <string name="waste_empty">No items tracked in this period yet.</string>
+    <string name="waste_total">Items tracked: %1$d</string>
+    <string name="waste_consumed">Consumed: %1$d</string>
+    <string name="waste_wasted">Wasted: %1$d</string>
+    <string name="waste_expired">Expired: %1$d</string>
+    <string name="waste_donated">Donated: %1$d</string>
+    <string name="waste_percent">Waste rate: %1$.1f%%</string>
+
+    <!-- order must match PERIOD_DAYS in WasteSummaryActivity: 7 days, 30 days, all time -->
+    <string-array name="period_labels">
+        <item>Last 7 days</item>
+        <item>Last 30 days</item>
+        <item>All time</item>
+    </string-array>
 </resources>

@@ -1,0 +1,63 @@
+package com.cp470.groupproject.data.dao;
+
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
+import androidx.room.Update;
+
+import com.cp470.groupproject.data.entity.ShoppingItem;
+
+import java.util.List;
+
+/** Data access for the shopping list. writes must run off the main thread. */
+@Dao
+public interface ShoppingItemDao {
+    /**
+     * adds an item to the list.
+     *
+     * @return the new id
+     */
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    long insert(ShoppingItem item);
+
+    /**
+     * adds several items at once (automatic list generation).
+     *
+     * @return the new ids
+     */
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    List<Long> insertAll(List<ShoppingItem> items);
+
+    @Update
+    int update(ShoppingItem item);
+
+    @Delete
+    int delete(ShoppingItem item);
+
+    /** ticks or unticks an item */
+    @Query("UPDATE shopping_items SET checked = :checked WHERE id = :id")
+    int setChecked(long id, boolean checked);
+
+    /**
+     * "clear completed": removes every ticked item.
+     *
+     * @return rows deleted
+     */
+    @Query("DELETE FROM shopping_items WHERE checked = 1")
+    int deleteChecked();
+
+    /** whole list: unchecked first, then by store, then by name */
+    @Query("SELECT * FROM shopping_items ORDER BY checked ASC, store COLLATE NOCASE ASC, name COLLATE NOCASE ASC")
+    LiveData<List<ShoppingItem>> observeAll();
+
+    /** snapshot of the list. background thread only */
+    @Query("SELECT * FROM shopping_items ORDER BY checked ASC, name COLLATE NOCASE ASC")
+    List<ShoppingItem> getAllSync();
+
+    /** unchecked entry with this normalized name (avoids duplicates when auto-generating) */
+    @Query("SELECT * FROM shopping_items WHERE normalizedName = :normalizedName AND checked = 0 LIMIT 1")
+    ShoppingItem findPendingByNormalizedName(String normalizedName);
+}

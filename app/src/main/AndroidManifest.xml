@@ -21,6 +21,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.itemdetail.ItemDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.inventory.InventoryActivity" />
+
+        <activity
+            android:name=".ui.wastesummary.WasteSummaryActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.inventory.InventoryActivity" />
+
     </application>
 
 </manifest>
