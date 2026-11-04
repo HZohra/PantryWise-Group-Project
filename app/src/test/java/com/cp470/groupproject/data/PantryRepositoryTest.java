@@ -14,8 +14,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.cp470.groupproject.data.db.PantryDatabase;
 import com.cp470.groupproject.data.entity.FavoriteRecipe;
 import com.cp470.groupproject.data.entity.FoodItem;
+import com.cp470.groupproject.data.entity.MealPlan;
 import com.cp470.groupproject.data.entity.ShoppingItem;
 import com.cp470.groupproject.data.model.ItemStatus;
+import com.cp470.groupproject.data.model.MealType;
 import com.cp470.groupproject.data.model.WasteStats;
 import com.cp470.groupproject.data.repository.PantryRepository;
 
@@ -27,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Repository logic tested without the android ui: an in-memory database and a direct (synchronous)
@@ -125,5 +128,27 @@ public class PantryRepositoryTest {
 
         repository.removeFavoriteRecipe("r1");
         assertEquals(0, db.favoriteRecipeDao().getAllSync().size());
+    }
+
+    @Test
+    public void plannedIngredientsAreNormalizedDistinctAndSkipCompleted() {
+        long day = 1_700_000_000_000L;
+        final long[] ids = new long[2];
+        repository.addMealPlan(new MealPlan(day, MealType.DINNER, "r1", "Omelette",
+                Arrays.asList("2 Eggs", "Milk 1L")), r -> ids[0] = r);
+        repository.addMealPlan(new MealPlan(day, MealType.LUNCH, "r2", "Pancakes",
+                Arrays.asList("Milk", "Flour 500g")), r -> ids[1] = r);
+        // a plan outside the requested range must be ignored
+        repository.addMealPlan(new MealPlan(day + 10 * 86_400_000L, MealType.DINNER, "r3", "Soup",
+                Arrays.asList("Carrot")), null);
+
+        // lunch comes before dinner
+        assertEquals("Pancakes", repository.getMealPlansSync(day, day).get(0).recipeTitle);
+
+        List<String> planned = repository.getPlannedIngredientsSync(day, day);
+        assertEquals(Arrays.asList("milk", "flour", "eggs"), planned);
+
+        repository.setMealPlanCompleted(ids[1], true);
+        assertEquals(Arrays.asList("eggs", "milk"), repository.getPlannedIngredientsSync(day, day));
     }
 }
