@@ -13,7 +13,11 @@ import java.util.List;
 /** Data access for the consumption and waste log. */
 @Dao
 public interface ConsumptionHistoryDao {
-    /** appends a log entry. @return the new id */
+    /**
+     * appends a log entry.
+     *
+     * @return the new id
+     */
     @Insert
     long insert(ConsumptionHistory entry);
 
@@ -35,7 +39,11 @@ public interface ConsumptionHistoryDao {
             + "FROM consumption_history WHERE timestamp >= :since GROUP BY disposition")
     List<DispositionCount> getCountsSinceSync(long since);
 
-    /** erases the whole log. @return rows deleted */
+    /**
+     * erases the whole log.
+     *
+     * @return rows deleted
+     */
     @Query("DELETE FROM consumption_history")
     int deleteAll();
 }

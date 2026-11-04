@@ -16,7 +16,11 @@ import java.util.List;
 
 @Dao
 public interface CategoryDao {
-    /** inserts a category, a duplicate name is ignored. @return the new id, or -1 if ignored */
+    /**
+     * inserts a category, a duplicate name is ignored.
+     *
+     * @return the new id, or -1 if ignored
+     */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(Category category);
 

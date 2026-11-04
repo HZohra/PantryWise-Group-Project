@@ -13,11 +13,19 @@ import java.util.List;
 /** Data access for saved favorite recipes. */
 @Dao
 public interface FavoriteRecipeDao {
-    /** saves a favorite, saving the same recipeId again replaces the old row. @return the row id */
+    /**
+     * saves a favorite, saving the same recipeId again replaces the old row.
+     *
+     * @return the row id
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(FavoriteRecipe recipe);
 
-    /** removes a favorite by the id from the recipe source. @return rows deleted */
+    /**
+     * removes a favorite by the id from the recipe source.
+     *
+     * @return rows deleted
+     */
     @Query("DELETE FROM favorite_recipes WHERE recipeId = :recipeId")
     int deleteByRecipeId(String recipeId);
 

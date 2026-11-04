@@ -31,19 +31,35 @@ public interface FoodItemDao {
 
     // ------------------------------------------------------------------ crud
 
-    /** inserts an item. @return the new row id */
+    /**
+     * inserts an item.
+     *
+     * @return the new row id
+     */
     @Insert(onConflict = OnConflictStrategy.ABORT)
     long insert(FoodItem item);
 
-    /** inserts several items in one transaction. @return the new row ids */
+    /**
+     * inserts several items in one transaction.
+     *
+     * @return the new row ids
+     */
     @Insert(onConflict = OnConflictStrategy.ABORT)
     List<Long> insertAll(List<FoodItem> items);
 
-    /** updates an existing item matched by primary key. @return rows updated (0 or 1) */
+    /**
+     * updates an existing item matched by primary key.
+     *
+     * @return rows updated (0 or 1)
+     */
     @Update
     int update(FoodItem item);
 
-    /** permanently deletes an item. @return rows deleted (0 or 1) */
+    /**
+     * permanently deletes an item.
+     *
+     * @return rows deleted (0 or 1)
+     */
     @Delete
     int delete(FoodItem item);
 

@@ -15,11 +15,19 @@ import java.util.List;
 /** Data access for the shopping list. writes must run off the main thread. */
 @Dao
 public interface ShoppingItemDao {
-    /** adds an item to the list. @return the new id */
+    /**
+     * adds an item to the list.
+     *
+     * @return the new id
+     */
     @Insert(onConflict = OnConflictStrategy.ABORT)
     long insert(ShoppingItem item);
 
-    /** adds several items at once (automatic list generation). @return the new ids */
+    /**
+     * adds several items at once (automatic list generation).
+     *
+     * @return the new ids
+     */
     @Insert(onConflict = OnConflictStrategy.ABORT)
     List<Long> insertAll(List<ShoppingItem> items);
 
@@ -33,7 +41,11 @@ public interface ShoppingItemDao {
     @Query("UPDATE shopping_items SET checked = :checked WHERE id = :id")
     int setChecked(long id, boolean checked);
 
-    /** "clear completed": removes every ticked item. @return rows deleted */
+    /**
+     * "clear completed": removes every ticked item.
+     *
+     * @return rows deleted
+     */
     @Query("DELETE FROM shopping_items WHERE checked = 1")
     int deleteChecked();
 

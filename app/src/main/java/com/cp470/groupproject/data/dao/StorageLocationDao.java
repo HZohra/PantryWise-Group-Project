@@ -19,7 +19,11 @@ import java.util.List;
 
 @Dao
 public interface StorageLocationDao {
-    /** inserts a location, a duplicate name is ignored. @return the new id, or -1 if ignored */
+    /**
+     * inserts a location, a duplicate name is ignored.
+     *
+     * @return the new id, or -1 if ignored
+     */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(StorageLocation location);
 
