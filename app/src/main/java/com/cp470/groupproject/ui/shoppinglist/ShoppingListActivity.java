@@ -2,7 +2,10 @@ package com.cp470.groupproject.ui.shoppinglist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,10 +33,15 @@ import com.cp470.groupproject.ui.mealplanner.MealPlannerActivity;
 import com.cp470.groupproject.util.Event;
 import com.cp470.groupproject.util.ShoppingInputValidator;
 import com.cp470.groupproject.util.ShoppingListFormatter;
+import com.cp470.groupproject.util.StoreAdvisor;
+import com.cp470.groupproject.util.StoreGrouper.StoreGroup;
+import com.cp470.groupproject.util.StoreType;
 import com.cp470.groupproject.util.WindowInsetsHelper;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Shopping list screen and destination of the expiration notification. it only renders state and
@@ -143,6 +151,11 @@ public class ShoppingListActivity extends AppCompatActivity {
             public void onItemClicked(ShoppingItem item) {
                 showEditDialog(item);
             }
+
+            @Override
+            public void onMapClicked(StoreGroup group) {
+                openMap(group);
+            }
         });
         recycler.setLayoutManager(new LinearLayoutManager(this));
         recycler.setAdapter(adapter);
@@ -150,6 +163,14 @@ public class ShoppingListActivity extends AppCompatActivity {
         // swipe a row to delete it (the snackbar offers undo)
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            // the shop headers cannot be deleted
+            @Override
+            public int getSwipeDirs(@NonNull RecyclerView list,
+                                    @NonNull RecyclerView.ViewHolder holder) {
+                return holder.getItemViewType() == ShoppingListAdapter.TYPE_HEADER
+                        ? 0 : super.getSwipeDirs(list, holder);
+            }
+
             @Override
             public boolean onMove(@NonNull RecyclerView list,
                                   @NonNull RecyclerView.ViewHolder holder,
@@ -161,7 +182,10 @@ public class ShoppingListActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder holder, int direction) {
                 int position = holder.getBindingAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
-                    viewModel.deleteItem(adapter.getCurrentList().get(position));
+                    ShoppingItem item = adapter.getCurrentList().get(position).item;
+                    if (item != null) {
+                        viewModel.deleteItem(item);
+                    }
                 }
             }
         }).attachToRecyclerView(recycler);
@@ -171,6 +195,25 @@ public class ShoppingListActivity extends AppCompatActivity {
         Button add = findViewById(R.id.btnAdd);
         add.setOnClickListener(v -> addFromForm());
         btnGenerate.setOnClickListener(v -> viewModel.generateForNextDays());
+        // the hint of the store field shows the shop that will be suggested for the typed name
+        edtName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // nothing to do
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // nothing to do
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                showSuggestedStore(s.toString());
+            }
+        });
+        // the form may have been restored after a rotation with a name already typed
+        showSuggestedStore(edtName.getText().toString());
         // the "done" key of the keyboard also adds the item
         edtName.setOnEditorActionListener((view, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -195,7 +238,7 @@ public class ShoppingListActivity extends AppCompatActivity {
     }
 
     private void observeViewModel() {
-        viewModel.getItems().observe(this, list -> {
+        viewModel.getRows().observe(this, list -> {
             adapter.submitList(list);
             boolean empty = list == null || list.isEmpty();
             txtEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
@@ -209,6 +252,65 @@ public class ShoppingListActivity extends AppCompatActivity {
             btnGenerate.setEnabled(!generating);
             invalidateOptionsMenu();
         });
+    }
+
+    /** puts the suggested shop in the hint of the store field, or the plain hint if nothing is typed */
+    private void showSuggestedStore(String typedName) {
+        if (typedName.trim().isEmpty()) {
+            edtStore.setHint(R.string.shopping_hint_store);
+            return;
+        }
+        edtStore.setHint(getString(R.string.shopping_store_suggested,
+                suggestedStoreName(StoreAdvisor.suggest(typedName))));
+    }
+
+    /** @return the name the user gave to this kind of shop, or its generic name */
+    private String suggestedStoreName(StoreType type) {
+        Map<StoreType, String> names = viewModel.getStoreNames();
+        String custom = names == null ? null : names.get(type);
+        return custom != null ? custom : getString(StoreLabels.nameRes(type));
+    }
+
+    /** implicit intent: any maps app can show the shops of a group near the user */
+    private void openMap(StoreGroup group) {
+        String query = group.name != null ? group.name
+                : getString(StoreLabels.queryRes(group.type));
+        Intent map = new Intent(Intent.ACTION_VIEW, Uri.parse(StoreAdvisor.mapsUri(query)));
+        // needs the <queries> entry for the geo scheme in the manifest on android 11+
+        if (map.resolveActivity(getPackageManager()) != null) {
+            startActivity(map);
+        } else {
+            Toast.makeText(this, R.string.shopping_map_no_app, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /** custom dialog where the user names the shops they use for each kind of product */
+    private void showMyStoresDialog() {
+        View content = LayoutInflater.from(this).inflate(R.layout.dialog_my_stores, null);
+        // same order as the values of StoreType
+        int[] fieldIds = {R.id.edtMyButcher, R.id.edtMyFish, R.id.edtMyProduce,
+                R.id.edtMyBakery, R.id.edtMyGeneral};
+        StoreType[] types = StoreType.values();
+        EditText[] fields = new EditText[types.length];
+        Map<StoreType, String> saved = viewModel.getStoreNames();
+        for (int i = 0; i < types.length; i++) {
+            fields[i] = content.findViewById(fieldIds[i]);
+            String name = saved == null ? null : saved.get(types[i]);
+            fields[i].setText(name == null ? "" : name);
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.shopping_my_stores_title)
+                .setView(content)
+                .setPositiveButton(R.string.shopping_action_save, (dialog, which) -> {
+                    Map<StoreType, String> names = new EnumMap<>(StoreType.class);
+                    for (int i = 0; i < types.length; i++) {
+                        names.put(types[i], fields[i].getText().toString());
+                    }
+                    viewModel.saveStoreNames(names);
+                    showSuggestedStore(edtName.getText().toString());
+                })
+                .setNegativeButton(R.string.shopping_action_cancel, null)
+                .show();
     }
 
     private void showMessage(Event<UiMessage> event) {
@@ -274,6 +376,10 @@ public class ShoppingListActivity extends AppCompatActivity {
         if (generate != null) {
             generate.setEnabled(!generating);
         }
+        MenuItem group = menu.findItem(R.id.action_group_by_store);
+        if (group != null) {
+            group.setChecked(viewModel.isGroupByStore());
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -290,6 +396,15 @@ public class ShoppingListActivity extends AppCompatActivity {
         }
         if (id == R.id.action_planner) {
             startActivity(MealPlannerActivity.newIntent(this));
+            return true;
+        }
+        if (id == R.id.action_my_stores) {
+            showMyStoresDialog();
+            return true;
+        }
+        if (id == R.id.action_group_by_store) {
+            viewModel.setGroupByStore(!viewModel.isGroupByStore());
+            invalidateOptionsMenu();
             return true;
         }
         if (id == R.id.action_clear) {

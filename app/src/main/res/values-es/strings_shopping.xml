@@ -128,4 +128,28 @@
 
     <!-- atajo temporal en la pantalla de resumen de desperdicio, solo visible en builds debug -->
     <string name="test_panel_open">Probar avisos, lista y planificador</string>
+
+    <!-- tienda sugerida: grupos de la lista de la compra y "mis tiendas" -->
+    <string name="store_type_butcher">Carnicería</string>
+    <string name="store_type_fish">Pescadería</string>
+    <string name="store_type_produce">Frutería</string>
+    <string name="store_type_bakery">Panadería</string>
+    <string name="store_type_general">Supermercado</string>
+    <string name="store_query_butcher">carnicería</string>
+    <string name="store_query_fish">pescadería</string>
+    <string name="store_query_produce">frutería</string>
+    <string name="store_query_bakery">panadería</string>
+    <string name="store_query_general">supermercado</string>
+    <string name="shopping_menu_my_stores">Mis tiendas</string>
+    <string name="shopping_menu_group_by_store">Agrupar por tienda</string>
+    <string name="shopping_my_stores_title">Mis tiendas</string>
+    <string name="shopping_my_stores_help">Pon nombre a las tiendas que usas. Deja un campo vacío para usar el nombre genérico.</string>
+    <string name="shopping_store_suggested">Sugerida: %1$s</string>
+    <string name="shopping_map_open">Buscar %1$s cerca</string>
+    <string name="shopping_map_open_generic">Buscar tiendas cerca</string>
+    <string name="shopping_map_no_app">No hay ninguna aplicación de mapas</string>
+    <plurals name="shopping_group_count">
+        <item quantity="one">%d artículo</item>
+        <item quantity="other">%d artículos</item>
+    </plurals>
 </resources>

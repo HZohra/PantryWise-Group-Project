@@ -18,6 +18,17 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_my_stores"
+        android:title="@string/shopping_menu_my_stores"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_group_by_store"
+        android:checkable="true"
+        android:title="@string/shopping_menu_group_by_store"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_clear"
         android:title="@string/shopping_menu_clear"
         app:showAsAction="never" />

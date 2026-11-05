@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
@@ -14,13 +15,18 @@ import com.cp470.groupproject.data.db.PantryDatabase;
 import com.cp470.groupproject.data.entity.ShoppingItem;
 import com.cp470.groupproject.data.repository.PantryRepository;
 import com.cp470.groupproject.shopping.ShoppingListGenerator;
+import com.cp470.groupproject.shopping.StorePreferences;
 import com.cp470.groupproject.util.Event;
 import com.cp470.groupproject.util.ShoppingInputValidator;
 import com.cp470.groupproject.util.ShoppingListFormatter;
+import com.cp470.groupproject.util.StoreGrouper;
+import com.cp470.groupproject.util.StoreGrouper.ShoppingRow;
+import com.cp470.groupproject.util.StoreType;
 import com.cp470.groupproject.util.WeekUtils;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 /**
  * State and actions of the shopping list screen. it talks only to the repository, never to views.
@@ -34,6 +40,10 @@ public class ShoppingListViewModel extends AndroidViewModel {
     private final LiveData<List<ShoppingItem>> items;
     private final LiveData<int[]> summary;
     private final MutableLiveData<Event<UiMessage>> messages = new MutableLiveData<>();
+    private final StorePreferences stores;
+    private final MutableLiveData<Map<StoreType, String>> storeNames;
+    private final MutableLiveData<Boolean> groupByStore;
+    private final MediatorLiveData<List<ShoppingRow>> rows = new MediatorLiveData<>();
 
     /** last deleted item, kept so the user can undo */
     private ShoppingItem lastDeleted;
@@ -44,6 +54,54 @@ public class ShoppingListViewModel extends AndroidViewModel {
         repository = new PantryRepository(application);
         items = repository.getShoppingItems();
         summary = Transformations.map(items, ShoppingListViewModel::summarize);
+
+        // small settings file: read once here, then kept in memory by android
+        stores = StorePreferences.from(application);
+        storeNames = new MutableLiveData<>(stores.getStoreNames());
+        groupByStore = new MutableLiveData<>(stores.isGroupByStore());
+        // the rows of the screen depend on the list and on both settings
+        rows.addSource(items, list -> updateRows());
+        rows.addSource(storeNames, names -> updateRows());
+        rows.addSource(groupByStore, grouped -> updateRows());
+    }
+
+    /** @return the list as rows: grouped by shop with headers, or flat, depending on the setting */
+    public LiveData<List<ShoppingRow>> getRows() {
+        return rows;
+    }
+
+    /** @return the names the user gave to each kind of shop */
+    public Map<StoreType, String> getStoreNames() {
+        return storeNames.getValue();
+    }
+
+    /** saves the names of the shops; a blank name goes back to the generic one */
+    public void saveStoreNames(@NonNull Map<StoreType, String> names) {
+        for (StoreType type : StoreType.values()) {
+            stores.setStoreName(type, names.get(type));
+        }
+        storeNames.setValue(stores.getStoreNames());
+    }
+
+    /** @return true if the list is grouped by shop */
+    public boolean isGroupByStore() {
+        return Boolean.TRUE.equals(groupByStore.getValue());
+    }
+
+    /** saves and applies whether the list is grouped by shop */
+    public void setGroupByStore(boolean grouped) {
+        stores.setGroupByStore(grouped);
+        groupByStore.setValue(grouped);
+    }
+
+    private void updateRows() {
+        List<ShoppingItem> list = items.getValue();
+        if (list == null) {
+            return;
+        }
+        rows.setValue(isGroupByStore()
+                ? StoreGrouper.toRows(StoreGrouper.group(list, storeNames.getValue()))
+                : StoreGrouper.flat(list));
     }
 
     /** @return the list, ticked items last */

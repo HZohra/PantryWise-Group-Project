@@ -12,6 +12,11 @@
             <action android:name="android.intent.action.SEND" />
             <data android:mimeType="text/plain" />
         </intent>
+        <!-- lets resolveActivity() see a maps app for the "find stores nearby" button -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
     </queries>
 
     <application

@@ -122,4 +122,28 @@
 
     <!-- temporary shortcut on the waste summary screen, only shown in debug builds -->
     <string name="test_panel_open">Test alerts, shopping list &amp; planner</string>
+
+    <!-- suggested store: groups of the shopping list and "my stores" -->
+    <string name="store_type_butcher">Butcher</string>
+    <string name="store_type_fish">Fish market</string>
+    <string name="store_type_produce">Greengrocer</string>
+    <string name="store_type_bakery">Bakery</string>
+    <string name="store_type_general">Supermarket</string>
+    <string name="store_query_butcher">butcher</string>
+    <string name="store_query_fish">fish market</string>
+    <string name="store_query_produce">greengrocer</string>
+    <string name="store_query_bakery">bakery</string>
+    <string name="store_query_general">supermarket</string>
+    <string name="shopping_menu_my_stores">My stores</string>
+    <string name="shopping_menu_group_by_store">Group by store</string>
+    <string name="shopping_my_stores_title">My stores</string>
+    <string name="shopping_my_stores_help">Name the shops you use. Leave a field empty to use the generic name.</string>
+    <string name="shopping_store_suggested">Suggested: %1$s</string>
+    <string name="shopping_map_open">Find %1$s nearby</string>
+    <string name="shopping_map_open_generic">Find stores nearby</string>
+    <string name="shopping_map_no_app">No maps app available</string>
+    <plurals name="shopping_group_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
 </resources>
