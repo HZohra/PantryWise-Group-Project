@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- strings of the expiration alerts, shopping list and meal planner (kept in their own file to avoid merge conflicts) -->
+<resources>
+    <!-- expiration notification -->
+    <string name="notif_channel_name">Expiration alerts</string>
+    <string name="notif_channel_description">Daily reminders about food that is expired or about to expire</string>
+    <plurals name="notif_title">
+        <item quantity="one">%d item needs attention</item>
+        <item quantity="other">%d items need attention</item>
+    </plurals>
+    <string name="notif_summary">%1$d expired · %2$d expiring soon</string>
+    <string name="notif_line_expires_today">%1$s — expires today</string>
+    <string name="notif_line_expires_tomorrow">%1$s — expires tomorrow</string>
+    <plurals name="notif_line_expires_in_days">
+        <item quantity="one">%2$s — expires in %1$d day</item>
+        <item quantity="other">%2$s — expires in %1$d days</item>
+    </plurals>
+    <string name="notif_line_expired_today">%1$s — expired today</string>
+    <plurals name="notif_line_expired_days_ago">
+        <item quantity="one">%2$s — expired %1$d day ago</item>
+        <item quantity="other">%2$s — expired %1$d days ago</item>
+    </plurals>
+    <string name="notif_more_lines">+%1$d more</string>
+
+    <!-- notification permission -->
+    <string name="notif_permission_title">Allow notifications?</string>
+    <string name="notif_permission_message">PantryWise needs permission to remind you before your food expires.</string>
+    <string name="notif_action_allow">Allow</string>
+    <string name="notif_action_not_now">Not now</string>
+    <string name="notif_disabled_message">Notifications are turned off. You won\'t get expiration reminders.</string>
+    <string name="notif_action_open_settings">Settings</string>
+
+    <!-- shopping list -->
+    <string name="title_shopping_list">Shopping list</string>
+    <string name="shopping_hint_name">Item name</string>
+    <string name="shopping_hint_qty">Qty</string>
+    <string name="shopping_hint_unit">Unit</string>
+    <string name="shopping_hint_store">Store (optional)</string>
+    <string name="shopping_action_add">Add</string>
+    <string name="shopping_summary">%1$d to buy · %2$d done</string>
+    <string name="shopping_empty">Your list is empty. Add your first item above.</string>
+    <string name="shopping_tag_auto">auto</string>
+    <string name="shopping_menu_share">Share</string>
+    <string name="shopping_menu_clear">Clear completed</string>
+    <string name="shopping_share_header">Shopping list</string>
+    <string name="shopping_share_subject">My shopping list</string>
+    <string name="shopping_share_chooser">Share list via</string>
+    <string name="shopping_share_empty">Nothing to share yet</string>
+    <string name="shopping_share_no_app">No app available to share the list</string>
+    <string name="shopping_error_name">Name is required</string>
+    <string name="shopping_error_qty">Enter a number greater than 0</string>
+    <string name="shopping_edit_title">Edit item</string>
+    <string name="shopping_action_save">Save</string>
+    <string name="shopping_action_cancel">Cancel</string>
+    <string name="shopping_deleted">Item deleted</string>
+    <string name="shopping_action_undo">Undo</string>
+    <string name="shopping_clear_title">Clear completed?</string>
+    <plurals name="shopping_clear_message">
+        <item quantity="one">Remove %d completed item?</item>
+        <item quantity="other">Remove %d completed items?</item>
+    </plurals>
+    <plurals name="shopping_cleared">
+        <item quantity="one">%d item removed</item>
+        <item quantity="other">%d items removed</item>
+    </plurals>
+    <string name="shopping_nothing_completed">No completed items</string>
+    <string name="shopping_added">%1$s added</string>
+    <string name="shopping_menu_planner">Meal planner</string>
+    <string name="shopping_action_generate">Generate from plan</string>
+    <plurals name="shopping_generated">
+        <item quantity="one">%d item added from your meal plan</item>
+        <item quantity="other">%d items added from your meal plan</item>
+    </plurals>
+    <string name="shopping_generated_none">Everything you need is already in stock</string>
+    <string name="shopping_generated_no_meals">No upcoming meals to shop for. Plan meals from today onwards.</string>
+    <string name="planner_action_generate">Generate shopping list</string>
+    <string name="planner_action_view_list">View</string>
+    <string name="planner_nothing_to_generate">This week is already over</string>
+
+    <!-- meal planner -->
+    <string name="title_meal_planner">Meal planner</string>
+    <string name="planner_week_range">%1$s – %2$s</string>
+    <string name="planner_today">Today</string>
+    <string name="planner_slot_empty">+ Add</string>
+    <string name="planner_meal_breakfast">Breakfast</string>
+    <string name="planner_meal_lunch">Lunch</string>
+    <string name="planner_meal_dinner">Dinner</string>
+    <string name="planner_meal_snack">Snack</string>
+    <string name="planner_slot_format">%1$s: %2$s</string>
+    <string name="planner_cooked_suffix">✓ cooked</string>
+    <string name="planner_dialog_add_title">Plan a meal</string>
+    <string name="planner_dialog_change_title">Change meal</string>
+    <string name="planner_custom_recipe">Custom recipe</string>
+    <string name="planner_hint_title">Recipe title</string>
+    <string name="planner_ingredients_title">Ingredients</string>
+    <string name="planner_ingredients_help">Type an ingredient and press Add. Leave the quantity empty to only check that you have it (e.g. soy sauce). Tap an ingredient to edit it.</string>
+    <string name="planner_hint_ing_name">Ingredient</string>
+    <string name="planner_remove_ingredient">Remove ingredient</string>
+    <!-- same order as IngredientLine.UNITS -->
+    <string-array name="ingredient_unit_labels">
+        <item>pcs</item>
+        <item>g</item>
+        <item>kg</item>
+        <item>ml</item>
+        <item>L</item>
+        <item>tsp</item>
+        <item>tbsp</item>
+        <item>cup</item>
+        <item>oz</item>
+        <item>lb</item>
+    </string-array>
+    <string name="planner_error_title">Title is required</string>
+    <string name="planner_action_change">Change</string>
+    <string name="planner_action_mark_cooked">Mark as cooked</string>
+    <string name="planner_action_mark_not_cooked">Mark as not cooked</string>
+    <string name="planner_action_remove">Remove</string>
+    <string name="planner_meal_saved">Meal saved</string>
+    <string name="planner_meal_removed">Meal removed</string>
+    <string name="planner_menu_shopping_list">Shopping list</string>
+    <string name="planner_previous_week">Previous week</string>
+    <string name="planner_next_week">Next week</string>
+
+    <!-- temporary shortcut on the waste summary screen, only shown in debug builds -->
+    <string name="test_panel_open">Test alerts, shopping list &amp; planner</string>
+</resources>

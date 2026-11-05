@@ -63,7 +63,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.7")
     implementation("androidx.lifecycle:lifecycle-livedata:2.8.7")
 
+    // WorkManager: background tasks (java version, not -ktx)
+    implementation("androidx.work:work-runtime:2.9.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+
     // Unit Testing
+    testImplementation("org.mockito:mockito-core:5.19.0")
     testImplementation("org.robolectric:robolectric:4.13")
     testImplementation("androidx.test:core:1.6.1")
     testImplementation("androidx.test.ext:junit:1.2.1")

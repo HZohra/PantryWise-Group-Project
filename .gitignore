@@ -14,3 +14,11 @@ captures/
 
 .externalNativeBuild/
 .cxx/
+
+# Personal folder (Aitor)
+aitor/
+
+# Claude Code: personal context and configuration
+CLAUDE.md
+CLAUDE.local.md
+.claude/

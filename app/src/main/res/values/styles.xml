@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- theme of the shopping list and planner screens: inherits the global app theme -->
+    <style name="Theme.CP470GroupProject.Shopping" parent="Theme.CP470GroupProject">
+        <item name="materialButtonStyle">@style/PantryWise.Button</item>
+    </style>
+
+    <style name="PantryWise.Button" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <!-- text field of the grid form: fills its column and keeps a comfortable touch height -->
+    <style name="PantryWise.Field" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="PantryWise.SectionTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <style name="PantryWise.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <!-- one meal slot of a day card: a tappable box tinted with the theme surface colour -->
+    <style name="PantryWise.Slot" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">?attr/colorSurfaceVariant</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="PantryWise.RowTitle" parent="TextAppearance.Material3.BodyLarge" />
+    <style name="PantryWise.RowSubtitle" parent="TextAppearance.Material3.BodySmall" />
+</resources>
