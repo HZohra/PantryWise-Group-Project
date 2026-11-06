@@ -205,7 +205,7 @@ public class MealPlannerActivity extends AppCompatActivity {
 
         if (existing != null) {
             title.setText(existing.recipeTitle);
-            editor.setIngredients(existing.ingredients);
+            editor.setIngredients(existing.ingredientTexts());
         } else {
             editor.setIngredients(new ArrayList<>());
         }
@@ -224,7 +224,7 @@ public class MealPlannerActivity extends AppCompatActivity {
                 } else {
                     FavoriteRecipe recipe = saved.get(position - 1);
                     title.setText(recipe.title);
-                    editor.setIngredients(recipe.ingredients);
+                    editor.setIngredients(recipe.ingredientTexts());
                 }
             }
 

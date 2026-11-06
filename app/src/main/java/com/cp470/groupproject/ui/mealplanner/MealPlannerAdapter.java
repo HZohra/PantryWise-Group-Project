@@ -22,7 +22,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Objects;
 
 /** Adapter of the planner: one card per day with its four meal slots. */
 public class MealPlannerAdapter extends ListAdapter<DayPlan, MealPlannerAdapter.Holder> {
@@ -59,7 +58,7 @@ public class MealPlannerAdapter extends ListAdapter<DayPlan, MealPlannerAdapter.
         return a.id == b.id
                 && a.recipeTitle.equals(b.recipeTitle)
                 && a.completed == b.completed
-                && Objects.equals(a.ingredients, b.ingredients);
+                && a.ingredientTexts().equals(b.ingredientTexts());
     }
 
     private final Listener listener;

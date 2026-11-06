@@ -1,6 +1,7 @@
 package com.cp470.groupproject.util;
 
 import com.cp470.groupproject.data.entity.MealPlan;
+import com.cp470.groupproject.data.entity.MealPlanIngredient;
 import com.cp470.groupproject.data.entity.ShoppingItem;
 import com.cp470.groupproject.data.model.StockSummary;
 
@@ -79,19 +80,19 @@ public final class ShoppingCalculator {
                                      Map<String, String> presence) {
         for (MealPlan plan : plans) {
             if (plan.completed) continue;
-            for (String text : plan.ingredients) {
-                IngredientParser.Parsed parsed = IngredientParser.parse(text);
-                if (parsed == null) continue;
-                if (parsed.explicitQuantity) {
-                    String key = parsed.normalizedName + "|" + parsed.unit;
+            // the lines were parsed when the meal was saved, so nothing is read again here
+            for (MealPlanIngredient line : plan.ingredients) {
+                if (line.normalizedName.isEmpty()) continue;
+                if (line.explicitQuantity) {
+                    String key = line.normalizedName + "|" + line.unit;
                     Need need = explicit.get(key);
                     if (need == null) {
-                        need = new Need(parsed.normalizedName, parsed.displayName, parsed.unit);
+                        need = new Need(line.normalizedName, line.displayName(), line.unit);
                         explicit.put(key, need);
                     }
-                    need.quantity += parsed.quantity;
+                    need.quantity += line.quantity;
                 } else {
-                    presence.put(parsed.normalizedName, parsed.displayName);
+                    presence.put(line.normalizedName, line.displayName());
                 }
             }
         }

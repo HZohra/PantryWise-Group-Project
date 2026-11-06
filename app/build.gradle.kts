@@ -33,6 +33,12 @@ android {
         }
     }
 
+    // the exported schemas (app/schemas) are read by the migration tests as assets. unit tests
+    // with Robolectric use the assets of the debug build, so they go there and never in release
+    sourceSets {
+        getByName("debug").assets.directories.add("schemas")
+    }
+
     buildTypes {
         release {
             optimization {
@@ -73,6 +79,8 @@ dependencies {
     testImplementation("androidx.test:core:1.6.1")
     testImplementation("androidx.test.ext:junit:1.2.1")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    // MigrationTestHelper: checks that a migration produces the schema room expects
+    testImplementation("androidx.room:room-testing:2.6.1")
 }
 
 // Generate Javadoc documentation

@@ -18,11 +18,15 @@ import com.cp470.groupproject.data.db.PantryDatabase;
 import com.cp470.groupproject.data.entity.Category;
 import com.cp470.groupproject.data.entity.ConsumptionHistory;
 import com.cp470.groupproject.data.entity.FavoriteRecipe;
+import com.cp470.groupproject.data.entity.FavoriteRecipeIngredient;
 import com.cp470.groupproject.data.entity.FoodItem;
 import com.cp470.groupproject.data.entity.MealPlan;
+import com.cp470.groupproject.data.entity.MealPlanIngredient;
 import com.cp470.groupproject.data.entity.ShoppingItem;
 import com.cp470.groupproject.data.entity.StorageLocation;
+import com.cp470.groupproject.data.model.FavoriteRecipeWithIngredients;
 import com.cp470.groupproject.data.model.ItemStatus;
+import com.cp470.groupproject.data.model.MealPlanWithIngredients;
 import com.cp470.groupproject.data.model.StockSummary;
 import com.cp470.groupproject.data.model.WasteStats;
 import com.cp470.groupproject.util.ExpiryUtils;
@@ -328,7 +332,13 @@ public class PantryRepository {
 
     /** observable list of favorite recipes, newest first */
     public LiveData<List<FavoriteRecipe>> getFavoriteRecipes() {
-        return favoriteDao.observeAll();
+        return Transformations.map(favoriteDao.observeAll(),
+                FavoriteRecipeWithIngredients::toRecipes);
+    }
+
+    /** snapshot of the favorite recipes with their ingredients. background thread only */
+    public List<FavoriteRecipe> getFavoriteRecipesSync() {
+        return FavoriteRecipeWithIngredients.toRecipes(favoriteDao.getAllSync());
     }
 
     /** emits 1 if the recipe is saved, otherwise 0 */
@@ -336,9 +346,21 @@ public class PantryRepository {
         return favoriteDao.observeIsFavorite(recipeId);
     }
 
-    /** saves a recipe as favorite */
+    /**
+     * saves a recipe as favorite. saving the same recipe again replaces it, and the old
+     * ingredient rows are deleted with the old row (cascade). the recipe and its ingredients are
+     * written in one transaction, so a failure never leaves a recipe without its ingredients.
+     */
     public void saveFavoriteRecipe(@NonNull FavoriteRecipe recipe) {
-        executor.execute(() -> favoriteDao.insert(recipe));
+        executor.execute(() -> database.runInTransaction(() -> {
+            long id = favoriteDao.insert(recipe);
+            List<FavoriteRecipeIngredient> rows = new ArrayList<>(recipe.ingredients);
+            for (FavoriteRecipeIngredient row : rows) {
+                row.id = 0;
+                row.favoriteId = id;
+            }
+            favoriteDao.insertIngredients(rows);
+        }));
     }
 
     /** removes a favorite recipe */
@@ -376,28 +398,51 @@ public class PantryRepository {
 
     /** observable planned meals between two days (both included) */
     public LiveData<List<MealPlan>> getMealPlans(long from, long to) {
-        return mealPlanDao.observeBetween(from, to);
+        return Transformations.map(mealPlanDao.observeBetween(from, to),
+                MealPlanWithIngredients::toMealPlans);
     }
 
     /** snapshot of the planned meals between two days. background thread only */
     public List<MealPlan> getMealPlansSync(long from, long to) {
-        return mealPlanDao.getBetweenSync(from, to);
+        return MealPlanWithIngredients.toMealPlans(mealPlanDao.getBetweenSync(from, to));
     }
 
-    /** adds a planned meal, the callback receives the new id (may be null) */
+    /**
+     * adds a planned meal with its ingredients in one transaction, the callback receives the new
+     * id (may be null)
+     */
     public void addMealPlan(@NonNull MealPlan plan, @Nullable ResultCallback<Long> callback) {
         executor.execute(() -> {
-            long id = mealPlanDao.insert(plan);
-            if (callback != null) callback.onResult(id);
+            long[] id = new long[1];
+            database.runInTransaction(() -> {
+                id[0] = mealPlanDao.insert(plan);
+                saveMealPlanIngredients(plan, id[0]);
+            });
+            if (callback != null) callback.onResult(id[0]);
         });
     }
 
-    /** updates a planned meal */
+    /** updates a planned meal and replaces its ingredients, in one transaction */
     public void updateMealPlan(@NonNull MealPlan plan) {
-        executor.execute(() -> mealPlanDao.update(plan));
+        executor.execute(() -> database.runInTransaction(() -> {
+            mealPlanDao.update(plan);
+            mealPlanDao.deleteIngredients(plan.id);
+            saveMealPlanIngredients(plan, plan.id);
+        }));
     }
 
-    /** deletes a planned meal */
+    /** writes the ingredient rows of a meal that is already saved. runs inside a transaction */
+    private void saveMealPlanIngredients(MealPlan plan, long mealPlanId) {
+        List<MealPlanIngredient> rows = new ArrayList<>(plan.ingredients);
+        for (MealPlanIngredient row : rows) {
+            // a row that came from the database keeps its old id otherwise
+            row.id = 0;
+            row.mealPlanId = mealPlanId;
+        }
+        mealPlanDao.insertIngredients(rows);
+    }
+
+    /** deletes a planned meal (its ingredient rows are deleted by the cascade) */
     public void deleteMealPlan(@NonNull MealPlan plan) {
         executor.execute(() -> mealPlanDao.delete(plan));
     }
@@ -414,11 +459,10 @@ public class PantryRepository {
      */
     public List<String> getPlannedIngredientsSync(long from, long to) {
         LinkedHashSet<String> names = new LinkedHashSet<>();
-        for (MealPlan plan : mealPlanDao.getBetweenSync(from, to)) {
+        for (MealPlan plan : getMealPlansSync(from, to)) {
             if (plan.completed) continue;
-            for (String ingredient : plan.ingredients) {
-                String normalized = IngredientNormalizer.normalize(ingredient);
-                if (!normalized.isEmpty()) names.add(normalized);
+            for (MealPlanIngredient ingredient : plan.ingredients) {
+                if (!ingredient.normalizedName.isEmpty()) names.add(ingredient.normalizedName);
             }
         }
         return new ArrayList<>(names);

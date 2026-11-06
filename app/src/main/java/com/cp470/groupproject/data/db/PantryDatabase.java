@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.cp470.groupproject.data.dao.CategoryDao;
@@ -19,8 +18,10 @@ import com.cp470.groupproject.data.dao.StorageLocationDao;
 import com.cp470.groupproject.data.entity.Category;
 import com.cp470.groupproject.data.entity.ConsumptionHistory;
 import com.cp470.groupproject.data.entity.FavoriteRecipe;
+import com.cp470.groupproject.data.entity.FavoriteRecipeIngredient;
 import com.cp470.groupproject.data.entity.FoodItem;
 import com.cp470.groupproject.data.entity.MealPlan;
+import com.cp470.groupproject.data.entity.MealPlanIngredient;
 import com.cp470.groupproject.data.entity.ShoppingItem;
 import com.cp470.groupproject.data.entity.StorageLocation;
 
@@ -34,9 +35,9 @@ import java.util.concurrent.Executors;
  */
 
 @Database(entities = {FoodItem.class, Category.class, StorageLocation.class, ShoppingItem.class,
-        FavoriteRecipe.class, ConsumptionHistory.class, MealPlan.class},
-        version = 2, exportSchema = true)
-@TypeConverters(Converters.class)
+        FavoriteRecipe.class, ConsumptionHistory.class, MealPlan.class, MealPlanIngredient.class,
+        FavoriteRecipeIngredient.class},
+        version = 3, exportSchema = true)
 public abstract class PantryDatabase extends RoomDatabase {
 
     /** file name of the sqlite database */
