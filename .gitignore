@@ -22,3 +22,6 @@ aitor/
 CLAUDE.md
 CLAUDE.local.md
 .claude/
+
+# Generated Javadoc (run gradlew generateJavadoc to recreate it)
+app/doc/javadoc/
