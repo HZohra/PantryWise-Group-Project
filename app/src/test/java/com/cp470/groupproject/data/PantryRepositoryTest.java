@@ -1,6 +1,7 @@
 package com.cp470.groupproject.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -124,10 +125,116 @@ public class PantryRepositoryTest {
         repository.saveFavoriteRecipe(new FavoriteRecipe("r1", "Omelette", Arrays.asList("eggs", "milk")));
         assertEquals(1, db.favoriteRecipeDao().getAllSync().size());
         assertEquals(Arrays.asList("eggs", "milk"),
-                db.favoriteRecipeDao().getAllSync().get(0).ingredients);
+                repository.getFavoriteRecipesSync().get(0).ingredientTexts());
 
         repository.removeFavoriteRecipe("r1");
         assertEquals(0, db.favoriteRecipeDao().getAllSync().size());
+    }
+
+    @Test
+    public void removeFavorite_withIngredients_deletesItsIngredientRows() {
+        repository.saveFavoriteRecipe(new FavoriteRecipe("r1", "Omelette", Arrays.asList("eggs", "milk")));
+        assertEquals(2, countRows("favorite_recipe_ingredients"));
+
+        repository.removeFavoriteRecipe("r1");
+
+        assertEquals(0, countRows("favorite_recipe_ingredients"));
+    }
+
+    @Test
+    public void saveFavorite_sameRecipeAgain_replacesIngredientsWithoutDuplicates() {
+        repository.saveFavoriteRecipe(new FavoriteRecipe("r1", "Omelette", Arrays.asList("eggs", "milk")));
+        repository.saveFavoriteRecipe(new FavoriteRecipe("r1", "Omelette", Arrays.asList("eggs")));
+
+        assertEquals(1, repository.getFavoriteRecipesSync().size());
+        assertEquals(Arrays.asList("eggs"), repository.getFavoriteRecipesSync().get(0).ingredientTexts());
+        assertEquals(1, countRows("favorite_recipe_ingredients"));
+    }
+
+    @Test
+    public void addMealPlan_withIngredients_savesParsedRowsInOrder() {
+        long day = 1_700_000_000_000L;
+        repository.addMealPlan(new MealPlan(day, MealType.DINNER, "r1", "Pancakes",
+                Arrays.asList("200 g flour", "2 eggs", "soy sauce")), null);
+
+        MealPlan saved = repository.getMealPlansSync(day, day).get(0);
+
+        assertEquals(Arrays.asList("200 g flour", "2 eggs", "soy sauce"), saved.ingredientTexts());
+        assertEquals("flour", saved.ingredients.get(0).normalizedName);
+        assertEquals(200.0, saved.ingredients.get(0).quantity, 0.0001);
+        assertEquals("g", saved.ingredients.get(0).unit);
+        assertTrue(saved.ingredients.get(1).explicitQuantity);
+        assertFalse(saved.ingredients.get(2).explicitQuantity);
+    }
+
+    @Test
+    public void addMealPlan_withBlankIngredient_dropsIt() {
+        long day = 1_700_000_000_000L;
+        repository.addMealPlan(new MealPlan(day, MealType.DINNER, "r1", "Soup",
+                Arrays.asList("carrot", "  ", "")), null);
+
+        assertEquals(1, countRows("meal_plan_ingredients"));
+    }
+
+    @Test
+    public void updateMealPlan_newIngredients_replacesTheOldOnes() {
+        long day = 1_700_000_000_000L;
+        final long[] id = new long[1];
+        repository.addMealPlan(new MealPlan(day, MealType.DINNER, "r1", "Omelette",
+                Arrays.asList("eggs", "milk")), r -> id[0] = r);
+
+        MealPlan edited = new MealPlan(day, MealType.DINNER, "r1", "Omelette",
+                Arrays.asList("eggs", "cheese", "ham"));
+        edited.id = id[0];
+        repository.updateMealPlan(edited);
+
+        assertEquals(Arrays.asList("eggs", "cheese", "ham"),
+                repository.getMealPlansSync(day, day).get(0).ingredientTexts());
+        assertEquals(3, countRows("meal_plan_ingredients"));
+    }
+
+    @Test
+    public void updateMealPlan_loadedFromDatabase_doesNotDuplicateRows() {
+        long day = 1_700_000_000_000L;
+        repository.addMealPlan(new MealPlan(day, MealType.DINNER, "r1", "Omelette",
+                Arrays.asList("eggs", "milk")), null);
+        MealPlan loaded = repository.getMealPlansSync(day, day).get(0);
+
+        loaded.completed = true;
+        repository.updateMealPlan(loaded);
+
+        assertEquals(2, countRows("meal_plan_ingredients"));
+    }
+
+    @Test
+    public void deleteMealPlan_withIngredients_deletesItsIngredientRows() {
+        long day = 1_700_000_000_000L;
+        repository.addMealPlan(new MealPlan(day, MealType.DINNER, "r1", "Omelette",
+                Arrays.asList("eggs", "milk")), null);
+
+        repository.deleteMealPlan(repository.getMealPlansSync(day, day).get(0));
+
+        assertEquals(0, countRows("meal_plan_ingredients"));
+    }
+
+    @Test
+    public void getMealPlans_observed_includesIngredients() {
+        long day = 1_700_000_000_000L;
+        repository.addMealPlan(new MealPlan(day, MealType.DINNER, "r1", "Omelette",
+                Arrays.asList("eggs", "milk")), null);
+
+        List<MealPlan> plans = LiveDataTestUtil.getValue(repository.getMealPlans(day, day));
+
+        assertEquals(Arrays.asList("eggs", "milk"), plans.get(0).ingredientTexts());
+    }
+
+    /** number of rows of a table, read straight from sqlite */
+    private int countRows(String table) {
+        try (android.database.Cursor cursor = db.getOpenHelper().getReadableDatabase()
+                .query("SELECT COUNT(*) FROM " + table)) {
+            cursor.moveToFirst();
+            return cursor.getInt(0);
+        }
     }
 
     @Test

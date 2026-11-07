@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- textos de los avisos de caducidad, la lista de la compra y el planificador (en su propio archivo para evitar conflictos de merge) -->
+<resources>
+    <!-- notificación de caducidad -->
+    <string name="notif_channel_name">Avisos de caducidad</string>
+    <string name="notif_channel_description">Recordatorios diarios sobre alimentos caducados o a punto de caducar</string>
+    <plurals name="notif_title">
+        <item quantity="one">%d alimento requiere atención</item>
+        <item quantity="many">%d alimentos requieren atención</item>
+        <item quantity="other">%d alimentos requieren atención</item>
+    </plurals>
+    <string name="notif_summary">%1$d caducados · %2$d por caducar</string>
+    <string name="notif_line_expires_today">%1$s — caduca hoy</string>
+    <string name="notif_line_expires_tomorrow">%1$s — caduca mañana</string>
+    <plurals name="notif_line_expires_in_days">
+        <item quantity="one">%2$s — caduca en %1$d día</item>
+        <item quantity="many">%2$s — caduca en %1$d días</item>
+        <item quantity="other">%2$s — caduca en %1$d días</item>
+    </plurals>
+    <string name="notif_line_expired_today">%1$s — caducó hoy</string>
+    <plurals name="notif_line_expired_days_ago">
+        <item quantity="one">%2$s — caducó hace %1$d día</item>
+        <item quantity="many">%2$s — caducó hace %1$d días</item>
+        <item quantity="other">%2$s — caducó hace %1$d días</item>
+    </plurals>
+    <string name="notif_more_lines">+%1$d más</string>
+
+    <!-- permiso de notificaciones -->
+    <string name="notif_permission_title">¿Permitir notificaciones?</string>
+    <string name="notif_permission_message">PantryWise necesita permiso para avisarte antes de que tus alimentos caduquen.</string>
+    <string name="notif_action_allow">Permitir</string>
+    <string name="notif_action_not_now">Ahora no</string>
+    <string name="notif_disabled_message">Las notificaciones están desactivadas. No recibirás avisos de caducidad.</string>
+    <string name="notif_action_open_settings">Ajustes</string>
+
+    <!-- lista de la compra -->
+    <string name="title_shopping_list">Lista de la compra</string>
+    <string name="shopping_hint_name">Nombre del artículo</string>
+    <string name="shopping_hint_qty">Cant.</string>
+    <string name="shopping_hint_unit">Unidad</string>
+    <string name="shopping_hint_store">Tienda (opcional)</string>
+    <string name="shopping_action_add">Añadir</string>
+    <string name="shopping_summary">%1$d por comprar · %2$d hechos</string>
+    <string name="shopping_empty">Tu lista está vacía. Añade el primer artículo arriba.</string>
+    <string name="shopping_tag_auto">auto</string>
+    <string name="shopping_menu_share">Compartir</string>
+    <string name="shopping_menu_clear">Quitar comprados</string>
+    <string name="shopping_share_header">Lista de la compra</string>
+    <string name="shopping_share_subject">Mi lista de la compra</string>
+    <string name="shopping_share_chooser">Compartir lista con</string>
+    <string name="shopping_share_empty">Aún no hay nada que compartir</string>
+    <string name="shopping_share_no_app">No hay ninguna app para compartir la lista</string>
+    <string name="shopping_error_name">El nombre es obligatorio</string>
+    <string name="shopping_error_qty">Introduce un número mayor que 0</string>
+    <string name="shopping_edit_title">Editar artículo</string>
+    <string name="shopping_action_save">Guardar</string>
+    <string name="shopping_action_cancel">Cancelar</string>
+    <string name="shopping_deleted">Artículo eliminado</string>
+    <string name="shopping_action_undo">Deshacer</string>
+    <string name="shopping_clear_title">¿Quitar comprados?</string>
+    <plurals name="shopping_clear_message">
+        <item quantity="one">¿Quitar %d artículo comprado?</item>
+        <item quantity="many">¿Quitar %d artículos comprados?</item>
+        <item quantity="other">¿Quitar %d artículos comprados?</item>
+    </plurals>
+    <plurals name="shopping_cleared">
+        <item quantity="one">%d artículo quitado</item>
+        <item quantity="many">%d artículos quitados</item>
+        <item quantity="other">%d artículos quitados</item>
+    </plurals>
+    <string name="shopping_nothing_completed">No hay artículos comprados</string>
+    <string name="shopping_added">%1$s añadido</string>
+    <string name="shopping_menu_planner">Planificador de comidas</string>
+    <string name="shopping_action_generate">Generar desde el plan</string>
+    <plurals name="shopping_generated">
+        <item quantity="one">%d artículo añadido desde tu plan</item>
+        <item quantity="many">%d artículos añadidos desde tu plan</item>
+        <item quantity="other">%d artículos añadidos desde tu plan</item>
+    </plurals>
+    <string name="shopping_generated_none">Ya tienes todo lo necesario</string>
+    <string name="shopping_generated_no_meals">No hay comidas próximas para las que comprar. Planifica comidas desde hoy.</string>
+    <string name="planner_action_generate">Generar lista de la compra</string>
+    <string name="planner_action_view_list">Ver</string>
+    <string name="planner_nothing_to_generate">Esta semana ya ha pasado</string>
+
+    <!-- planificador de comidas -->
+    <string name="title_meal_planner">Planificador de comidas</string>
+    <string name="planner_week_range">%1$s – %2$s</string>
+    <string name="planner_today">Hoy</string>
+    <string name="planner_slot_empty">+ Añadir</string>
+    <string name="planner_meal_breakfast">Desayuno</string>
+    <string name="planner_meal_lunch">Comida</string>
+    <string name="planner_meal_dinner">Cena</string>
+    <string name="planner_meal_snack">Snack</string>
+    <string name="planner_slot_format">%1$s: %2$s</string>
+    <string name="planner_cooked_suffix">✓ cocinada</string>
+    <string name="planner_dialog_add_title">Planificar comida</string>
+    <string name="planner_dialog_change_title">Cambiar comida</string>
+    <string name="planner_custom_recipe">Receta propia</string>
+    <string name="planner_hint_title">Título de la receta</string>
+    <string name="planner_ingredients_title">Ingredientes</string>
+    <string name="planner_ingredients_help">Escribe un ingrediente y pulsa Añadir. Deja la cantidad vacía para comprobar solo que lo tienes (p. ej. salsa de soja). Toca un ingrediente para editarlo.</string>
+    <string name="planner_hint_ing_name">Ingrediente</string>
+    <string name="planner_remove_ingredient">Quitar ingrediente</string>
+    <!-- mismo orden que IngredientLine.UNITS -->
+    <string-array name="ingredient_unit_labels">
+        <item>ud</item>
+        <item>g</item>
+        <item>kg</item>
+        <item>ml</item>
+        <item>L</item>
+        <item>cdta</item>
+        <item>cda</item>
+        <item>taza</item>
+        <item>oz</item>
+        <item>lb</item>
+    </string-array>
+    <string name="planner_error_title">El título es obligatorio</string>
+    <string name="planner_action_change">Cambiar</string>
+    <string name="planner_action_mark_cooked">Marcar como cocinada</string>
+    <string name="planner_action_mark_not_cooked">Marcar como no cocinada</string>
+    <string name="planner_action_remove">Quitar</string>
+    <string name="planner_meal_saved">Comida guardada</string>
+    <string name="planner_meal_removed">Comida quitada</string>
+    <string name="planner_menu_shopping_list">Lista de la compra</string>
+    <string name="planner_previous_week">Semana anterior</string>
+    <string name="planner_next_week">Semana siguiente</string>
+
+    <!-- atajo temporal en la pantalla de resumen de desperdicio, solo visible en builds debug -->
+    <string name="test_panel_open">Probar avisos, lista y planificador</string>
+
+    <!-- tienda sugerida: grupos de la lista de la compra y "mis tiendas" -->
+    <string name="store_type_butcher">Carnicería</string>
+    <string name="store_type_fish">Pescadería</string>
+    <string name="store_type_produce">Frutería</string>
+    <string name="store_type_bakery">Panadería</string>
+    <string name="store_type_general">Supermercado</string>
+    <string name="store_query_butcher">carnicería</string>
+    <string name="store_query_fish">pescadería</string>
+    <string name="store_query_produce">frutería</string>
+    <string name="store_query_bakery">panadería</string>
+    <string name="store_query_general">supermercado</string>
+    <string name="shopping_menu_my_stores">Mis tiendas</string>
+    <string name="shopping_menu_group_by_store">Agrupar por tienda</string>
+    <string name="shopping_my_stores_title">Mis tiendas</string>
+    <string name="shopping_my_stores_help">Pon nombre a las tiendas que usas. Deja un campo vacío para usar el nombre genérico.</string>
+    <string name="shopping_store_suggested">Sugerida: %1$s</string>
+    <string name="shopping_map_open">Buscar %1$s cerca</string>
+    <string name="shopping_map_open_generic">Buscar tiendas cerca</string>
+    <string name="shopping_map_no_app">No hay ninguna aplicación de mapas</string>
+    <plurals name="shopping_group_count">
+        <item quantity="one">%d artículo</item>
+        <item quantity="other">%d artículos</item>
+    </plurals>
+</resources>

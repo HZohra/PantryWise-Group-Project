@@ -2,7 +2,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- required from android 13 to show notifications (expiration alerts) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- android 11+ hides other apps unless declared: needed so resolveActivity() sees apps that
+         can receive the shared shopping list -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="text/plain" />
+        </intent>
+        <!-- lets resolveActivity() see a maps app for the "find stores nearby" button -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+    </queries>
+
     <application
+        android:name=".PantryWiseApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -31,6 +49,18 @@
             android:name=".ui.wastesummary.WasteSummaryActivity"
             android:exported="false"
             android:parentActivityName=".ui.inventory.InventoryActivity" />
+
+        <activity
+            android:name=".ui.shoppinglist.ShoppingListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CP470GroupProject.Shopping"
+            android:parentActivityName=".ui.inventory.InventoryActivity" />
+
+        <activity
+            android:name=".ui.mealplanner.MealPlannerActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.inventory.InventoryActivity"
+            android:theme="@style/Theme.CP470GroupProject.Shopping" />
 
     </application>
 

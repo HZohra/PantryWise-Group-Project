@@ -13,7 +13,7 @@ import java.util.List;
  * A recipe the user saved. {@link #recipeId} comes from the recipe source(ai engine or api)
  * and is unique, so a recipe can be saved only once.
  *
- * The ingredient list is stored through a List<String> type converter.
+ * The ingredients are rows of the {@code favorite_recipe_ingredients} table.
  */
 @Entity(tableName = "favorite_recipes", indices = {@Index(value = "recipeId", unique = true)})
 public class FavoriteRecipe {
@@ -26,9 +26,13 @@ public class FavoriteRecipe {
     @NonNull
     public String title = "";
 
-    /** names of the required ingredients */
+    /**
+     * ingredients of the recipe. they live in the {@code favorite_recipe_ingredients} table, so
+     * room does not read this field: the repository fills it after loading the recipe.
+     */
+    @Ignore
     @NonNull
-    public List<String> ingredients = new ArrayList<>();
+    public List<FavoriteRecipeIngredient> ingredients = new ArrayList<>();
 
     /** when the recipe was saved, in milliseconds */
     public long savedAt;
@@ -36,12 +40,23 @@ public class FavoriteRecipe {
     /** empty constructor required by room */
     public FavoriteRecipe() { }
 
+    /** @param ingredientTexts the ingredients as typed, such as "eggs"; blank ones are dropped */
     @Ignore
     public FavoriteRecipe(@NonNull String recipeId, @NonNull String title,
-                          @NonNull List<String> ingredients) {
+                          @NonNull List<String> ingredientTexts) {
         this.recipeId = recipeId;
         this.title = title;
-        this.ingredients = ingredients;
         this.savedAt = System.currentTimeMillis();
+        int position = 0;
+        for (String text : ingredientTexts) {
+            if (text != null && !text.trim().isEmpty()) {
+                this.ingredients.add(new FavoriteRecipeIngredient(text, position++));
+            }
+        }
+    }
+
+    /** @return the typed text of each ingredient, in order (what the edit form shows) */
+    public List<String> ingredientTexts() {
+        return IngredientLine.texts(ingredients);
     }
 }
