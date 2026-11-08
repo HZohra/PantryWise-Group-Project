@@ -1,4 +1,12 @@
 node_modules/
+
+# secrets: never commit
 .env
 .env.*
 !.env.example
+
+# test coverage reports
+coverage/
+
+# logs
+npm-debug.log*
