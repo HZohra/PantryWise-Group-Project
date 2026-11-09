@@ -11,6 +11,10 @@ const LIMITS = Object.freeze({
   maxTimeMax: 600,
   searchLimitMax: 20,
   recommendLimitMax: 10,
+  titleMax: 150,
+  ingredientLinesMax: 50,
+  lineMax: 200,
+
 });
 
 // Values Edamam accepts. Checking them here gives a clear 400 instead of a confusing 502.
@@ -246,6 +250,42 @@ function checkRecommendRequest(body) {
 
   return { errors, clean };
 }
+/** POST /api/v1/recipes/substitute */
+function checkSubstituteRequest(body) {
+  const errors = [];
+  const clean = { recipeTitle: '', ingredient: '', ingredientLines: [], inventory: [], preferences: { health: [] } };
+
+  if (!isPlainObject(body)) {
+    return { errors: ['Body must be a JSON object'], clean };
+  }
+
+  if (!isNonEmptyString(body.recipeTitle) || body.recipeTitle.trim().length > LIMITS.titleMax) {
+    errors.push(`recipeTitle is required (max ${LIMITS.titleMax} characters)`);
+  } else {
+    clean.recipeTitle = body.recipeTitle.trim();
+  }
+
+  if (!isNonEmptyString(body.ingredient) || body.ingredient.trim().length > LIMITS.nameMax) {
+    errors.push(`ingredient is required (max ${LIMITS.nameMax} characters)`);
+  } else {
+    clean.ingredient = body.ingredient.trim();
+  }
+
+  if (body.ingredientLines !== undefined) {
+    if (!Array.isArray(body.ingredientLines) || body.ingredientLines.length > LIMITS.ingredientLinesMax) {
+      errors.push(`ingredientLines must be an array of at most ${LIMITS.ingredientLinesMax} strings`);
+    } else if (body.ingredientLines.some((l) => typeof l !== 'string' || l.length > LIMITS.lineMax)) {
+      errors.push(`each ingredientLines entry must be a string (max ${LIMITS.lineMax} characters)`);
+    } else {
+      clean.ingredientLines = body.ingredientLines.map((l) => l.trim()).filter(Boolean);
+    }
+  }
+
+  clean.inventory = checkInventoryItems(body.inventory, errors);   // reused from chat/recommend
+  clean.preferences = checkPreferences(body.preferences, errors);  // reused from recommend
+  return { errors, clean };
+}
+
 
 // =====================================================================
 // Middleware factories
@@ -281,6 +321,7 @@ module.exports = {
   checkChatRequest,
   checkRecipeSearchQuery,
   checkRecommendRequest,
+  checkSubstituteRequest,
   LIMITS,
   DIETS,
   HEALTH_LABELS,

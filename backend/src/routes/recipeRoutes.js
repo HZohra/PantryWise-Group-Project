@@ -1,18 +1,19 @@
 const express = require('express');
-const { recipeLimiter } = require('../middleware/rateLimiter');
+const { recipeLimiter, aiLimiter } = require('../middleware/rateLimiter');
 const {
-  validateQuery, validateBody, checkRecipeSearchQuery, checkRecommendRequest,
+  validateQuery, validateBody, checkRecipeSearchQuery, checkRecommendRequest, checkSubstituteRequest,
 } = require('../middleware/validate');
-const { search, recommend } = require('../controllers/recipeController');
+const { search, recommend, substitute } = require('../controllers/recipeController');
 
 const router = express.Router();
 
-// GET /api/v1/recipes/search
+// GET /api/v1/recipes/search      (Edamam)
 router.get('/search', recipeLimiter, validateQuery(checkRecipeSearchQuery), search);
 
-// POST /api/v1/recipes/recommend
+// POST /api/v1/recipes/recommend  (Edamam)
 router.post('/recommend', recipeLimiter, validateBody(checkRecommendRequest), recommend);
 
-// /substitute (4.7) will be added here
+// POST /api/v1/recipes/substitute (Claude → uses the AI limiter)
+router.post('/substitute', aiLimiter, validateBody(checkSubstituteRequest), substitute);
 
 module.exports = router;
