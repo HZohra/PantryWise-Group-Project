@@ -1,5 +1,6 @@
 //Creates the Express application, configures middleware, and connects API routes
 
+const chatRoutes = require('./routes/chatRoutes');
 const express = require('express');
 const healthRoutes = require('./routes/healthRoutes');
 const notFound = require('./middleware/notFound');
@@ -12,6 +13,7 @@ app.use(express.json({ limit: '100kb' }));
 
 // Routes
 app.use('/api/v1/health', healthRoutes);
+app.use('/api/v1/ai/chat', chatRoutes);
 
 // These two must come AFTER all routes
 app.use(notFound);      // no route matched → 404
