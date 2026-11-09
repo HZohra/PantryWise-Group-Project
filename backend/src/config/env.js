@@ -1,4 +1,3 @@
-// Load .env once, here, before anything reads process.env
 const path = require('path');
 
 // Load backend/.env no matter which folder the command is run from
@@ -17,6 +16,7 @@ const config = Object.freeze({
   edamam: {
     appId: process.env.EDAMAM_APP_ID,
     appKey: process.env.EDAMAM_APP_KEY,
+    timeoutMs: Number(process.env.EDAMAM_TIMEOUT_MS) || 10000, // NEW
   },
 });
 
