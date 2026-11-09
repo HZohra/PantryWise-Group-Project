@@ -1,0 +1,5 @@
+{
+  "inventory": [{ "name": "yogurt", "daysUntilExpiry": -2 }],
+  "preferences": { "diet": "keto", "health": "vegan", "maxTime": 0 },
+  "limit": 50
+}

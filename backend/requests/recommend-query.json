@@ -1,0 +1,11 @@
+{
+  "query": "pasta",
+  "preferences": { "diet": "balanced", "health": ["vegetarian"], "maxTime": 45 },
+  "inventory": [
+    { "name": "tomatoes", "quantity": 4, "unit": "pcs", "daysUntilExpiry": 2 },
+    { "name": "basil", "quantity": 1, "unit": "bunch", "daysUntilExpiry": 1 },
+    { "name": "garlic", "quantity": 1, "unit": "head", "daysUntilExpiry": 30 },
+    { "name": "parmesan", "quantity": 200, "unit": "g", "daysUntilExpiry": 14 }
+  ],
+  "limit": 5
+}
