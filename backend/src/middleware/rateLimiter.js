@@ -25,4 +25,13 @@ const aiLimiter = rateLimit({
   handler: tooMany('You are sending messages too quickly. Please wait a minute and try again.'),
 });
 
-module.exports = { apiLimiter, aiLimiter };
+/** Limit for endpoints that call Edamam (it has its own quota). */
+const recipeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: config.rateLimit.recipesPerMinute,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: tooMany('Too many recipe searches. Please wait a minute and try again.'),
+});
+
+module.exports = { apiLimiter, aiLimiter, recipeLimiter };

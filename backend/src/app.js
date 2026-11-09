@@ -6,6 +6,7 @@ const healthRoutes = require('./routes/healthRoutes');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
+const recipeRoutes = require('./routes/recipeRoutes');
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/api', apiLimiter);   // NEW: applies to every /api route
 // Routes
 app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/ai/chat', chatRoutes);
+app.use('/api/v1/recipes', recipeRoutes);
 
 // These two must come AFTER all routes
 app.use(notFound);      // no route matched → 404

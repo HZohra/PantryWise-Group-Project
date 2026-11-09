@@ -90,6 +90,88 @@ function checkChatRequest(body) {
   return { errors, clean };
 }
 
+// Values Edamam accepts. Checking them here gives a clear 400 instead of a confusing 502.
+const DIETS = ['balanced', 'high-fiber', 'high-protein', 'low-carb', 'low-fat', 'low-sodium'];
+const HEALTH_LABELS = [
+  'vegan', 'vegetarian', 'pescatarian', 'gluten-free', 'dairy-free', 'egg-free',
+  'peanut-free', 'tree-nut-free', 'soy-free', 'fish-free', 'shellfish-free',
+  'pork-free', 'red-meat-free', 'alcohol-free', 'kosher',
+];
+const CUISINES = [
+  'american', 'asian', 'british', 'caribbean', 'central europe', 'chinese', 'eastern europe',
+  'french', 'indian', 'italian', 'japanese', 'kosher', 'mediterranean', 'mexican',
+  'middle eastern', 'nordic', 'south american', 'south east asian',
+];
+const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack', 'teatime'];
+
+/**
+ * Checks GET /recipes/search query parameters.
+ * Query values arrive as strings (or arrays if a param is repeated), so numbers must be parsed.
+ * @returns {{ errors: string[], clean: object }}  clean uses the option names edamamService expects
+ */
+function checkRecipeSearchQuery(query) {
+  const errors = [];
+  const clean = { query: '', health: [], limit: 10 };
+
+  // Reads one param as a trimmed string; rejects repeated params like ?diet=a&diet=b
+  const get = (name) => {
+    const value = query[name];
+    if (value === undefined) return undefined;
+    if (typeof value !== 'string') {
+      errors.push(`${name} must be given only once`);
+      return undefined;
+    }
+    return value.trim();
+  };
+
+  // Checks a value against an allow-list, case-insensitively
+  const pickFrom = (name, value, allowed) => {
+    const v = value.toLowerCase();
+    if (allowed.includes(v)) return v;
+    errors.push(`${name} must be one of: ${allowed.join(', ')}`);
+    return undefined;
+  };
+
+  // Parses a whole number within [min, max]
+  const intIn = (name, value, min, max) => {
+    if (!/^\d+$/.test(value) || Number(value) < min || Number(value) > max) {
+      errors.push(`${name} must be a whole number from ${min} to ${max}`);
+      return undefined;
+    }
+    return Number(value);
+  };
+
+  const q = get('q');
+  if (!q) errors.push('q is required');
+  else if (q.length > 100) errors.push('q must be at most 100 characters');
+  else clean.query = q;
+
+  const diet = get('diet');
+  if (diet) clean.diet = pickFrom('diet', diet, DIETS);
+
+  const health = get('health');
+  if (health) {
+    const labels = health.toLowerCase().split(',').map((s) => s.trim()).filter(Boolean);
+    const unknown = labels.filter((l) => !HEALTH_LABELS.includes(l));
+    if (unknown.length > 0) errors.push(`health labels must be from: ${HEALTH_LABELS.join(', ')}`);
+    else clean.health = [...new Set(labels)];
+  }
+
+  const cuisine = get('cuisine');
+  if (cuisine) clean.cuisineType = pickFrom('cuisine', cuisine, CUISINES);
+
+  const mealType = get('mealType');
+  if (mealType) clean.mealType = pickFrom('mealType', mealType, MEAL_TYPES);
+
+  const maxTime = get('maxTime');
+  if (maxTime) clean.maxTimeMinutes = intIn('maxTime', maxTime, 1, 600);
+
+  const limit = get('limit');
+  if (limit) clean.limit = intIn('limit', limit, 1, 20) ?? 10;
+
+  return { errors, clean };
+}
+
 /**
  * Turns a checker function into Express middleware.
  * Bad input → 400 VALIDATION_ERROR with every problem listed in `details`.
@@ -106,4 +188,29 @@ function validateBody(checker) {
   };
 }
 
-module.exports = { validateBody, checkChatRequest, LIMITS };
+/**
+ * Like validateBody, but for query parameters.
+ * Express 5 makes req.query read-only, so the clean copy goes in req.validatedQuery.
+ */
+function validateQuery(checker) {
+  return (req, res, next) => {
+    const { errors, clean } = checker(req.query);
+    if (errors.length > 0) {
+      return next(new AppError(400, 'VALIDATION_ERROR', 'Query parameters are invalid', errors));
+    }
+    req.validatedQuery = clean;
+    return next();
+  };
+}
+
+module.exports = {
+  validateBody,
+  validateQuery,
+  checkChatRequest,
+  checkRecipeSearchQuery,
+  LIMITS,
+  DIETS,
+  HEALTH_LABELS,
+  CUISINES,
+  MEAL_TYPES,
+};

@@ -22,6 +22,7 @@ const config = Object.freeze({
    rateLimit: {
      apiPer15Min: Number(process.env.API_RATE_LIMIT_PER_15_MIN) || 100,
      aiPerMinute: Number(process.env.AI_RATE_LIMIT_PER_MINUTE) || 10,
+     recipesPerMinute: Number(process.env.RECIPES_RATE_LIMIT_PER_MINUTE) || 20,
    },
 });
 
