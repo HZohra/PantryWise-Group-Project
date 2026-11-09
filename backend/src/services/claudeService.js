@@ -68,6 +68,15 @@ async function generateReply({ system, messages, maxTokens = 600 }) {
     throw mapClaudeError(err);
   }
 
+  // Diagnostics: tell us when a reply was cut off, and why
+  if (response.stop_reason === 'max_tokens') {
+    console.warn(
+      '[claude] reply cut off by max_tokens =', maxTokens,
+      '| output tokens =', response.usage?.output_tokens,
+      '| blocks =', response.content.map((b) => b.type).join(','),
+    );
+  }
+
   // A reply is a list of content blocks; we only want the text ones
   const text = response.content
     .filter((block) => block.type === 'text')

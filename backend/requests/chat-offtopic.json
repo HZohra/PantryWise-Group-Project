@@ -1,0 +1,4 @@
+{
+  "message": "Can you write my history essay about World War 1?",
+  "inventory": [{ "name": "eggs", "quantity": 6, "unit": "pcs", "daysUntilExpiry": 4 }]
+}
