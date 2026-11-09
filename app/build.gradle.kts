@@ -45,9 +45,9 @@ android {
     }
 
     buildTypes {
-        // NEW: emulator → your laptop's backend. Must end with "/" for Retrofit.
         debug {
-            buildConfigField("String", "AI_BASE_URL", "\"http://10.0.2.2:3000/api/v1/\"")
+            // Emulator → laptop through "adb reverse tcp:3000 tcp:3000" (run once after each emulator start)
+            buildConfigField("String", "AI_BASE_URL", "\"http://localhost:3000/api/v1/\"")
         }
         release {
             optimization {
