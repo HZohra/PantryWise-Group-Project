@@ -31,6 +31,8 @@ const CUISINES = [
 ];
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack', 'teatime'];
 
+const RECOMMEND_MODES = ['standard', 'zeroWaste'];
+
 const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 const isNonEmptyString = (v) => typeof v === 'string' && v.trim().length > 0;
 
@@ -216,7 +218,7 @@ function checkRecipeSearchQuery(query) {
 /** POST /api/v1/recipes/recommend */
 function checkRecommendRequest(body) {
   const errors = [];
-  const clean = { query: undefined, inventory: [], preferences: { health: [] }, limit: 5 };
+  const clean = { query: undefined, inventory: [], preferences: { health: [] }, limit: 5, mode: 'standard' };
 
   if (!isPlainObject(body)) {
     return { errors: ['Body must be a JSON object'], clean };
@@ -241,6 +243,13 @@ function checkRecommendRequest(body) {
       clean.limit = body.limit;
     }
   }
+    if (body.mode !== undefined) {
+      if (!RECOMMEND_MODES.includes(body.mode)) {
+        errors.push(`mode must be one of: ${RECOMMEND_MODES.join(', ')}`);
+      } else {
+        clean.mode = body.mode;
+      }
+    }
 
   // Needs something to search for: a query, or at least one item that isn't expired
   const hasUsableItem = clean.inventory.some((i) => i.daysUntilExpiry === null || i.daysUntilExpiry >= 0);
@@ -327,4 +336,5 @@ module.exports = {
   HEALTH_LABELS,
   CUISINES,
   MEAL_TYPES,
+  RECOMMEND_MODES,
 };

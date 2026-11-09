@@ -1,7 +1,6 @@
 const { searchRecipes } = require('./edamamService');
-const { rankRecipes, DEFAULT_WEIGHTS } = require('./recommendationService');
+const { rankRecipes, WEIGHTS_BY_MODE } = require('./recommendationService');
 const { sortByUrgency } = require('../utils/prompts');
-
 const MAX_SEARCHES = 2;        // at most 2 Edamam calls per recommendation (protects the quota)
 const RESULTS_PER_SEARCH = 20; // Edamam's page size: a bigger pool gives ranking more to choose from
 
@@ -42,15 +41,22 @@ async function searchAll(terms, preferences) {
 
 /**
  * Full recommendation pipeline: choose terms → search Edamam → merge → rank → top N.
- * @param {{inventory: object[], query?: string, preferences: object, limit: number}} input  validated
- * @param {{coverage: number, expiring: number}} [weights]  Zero-Waste Mode (4.8) passes different weights
- * @returns {Promise<{searchedFor: string[], recipes: object[]}>}
+ * In zeroWaste mode, recipes that use no expiring item are dropped (unless that would leave nothing).
+ * @param {{inventory, query?, preferences, limit, mode}} input  validated
+ * @returns {Promise<{mode: string, searchedFor: string[], recipes: object[]}>}
  */
-async function recommendRecipes({ inventory, query, preferences, limit }, weights = DEFAULT_WEIGHTS) {
+async function recommendRecipes({ inventory, query, preferences, limit, mode }) {
   const searchedFor = chooseSearchTerms(inventory, query);
   const candidates = await searchAll(searchedFor, preferences);
-  const recipes = rankRecipes(candidates, inventory, weights).slice(0, limit);
-  return { searchedFor, recipes };
+
+  let ranked = rankRecipes(candidates, inventory, WEIGHTS_BY_MODE[mode]);
+
+  if (mode === 'zeroWaste') {
+    const rescuing = ranked.filter((r) => r.match.expiringUsed.length > 0);
+    if (rescuing.length > 0) ranked = rescuing; // fallback: never return an empty list just because of the filter
+  }
+
+  return { mode, searchedFor, recipes: ranked.slice(0, limit) };
 }
 
 module.exports = { recommendRecipes, chooseSearchTerms };

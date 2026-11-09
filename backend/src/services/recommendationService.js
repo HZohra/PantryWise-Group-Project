@@ -3,6 +3,12 @@ const { EXPIRING_SOON_DAYS } = require('../utils/prompts');
 /** Weights for the score. Zero-Waste Mode (4.8) will use different ones. */
 const DEFAULT_WEIGHTS = Object.freeze({ coverage: 100, expiring: 10 });
 
+/** Zero-Waste Mode: rescuing expiring food matters more than having every ingredient. */
+const ZERO_WASTE_WEIGHTS = Object.freeze({ coverage: 40, expiring: 30 });
+
+/** Which weights each mode uses. */
+const WEIGHTS_BY_MODE = Object.freeze({ standard: DEFAULT_WEIGHTS, zeroWaste: ZERO_WASTE_WEIGHTS });
+
 /** Assumed to be in every kitchen: never counted as needed or missing. */
 const STAPLES = new Set(['water', 'salt', 'pepper', 'black pepper', 'sea salt', 'kosher salt', 'ice']);
 
@@ -121,5 +127,7 @@ module.exports = {
   normalizeName,
   namesMatch,
   DEFAULT_WEIGHTS,
+  ZERO_WASTE_WEIGHTS,
+  WEIGHTS_BY_MODE,
   STAPLES,
 };
