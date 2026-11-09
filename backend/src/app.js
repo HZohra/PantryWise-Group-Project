@@ -5,11 +5,16 @@ const express = require('express');
 const healthRoutes = require('./routes/healthRoutes');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
+const { apiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
 app.disable('x-powered-by');
 app.use(express.json({ limit: '100kb' }));
+
+
+app.use(express.json({ limit: '100kb' }));
+app.use('/api', apiLimiter);   // NEW: applies to every /api route
 
 // Routes
 app.use('/api/v1/health', healthRoutes);

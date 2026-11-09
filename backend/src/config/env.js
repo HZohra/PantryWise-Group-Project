@@ -18,6 +18,11 @@ const config = Object.freeze({
     appKey: process.env.EDAMAM_APP_KEY,
     timeoutMs: Number(process.env.EDAMAM_TIMEOUT_MS) || 10000, // NEW
   },
+
+   rateLimit: {
+     apiPer15Min: Number(process.env.API_RATE_LIMIT_PER_15_MIN) || 100,
+     aiPerMinute: Number(process.env.AI_RATE_LIMIT_PER_MINUTE) || 10,
+   },
 });
 
 /** @returns {string[]} names of required variables that are missing or blank */
