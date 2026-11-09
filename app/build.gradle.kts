@@ -27,6 +27,11 @@ android {
         }
     }
 
+    // NEW: generates BuildConfig.java so code can read build-specific values like AI_BASE_URL
+    buildFeatures {
+        buildConfig = true
+    }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -40,10 +45,16 @@ android {
     }
 
     buildTypes {
+        // NEW: emulator → your laptop's backend. Must end with "/" for Retrofit.
+        debug {
+            buildConfigField("String", "AI_BASE_URL", "\"http://10.0.2.2:3000/api/v1/\"")
+        }
         release {
             optimization {
                 enable = false
             }
+            // NEW: no deployed backend yet. Replace with the real HTTPS URL if it is ever hosted.
+            buildConfigField("String", "AI_BASE_URL", "\"https://example.invalid/api/v1/\"")
         }
     }
     compileOptions {
@@ -81,6 +92,12 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     // MigrationTestHelper: checks that a migration produces the schema room expects
     testImplementation("androidx.room:room-testing:2.6.1")
+
+    // NEW: Networking for the AI assistant & recipes (Team Member 5)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }
 
 // Generate Javadoc documentation

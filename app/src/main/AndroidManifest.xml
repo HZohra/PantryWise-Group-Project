@@ -5,6 +5,9 @@
     <!-- required from android 13 to show notifications (expiration alerts) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- lets the AI assistant call the PantryWise backend -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- android 11+ hides other apps unless declared: needed so resolveActivity() sees apps that
          can receive the shared shopping list -->
     <queries>
