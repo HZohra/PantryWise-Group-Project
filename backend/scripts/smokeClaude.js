@@ -10,7 +10,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  // Log only the status, type and message. Never the request or the key.
-  console.error('Claude call failed:', err.status ?? '-', err.name, '-', err.message);
+  console.error('Mapped to:', err.statusCode, err.code, '-', err.message);
   process.exitCode = 1;
 });

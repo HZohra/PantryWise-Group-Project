@@ -12,7 +12,7 @@ const config = Object.freeze({
   anthropic: {
     apiKey: process.env.ANTHROPIC_API_KEY,
     model: process.env.ANTHROPIC_MODEL || 'claude-haiku-5-5',
-    timeoutMs: 20000, // give up after 20 s instead of leaving the user waiting
+    timeoutMs: Number(process.env.ANTHROPIC_TIMEOUT_MS) || 20000,
   },
   edamam: {
     appId: process.env.EDAMAM_APP_ID,
