@@ -33,7 +33,7 @@ public final class ApiClient {
     }
 
     /** Package-private so tests can point it at a different server if needed. */
-    static AiApiService create(String baseUrl) {
+    public static AiApiService create(String baseUrl) {
         OkHttpClient.Builder http = new OkHttpClient.Builder()
                 .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
