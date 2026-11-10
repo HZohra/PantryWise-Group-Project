@@ -35,6 +35,16 @@ Open `backend/.env` and fill in the values:
 | `EDAMAM_APP_ID` | Your Edamam application id |
 | `EDAMAM_APP_KEY` | Your Edamam application key |
 
+Optional (leave them out to use the defaults in `src/config/env.js`):
+
+| Variable | What it is |
+|---|---|
+| `ANTHROPIC_TIMEOUT_MS` | Timeout for Claude requests, in milliseconds |
+| `EDAMAM_TIMEOUT_MS` | Timeout for Edamam requests, in milliseconds |
+| `API_RATE_LIMIT_PER_15_MIN` | General limit per 15 minutes (default 100) |
+| `AI_RATE_LIMIT_PER_MINUTE` | AI limit per minute (default 10) |
+| `RECIPES_RATE_LIMIT_PER_MINUTE` | Recipe limit per minute (default 20) |
+
 `.env` is listed in `backend/.gitignore`. **Never commit it**, and never paste keys into
 Android code, logs, screenshots or chat messages. Only `.env.example` (no real values) is committed.
 
@@ -302,12 +312,13 @@ a friendly message with a Retry button for network problems and timeouts.
 |---|---|---|
 | AI | `/ai/chat`, `/ai/recipe`, `/recipes/substitute` | 10 requests per minute |
 | Recipes | `/recipes/search`, `/recipes/recommend` | 20 requests per minute |
-| General | every `/api` route | a 15-minute limit set in `src/config/env.js` |
+| General | every `/api` route | 100 requests per 15 minutes |
 
 - Our Edamam plan allows **10 calls per minute**. Edamam answers are cached in memory for
   10 minutes, so repeating the same search does not use the quota (the server log shows
   `[edamam] cache hit`).
 - Limits are per server, so everyone sharing one backend shares them.
+- These numbers are the defaults. Each one can be changed with an optional `.env` variable (see the optional variables table in the setup section).
 
 ## 9. Testing
 
