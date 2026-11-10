@@ -72,8 +72,14 @@ function removeRecipesWithAllergens(recipes, allergies = []) {
   }));
 }
 
+/** "Grilled Butterflied Chicken Recipe" + "Serious Eats" → one key, so Edamam's near-copies collapse. */
+function sameDishKey(recipe) {
+  return `${normalizeName(recipe.title)}|${String(recipe.sourceName || '').trim().toLowerCase()}`;
+}
+
 /**
- * Runs the searches in parallel and merges them without duplicates.
+ * Runs the searches in parallel and merges them without duplicates:
+ * the same id, or the same title from the same source (Edamam sometimes lists a dish twice).
  * If one search fails but another works, we still use what we got.
  * @throws {AppError} only if EVERY search failed
  */
@@ -87,13 +93,19 @@ async function searchAll(terms, preferences) {
     throw results[0].reason; // already an AppError from edamamService
   }
 
-  const byId = new Map();
+  const seenIds = new Set();
+  const seenDishes = new Set();
+  const merged = [];
   for (const result of succeeded) {
     for (const recipe of result.value) {
-      if (!byId.has(recipe.recipeId)) byId.set(recipe.recipeId, recipe);
+      const dish = sameDishKey(recipe);
+      if (seenIds.has(recipe.recipeId) || seenDishes.has(dish)) continue;
+      seenIds.add(recipe.recipeId);
+      seenDishes.add(dish);
+      merged.push(recipe);
     }
   }
-  return [...byId.values()];
+  return merged;
 }
 
 /** Searches, then removes recipes with the user's allergens. */
