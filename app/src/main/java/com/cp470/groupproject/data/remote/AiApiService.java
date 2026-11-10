@@ -2,6 +2,8 @@ package com.cp470.groupproject.data.remote;
 
 import androidx.annotation.Nullable;
 
+import com.cp470.groupproject.data.remote.dto.AiRecipeRequest;
+import com.cp470.groupproject.data.remote.dto.AiRecipeResponse;
 import com.cp470.groupproject.data.remote.dto.ChatRequest;
 import com.cp470.groupproject.data.remote.dto.ChatResponse;
 import com.cp470.groupproject.data.remote.dto.HealthResponse;
@@ -52,4 +54,8 @@ public interface AiApiService {
     /** POST /api/v1/recipes/substitute: local swap list first, Claude only for other ingredients. */
     @POST("recipes/substitute")
     Call<SubstituteResponse> substitute(@Body SubstituteRequest request);
+
+    /** POST /api/v1/ai/recipe: one validated, allergy-safe recipe built around expiring food. */
+    @POST("ai/recipe")
+    Call<AiRecipeResponse> generateRecipe(@Body AiRecipeRequest request);
 }

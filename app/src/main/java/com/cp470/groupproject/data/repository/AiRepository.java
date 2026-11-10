@@ -12,6 +12,8 @@ import com.cp470.groupproject.data.remote.ApiCalls;
 import com.cp470.groupproject.data.remote.ApiClient;
 import com.cp470.groupproject.data.remote.ApiResult;
 import com.cp470.groupproject.data.remote.InventoryMapper;
+import com.cp470.groupproject.data.remote.dto.AiRecipeRequest;
+import com.cp470.groupproject.data.remote.dto.AiRecipeResponse;
 import com.cp470.groupproject.data.remote.dto.ChatMessageDto;
 import com.cp470.groupproject.data.remote.dto.ChatRequest;
 import com.cp470.groupproject.data.remote.dto.ChatResponse;
@@ -25,7 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * Single entry point for the AI assistant's data (Team Member 5).
+ * Single entry point for the AI assistant's data (Team Member 5): chat and AI recipes.
  * Reads the pantry from PantryRepository (read-only) and talks to the backend through Retrofit.
  * Every request carries the app language, so replies come back in English or Spanish (US-8).
  * Callbacks are delivered ON A BACKGROUND THREAD: callers must use LiveData.postValue().
@@ -82,6 +84,31 @@ public class AiRepository {
                         : ApiResult.failure(response.getError());
             } catch (RuntimeException e) {
                 Log.e(TAG, "chat failed unexpectedly", e);
+                result = ApiResult.failure(new AiError(AiError.UNKNOWN, e.getMessage(), 0, null));
+            }
+            callback.onResult(result);
+        });
+    }
+
+    /**
+     * One AI recipe built around the pantry's expiring food (US-2, UC-2), in the app language.
+     * The backend checks the structure and allergens and retries once if needed.
+     * @param preferences null until the preferences screen exists (G16)
+     * @param servings    clamped to 1..{@link AiRecipeRequest#MAX_SERVINGS}
+     */
+    public void generateRecipe(@Nullable PreferencesDto preferences,
+                               int servings,
+                               @NonNull Callback<AiRecipeResponse> callback) {
+        int cleanServings = Math.max(1, Math.min(servings, AiRecipeRequest.MAX_SERVINGS));
+        executor.execute(() -> {
+            ApiResult<AiRecipeResponse> result;
+            try {
+                List<InventoryItemDto> inventory = InventoryMapper.toDtos(
+                        pantry.getActiveItemsSync(), System.currentTimeMillis());
+                AiRecipeRequest request = new AiRecipeRequest(inventory, appLanguageTag(), preferences, cleanServings);
+                result = ApiCalls.execute(api.generateRecipe(request));
+            } catch (RuntimeException e) {
+                Log.e(TAG, "AI recipe failed unexpectedly", e);
                 result = ApiResult.failure(new AiError(AiError.UNKNOWN, e.getMessage(), 0, null));
             }
             callback.onResult(result);

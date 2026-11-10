@@ -14,10 +14,12 @@ public final class ApiClient {
 
     private static final long CONNECT_TIMEOUT_SECONDS = 10;
     /**
-     * Longer than the backend's worst case (20 s Claude timeout + 1 retry), so the app
-     * receives the backend's clean 504 AI_TIMEOUT instead of a vague client-side timeout.
+     * Longer than the backend's worst case, so the app receives the backend's own clean error
+     * instead of giving up while the backend is still working. The slowest endpoint is /ai/recipe:
+     * up to two Claude calls (an unusable answer is asked for again once). Fast answers are not
+     * delayed: this only limits how long the app waits at most.
      */
-    private static final long READ_TIMEOUT_SECONDS = 45;
+    private static final long READ_TIMEOUT_SECONDS = 100;
     private static final long WRITE_TIMEOUT_SECONDS = 15;
 
     private ApiClient() { } // no instances: static access only
@@ -32,7 +34,7 @@ public final class ApiClient {
         return Holder.SERVICE;
     }
 
-    /** Package-private so tests can point it at a different server if needed. */
+    /** Public so tests can point it at a different server (e.g. an unreachable one). */
     public static AiApiService create(String baseUrl) {
         OkHttpClient.Builder http = new OkHttpClient.Builder()
                 .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
