@@ -16,12 +16,14 @@ import com.cp470.groupproject.data.remote.dto.ChatMessageDto;
 import com.cp470.groupproject.data.remote.dto.ChatRequest;
 import com.cp470.groupproject.data.remote.dto.ChatResponse;
 import com.cp470.groupproject.data.remote.dto.InventoryItemDto;
+import com.cp470.groupproject.data.remote.dto.PreferencesDto;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -32,6 +34,7 @@ import retrofit2.Response;
 /**
  * Single entry point for the AI assistant's data (Team Member 5).
  * Reads the pantry from PantryRepository (read-only) and talks to the backend through Retrofit.
+ * Every request carries the app language, so replies come back in English or Spanish (US-8).
  * Callbacks are delivered ON A BACKGROUND THREAD: callers must use LiveData.postValue().
  */
 public class AiRepository {
@@ -58,15 +61,28 @@ public class AiRepository {
         this.executor = executor;
     }
 
+    /** Sends a chat message without saved preferences. */
     public void sendChatMessage(@NonNull String message,
                                 @NonNull List<ChatMessageDto> history,
+                                @NonNull Callback<String> callback) {
+        sendChatMessage(message, history, null, callback);
+    }
+
+    /**
+     * Sends a chat message with the current pantry, the app language and (optionally) saved preferences.
+     * @param preferences null until the preferences screen exists (G16)
+     */
+    public void sendChatMessage(@NonNull String message,
+                                @NonNull List<ChatMessageDto> history,
+                                @Nullable PreferencesDto preferences,
                                 @NonNull Callback<String> callback) {
         executor.execute(() -> {
             ApiResult<String> result;
             try {
                 List<InventoryItemDto> inventory = InventoryMapper.toDtos(
                         pantry.getActiveItemsSync(), System.currentTimeMillis());
-                ChatRequest request = new ChatRequest(message, lastN(history, MAX_HISTORY), inventory);
+                ChatRequest request = new ChatRequest(message, lastN(history, MAX_HISTORY), inventory,
+                        appLanguageTag(), preferences);
 
                 ApiResult<ChatResponse> response = execute(api.chat(request));
                 result = response.isSuccess()
@@ -78,6 +94,15 @@ public class AiRepository {
             }
             callback.onResult(result);
         });
+    }
+
+    /**
+     * The app's current language as a tag such as "en-US" or "es-MX".
+     * Follows the device language (and a per-app language, if the team adds one).
+     */
+    @NonNull
+    static String appLanguageTag() {
+        return Locale.getDefault().toLanguageTag();
     }
 
     @NonNull
