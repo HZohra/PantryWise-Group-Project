@@ -119,13 +119,18 @@ public class RecipesActivity extends AppCompatActivity {
         viewModel.loadIfNeeded();
     }
 
-    /** Keeps the toolbar below the status bar and the list above the navigation bar and keyboard. */
+    /**
+     * The status-bar space is padding on the ROOT (not the app bar), so it stays in place and keeps
+     * the background colour when the header scrolls away; nothing shows through behind the clock.
+     * The list stays above the navigation bar and keyboard.
+     */
     private void applyWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(
                     WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
             Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
-            appBar.setPadding(bars.left, bars.top, bars.right, 0);
+            root.setPadding(0, bars.top, 0, 0);
+            appBar.setPadding(bars.left, 0, bars.right, 0);
             content.setPadding(bars.left, 0, bars.right, Math.max(bars.bottom, ime.bottom));
             return WindowInsetsCompat.CONSUMED;
         });

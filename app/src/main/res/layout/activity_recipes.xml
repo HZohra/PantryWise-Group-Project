@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="?attr/colorSurface">
 
+    <!-- Toolbar + search + Zero-Waste + Generate scroll away with the list and come back on scroll up -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/ai_recipes_app_bar"
         android:layout_width="match_parent"
@@ -16,7 +17,65 @@
             android:id="@+id/ai_recipes_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
             app:title="@string/ai_recipes_title" />
+
+        <LinearLayout
+            android:id="@+id/ai_recipes_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/ai_item_gap"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
+
+            <!-- Search: the keyboard's search key starts the search -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ai_recipes_search_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/ai_screen_padding"
+                android:layout_marginTop="@dimen/ai_item_gap"
+                android:hint="@string/ai_recipes_search_hint"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ai_recipes_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLength="@integer/ai_query_max_length"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Zero-Waste Mode (remembered between visits) -->
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/ai_recipes_zero_waste"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/ai_screen_padding"
+                android:layout_marginTop="@dimen/ai_item_gap"
+                android:text="@string/ai_recipes_zero_waste"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/ai_screen_padding"
+                android:text="@string/ai_recipes_zero_waste_hint"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+            <!-- UC-2 / Zero-Waste "Ask AI": an AI recipe built from expiring food -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ai_recipes_generate"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/ai_screen_padding"
+                android:layout_marginTop="@dimen/ai_item_gap"
+                android:text="@string/ai_gen_button" />
+        </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
@@ -26,59 +85,10 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Search: the keyboard's search key starts the search -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/ai_recipes_search_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/ai_screen_padding"
-            android:layout_marginTop="@dimen/ai_item_gap"
-            android:hint="@string/ai_recipes_search_hint"
-            app:endIconMode="clear_text">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ai_recipes_search"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:maxLength="@integer/ai_query_max_length"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Zero-Waste Mode (remembered between visits) -->
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/ai_recipes_zero_waste"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/ai_screen_padding"
-            android:layout_marginTop="@dimen/ai_item_gap"
-            android:text="@string/ai_recipes_zero_waste"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/ai_screen_padding"
-            android:text="@string/ai_recipes_zero_waste_hint"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="?attr/colorOnSurfaceVariant" />
-
-        <!-- UC-2 / Zero-Waste "Ask AI": an AI recipe built from expiring food -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/ai_recipes_generate"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/ai_screen_padding"
-            android:layout_marginTop="@dimen/ai_item_gap"
-            android:text="@string/ai_gen_button" />
-
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/ai_recipes_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/ai_item_gap"
             android:indeterminate="true"
             android:visibility="gone" />
 

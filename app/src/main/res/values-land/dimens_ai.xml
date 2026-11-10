@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Landscape overrides for the AI screens (Team Member 5). Only what differs from values/dimens_ai.xml. -->
+<resources>
+    <!-- A shorter photo, so the recipe content is still visible in landscape -->
+    <dimen name="ai_detail_image_height">140dp</dimen>
+</resources>

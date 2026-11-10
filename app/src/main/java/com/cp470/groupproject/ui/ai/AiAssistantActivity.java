@@ -51,6 +51,8 @@ public class AiAssistantActivity extends AppCompatActivity {
 
     /** The error Snackbar currently on screen, so it can be dismissed when the user moves on. */
     @Nullable private Snackbar errorSnackbar;
+    /** The list's normal bottom padding; extra space is added while an error Snackbar is visible. */
+    private int baseListPaddingBottom;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +69,7 @@ public class AiAssistantActivity extends AppCompatActivity {
         progress = findViewById(R.id.ai_progress);
         input = findViewById(R.id.ai_input);
         sendButton = findViewById(R.id.ai_send);
+        baseListPaddingBottom = messageList.getPaddingBottom();
 
         MaterialToolbar toolbar = findViewById(R.id.ai_toolbar);
         setSupportActionBar(toolbar);
@@ -141,6 +144,7 @@ public class AiAssistantActivity extends AppCompatActivity {
     /**
      * Retryable errors (no internet, timeout) stay on screen until the user taps Retry or moves on.
      * Rate limits and other errors disappear by themselves.
+     * While a Snackbar is visible, the list gets extra space so it never hides the last message.
      */
     private void showError(@Nullable AiError error) {
         if (error == null) {
@@ -148,20 +152,49 @@ public class AiAssistantActivity extends AppCompatActivity {
         }
         dismissError();
         boolean retryable = AiErrorText.isRetryable(error);
-        errorSnackbar = Snackbar.make(root, AiErrorText.message(this, error),
+        Snackbar snackbar = Snackbar.make(root, AiErrorText.message(this, error),
                         retryable ? Snackbar.LENGTH_INDEFINITE : Snackbar.LENGTH_LONG)
                 .setAnchorView(inputBar);
         if (retryable) {
-            errorSnackbar.setAction(R.string.ai_retry, v -> viewModel.retry());
+            snackbar.setAction(R.string.ai_retry, v -> viewModel.retry());
         }
-        errorSnackbar.show();
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onShown(Snackbar shown) {
+                if (shown == errorSnackbar) {
+                    reserveSpaceForSnackbar(shown.getView().getHeight());
+                }
+            }
+
+            @Override
+            public void onDismissed(Snackbar dismissed, int event) {
+                if (dismissed == errorSnackbar) { // closed by itself, by a swipe or by Retry
+                    errorSnackbar = null;
+                    reserveSpaceForSnackbar(0);
+                }
+            }
+        });
+        errorSnackbar = snackbar;
+        snackbar.show();
         viewModel.onErrorShown();
     }
 
     private void dismissError() {
         if (errorSnackbar != null) {
-            errorSnackbar.dismiss();
-            errorSnackbar = null;
+            Snackbar old = errorSnackbar;
+            errorSnackbar = null; // so its onDismissed doesn't touch the next Snackbar's space
+            old.dismiss();
+            reserveSpaceForSnackbar(0);
+        }
+    }
+
+    /** Adds (or removes, with 0) room under the last bubble and keeps the newest message visible. */
+    private void reserveSpaceForSnackbar(int extraPx) {
+        messageList.setPadding(messageList.getPaddingLeft(), messageList.getPaddingTop(),
+                messageList.getPaddingRight(), baseListPaddingBottom + extraPx);
+        int count = adapter.getItemCount();
+        if (count > 0) {
+            messageList.scrollToPosition(count - 1);
         }
     }
 
