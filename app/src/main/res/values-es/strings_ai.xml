@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spanish strings for the AI assistant and recipe screens (Team Member 5). -->
+<resources>
+
+    <!-- Pantalla de chat -->
+    <string name="ai_chat_title">Asistente de cocina</string>
+    <string name="ai_chat_input_hint">Pregunta sobre cocina o tu despensa…</string>
+    <string name="ai_chat_send">Enviar</string>
+    <string name="ai_chat_new_chat">Nuevo chat</string>
+    <string name="ai_chat_welcome">¡Hola! Pregúntame qué cocinar con tus alimentos, cómo aprovechar lo que está por caducar o con qué sustituir un ingrediente que te falta.</string>
+    <string name="ai_chat_thinking">El asistente está pensando…</string>
+    <string name="ai_chat_you">Tú</string>
+    <string name="ai_chat_assistant">Asistente</string>
+    <string name="ai_chat_cleared">Nuevo chat iniciado</string>
+
+    <!-- Diálogo de consentimiento (US-6) -->
+    <string name="ai_consent_title">¿Usar el asistente de IA?</string>
+    <string name="ai_consent_message">Para responder, se enviarán a un servicio de IA tu mensaje y una lista de los productos de tu despensa (nombres, cantidades y fechas de caducidad). Si cancelas, no se envía nada.</string>
+    <string name="ai_consent_continue">Continuar</string>
+    <string name="ai_consent_cancel">Cancelar</string>
+
+    <!-- Errores (según AiError.code) -->
+    <string name="ai_error_network">No se puede conectar con el asistente. Revisa tu conexión.</string>
+    <string name="ai_error_timeout">El asistente tardó demasiado en responder.</string>
+    <string name="ai_error_rate_limited">El asistente está ocupado. Inténtalo de nuevo en un minuto.</string>
+    <string name="ai_error_rate_limited_seconds">El asistente está ocupado. Inténtalo de nuevo en %1$d segundos.</string>
+    <string name="ai_error_unavailable">El asistente no está disponible en este momento.</string>
+    <string name="ai_error_message_too_long">Tu mensaje es demasiado largo (máximo %1$d caracteres).</string>
+    <string name="ai_error_generic">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="ai_retry">Reintentar</string>
+
+</resources>

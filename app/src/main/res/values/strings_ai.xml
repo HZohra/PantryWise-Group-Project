@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Strings for the AI assistant and recipe screens (Team Member 5). Spanish: values-es/strings_ai.xml -->
+<resources>
+
+    <!-- Chat screen -->
+    <string name="ai_chat_title">Kitchen Assistant</string>
+    <string name="ai_chat_input_hint">Ask about cooking or your pantry…</string>
+    <string name="ai_chat_send">Send</string>
+    <string name="ai_chat_new_chat">New chat</string>
+    <string name="ai_chat_welcome">Hi! Ask me what to cook with your food, how to use items that are expiring, or what to swap for a missing ingredient.</string>
+    <string name="ai_chat_thinking">Assistant is thinking…</string>
+    <string name="ai_chat_you">You</string>
+    <string name="ai_chat_assistant">Assistant</string>
+    <string name="ai_chat_cleared">Started a new chat</string>
+
+    <!-- Consent dialog (US-6) -->
+    <string name="ai_consent_title">Use the AI assistant?</string>
+    <string name="ai_consent_message">To answer, your message and a list of your pantry items (names, amounts and expiry dates) will be sent to an AI service. Nothing is sent if you cancel.</string>
+    <string name="ai_consent_continue">Continue</string>
+    <string name="ai_consent_cancel">Cancel</string>
+
+    <!-- Errors (chosen by AiError.code) -->
+    <string name="ai_error_network">Can\'t reach the assistant. Check your connection.</string>
+    <string name="ai_error_timeout">The assistant took too long to answer.</string>
+    <string name="ai_error_rate_limited">The assistant is busy. Try again in a minute.</string>
+    <string name="ai_error_rate_limited_seconds">The assistant is busy. Try again in %1$d seconds.</string>
+    <string name="ai_error_unavailable">The assistant is unavailable right now.</string>
+    <string name="ai_error_message_too_long">Your message is too long (max %1$d characters).</string>
+    <string name="ai_error_generic">Something went wrong. Please try again.</string>
+    <string name="ai_retry">Retry</string>
+
+</resources>
