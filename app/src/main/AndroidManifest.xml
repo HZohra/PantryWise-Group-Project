@@ -65,6 +65,12 @@
             android:parentActivityName=".ui.inventory.InventoryActivity"
             android:theme="@style/Theme.CP470GroupProject.Shopping" />
 
+        <activity
+            android:name=".ui.ai.AiAssistantActivity"
+            android:exported="false"
+            android:label="@string/ai_chat_title"
+            android:parentActivityName=".ui.inventory.InventoryActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
