@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "PantryWise AI API",
-    "description": "AI Kitchen Assistant & Recipe Engine (Team Member 5).\n\nBefore running: start the backend with `npm run dev` inside `backend/`.\nRun the whole collection at most once per minute (rate limits: 10 AI calls/min, 20 recipe calls/min).\nEach full run makes about 5 Claude calls and 4 Edamam calls.",
+    "description": "AI Kitchen Assistant & Recipe Engine (Team Member 5).\n\nBefore running: start the backend with `npm run dev` inside `backend/`.\nRun the whole collection at most once per minute (rate limits: 10 AI calls/min, 20 recipe calls/min).\nEach full run makes about 2 Claude calls (common substitutions come from the local list) and at most 4 Edamam calls (fewer when the 10-minute cache has the answer).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -171,7 +171,7 @@
           "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
             "const body = pm.response.json();",
             "pm.test('400', () => pm.response.to.have.status(400));",
-            "pm.test('lists all 5 problems', () => pm.expect(body.error.details).to.have.lengthOf(5));"
+            "pm.test('lists all 4 problems', () => pm.expect(body.error.details).to.have.lengthOf(4));"
           ] } }],
           "request": {
             "method": "POST",
@@ -186,6 +186,7 @@
           "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
             "const body = pm.response.json();",
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('answered from the local list (no AI)', () => pm.expect(body.source).to.eql('local'));",
             "pm.test('1 to 3 substitutes', () => pm.expect(body.substitutes.length).to.be.within(1, 3));",
             "pm.test('first suggestion is in the pantry', () => pm.expect(body.substitutes[0].inPantry).to.be.true);",
             "pm.test('first suggestion is the yogurt', () => pm.expect(body.substitutes[0].name).to.include('yogurt'));"
@@ -203,6 +204,7 @@
           "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
             "const body = pm.response.json();",
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('answered from the local list (no AI)', () => pm.expect(body.source).to.eql('local'));",
             "pm.test('no dairy suggested', () => body.substitutes.forEach(s => pm.expect(s.name).to.not.match(/butter|cheese|cheddar|parmesan|heavy cream/)));",
             "pm.test('at least one suggestion is in the pantry', () => pm.expect(body.substitutes.some(s => s.inPantry)).to.be.true);"
           ] } }],
