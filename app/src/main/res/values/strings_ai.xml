@@ -55,4 +55,38 @@
     <string name="ai_recipes_error_busy">Too many searches. Try again shortly.</string>
     <string name="ai_recipes_error_generic">Couldn\'t load recipes. Please try again.</string>
 
+    <!-- Recipe details (5.7) -->
+    <string name="ai_detail_title">Recipe</string>
+    <plurals name="ai_detail_servings">
+        <item quantity="one">%1$d serving</item>
+        <item quantity="other">%1$d servings</item>
+    </plurals>
+    <string name="ai_detail_source">From %1$s</string>
+    <string name="ai_detail_ask_assistant">Ask assistant how to make this</string>
+    <string name="ai_detail_view_original">View original recipe</string>
+    <string name="ai_detail_no_browser">No app on this phone can open the link.</string>
+    <string name="ai_detail_ingredients">Ingredients</string>
+    <string name="ai_detail_in_pantry">In pantry</string>
+    <string name="ai_detail_missing">Missing</string>
+    <string name="ai_detail_find_substitute">Find substitute</string>
+    <string name="ai_detail_nutrition">Nutrition per serving</string>
+    <string name="ai_detail_nutrition_whole">Nutrition (whole recipe)</string>
+    <string name="ai_detail_calories">Calories</string>
+    <string name="ai_detail_protein">Protein</string>
+    <string name="ai_detail_carbs">Carbs</string>
+    <string name="ai_detail_fat">Fat</string>
+    <string name="ai_detail_kcal">%1$d kcal</string>
+    <string name="ai_detail_grams">%1$d g</string>
+    <string name="ai_detail_unknown" translatable="false">–</string>
+    <!-- Sent to the chat by "Ask assistant how to make this" -->
+    <string name="ai_detail_ask_prompt">How do I make \"%1$s\"? Please give numbered steps. Ingredients:\n%2$s</string>
+
+    <!-- Substitutes sheet (5.7) -->
+    <string name="ai_sub_title">Instead of %1$s</string>
+    <string name="ai_sub_loading">Finding substitutes…</string>
+    <string name="ai_sub_source_local">Quick suggestion</string>
+    <string name="ai_sub_source_ai">Suggested by AI</string>
+    <string name="ai_sub_in_pantry">You have this</string>
+    <string name="ai_sub_none">No safe substitute found.</string>
+
 </resources>

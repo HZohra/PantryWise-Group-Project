@@ -19,4 +19,8 @@
 
     <!-- Must match the backend's LIMITS.queryMax -->
     <integer name="ai_query_max_length">100</integer>
+
+    <!-- Recipe details (5.7) -->
+    <dimen name="ai_detail_image_height">220dp</dimen>
+    <dimen name="ai_section_gap">16dp</dimen>
 </resources>

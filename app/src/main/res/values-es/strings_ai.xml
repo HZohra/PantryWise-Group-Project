@@ -55,4 +55,37 @@
     <string name="ai_recipes_error_busy">Demasiadas búsquedas. Inténtalo de nuevo en un momento.</string>
     <string name="ai_recipes_error_generic">No se pudieron cargar las recetas. Inténtalo de nuevo.</string>
 
+    <!-- Detalle de receta (5.7) -->
+    <string name="ai_detail_title">Receta</string>
+    <plurals name="ai_detail_servings">
+        <item quantity="one">%1$d porción</item>
+        <item quantity="other">%1$d porciones</item>
+    </plurals>
+    <string name="ai_detail_source">De %1$s</string>
+    <string name="ai_detail_ask_assistant">Preguntar al asistente cómo prepararla</string>
+    <string name="ai_detail_view_original">Ver receta original</string>
+    <string name="ai_detail_no_browser">Ninguna app del teléfono puede abrir el enlace.</string>
+    <string name="ai_detail_ingredients">Ingredientes</string>
+    <string name="ai_detail_in_pantry">En la despensa</string>
+    <string name="ai_detail_missing">Falta</string>
+    <string name="ai_detail_find_substitute">Buscar sustituto</string>
+    <string name="ai_detail_nutrition">Nutrición por porción</string>
+    <string name="ai_detail_nutrition_whole">Nutrición (receta completa)</string>
+    <string name="ai_detail_calories">Calorías</string>
+    <string name="ai_detail_protein">Proteína</string>
+    <string name="ai_detail_carbs">Carbohidratos</string>
+    <string name="ai_detail_fat">Grasa</string>
+    <string name="ai_detail_kcal">%1$d kcal</string>
+    <string name="ai_detail_grams">%1$d g</string>
+    <!-- Se envía al chat con "Preguntar al asistente cómo prepararla" -->
+    <string name="ai_detail_ask_prompt">¿Cómo preparo \"%1$s\"? Dame los pasos numerados. Ingredientes:\n%2$s</string>
+
+    <!-- Hoja de sustitutos (5.7) -->
+    <string name="ai_sub_title">En lugar de %1$s</string>
+    <string name="ai_sub_loading">Buscando sustitutos…</string>
+    <string name="ai_sub_source_local">Sugerencia rápida</string>
+    <string name="ai_sub_source_ai">Sugerido por la IA</string>
+    <string name="ai_sub_in_pantry">Lo tienes</string>
+    <string name="ai_sub_none">No se encontró un sustituto seguro.</string>
+
 </resources>
