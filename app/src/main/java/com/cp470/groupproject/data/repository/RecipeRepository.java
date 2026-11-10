@@ -16,16 +16,20 @@ import com.cp470.groupproject.data.remote.dto.InventoryItemDto;
 import com.cp470.groupproject.data.remote.dto.PreferencesDto;
 import com.cp470.groupproject.data.remote.dto.RecommendRequest;
 import com.cp470.groupproject.data.remote.dto.RecommendResponse;
+import com.cp470.groupproject.data.remote.dto.SubstituteRequest;
+import com.cp470.groupproject.data.remote.dto.SubstituteResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * Recipe data for the Recipes screen (Team Member 5).
+ * Recipe data for the Recipes and Recipe details screens (Team Member 5).
  * Both "recommend from my pantry" and keyword search go through /recipes/recommend,
  * so every result is ranked by the same pantry match ("You have X of Y", expiring badge),
  * allergens are filtered out and an empty search is broadened once (all done by the backend).
+ * Substitutions go through /recipes/substitute (local swap list first, Claude only if needed).
  * Callbacks are delivered ON A BACKGROUND THREAD: callers must use LiveData.postValue().
  */
 public class RecipeRepository {
@@ -33,6 +37,11 @@ public class RecipeRepository {
     private static final String TAG = "RecipeRepository";
     /** Backend LIMITS.queryMax. */
     public static final int MAX_QUERY_LENGTH = 100;
+    /** Backend LIMITS.titleMax, nameMax, ingredientLinesMax and lineMax. */
+    static final int MAX_TITLE_LENGTH = 150;
+    static final int MAX_INGREDIENT_LENGTH = 100;
+    static final int MAX_LINES = 50;
+    static final int MAX_LINE_LENGTH = 200;
 
     public interface Callback<T> {
         void onResult(@NonNull ApiResult<T> result);
@@ -83,6 +92,38 @@ public class RecipeRepository {
         });
     }
 
+    /**
+     * Substitutes for one missing ingredient, items the user owns first, in the app language (US-3).
+     * @param recipeTitle     shown to the AI as context
+     * @param ingredient      the food name, e.g. "egg" (IngredientMatcher gives it), not the whole line
+     * @param ingredientLines the recipe's lines, as context
+     * @param preferences     null until the preferences screen exists (G16)
+     */
+    public void substitute(@NonNull String recipeTitle,
+                           @NonNull String ingredient,
+                           @Nullable List<String> ingredientLines,
+                           @Nullable PreferencesDto preferences,
+                           @NonNull Callback<SubstituteResponse> callback) {
+        String cleanTitle = clampText(recipeTitle, MAX_TITLE_LENGTH);
+        String cleanIngredient = clampText(ingredient, MAX_INGREDIENT_LENGTH);
+        List<String> cleanLines = cleanLines(ingredientLines);
+
+        executor.execute(() -> {
+            ApiResult<SubstituteResponse> result;
+            try {
+                List<InventoryItemDto> inventory = InventoryMapper.toDtos(
+                        pantry.getActiveItemsSync(), System.currentTimeMillis());
+                SubstituteRequest request = new SubstituteRequest(cleanTitle, cleanIngredient, cleanLines,
+                        inventory, AiRepository.appLanguageTag(), preferences);
+                result = ApiCalls.execute(api.substitute(request));
+            } catch (RuntimeException e) {
+                Log.e(TAG, "substitute failed unexpectedly", e);
+                result = ApiResult.failure(new AiError(AiError.UNKNOWN, e.getMessage(), 0, null));
+            }
+            callback.onResult(result);
+        });
+    }
+
     /** Trimmed and capped at the backend limit; null when there is nothing to search for. */
     @Nullable
     public static String cleanQuery(@Nullable String query) {
@@ -90,5 +131,26 @@ public class RecipeRepository {
         String trimmed = query.trim();
         if (trimmed.isEmpty()) return null;
         return trimmed.length() <= MAX_QUERY_LENGTH ? trimmed : trimmed.substring(0, MAX_QUERY_LENGTH).trim();
+    }
+
+    /** Trimmed and cut to max characters (never null). */
+    @NonNull
+    static String clampText(@Nullable String text, int max) {
+        if (text == null) return "";
+        String trimmed = text.trim();
+        return trimmed.length() <= max ? trimmed : trimmed.substring(0, max).trim();
+    }
+
+    /** At most MAX_LINES non-blank lines, each at most MAX_LINE_LENGTH characters. */
+    @NonNull
+    static List<String> cleanLines(@Nullable List<String> lines) {
+        List<String> result = new ArrayList<>();
+        if (lines == null) return result;
+        for (String line : lines) {
+            String clean = clampText(line, MAX_LINE_LENGTH);
+            if (!clean.isEmpty()) result.add(clean);
+            if (result.size() == MAX_LINES) break;
+        }
+        return result;
     }
 }
