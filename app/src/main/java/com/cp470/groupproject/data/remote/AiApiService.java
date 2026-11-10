@@ -8,6 +8,8 @@ import com.cp470.groupproject.data.remote.dto.HealthResponse;
 import com.cp470.groupproject.data.remote.dto.RecommendRequest;
 import com.cp470.groupproject.data.remote.dto.RecommendResponse;
 import com.cp470.groupproject.data.remote.dto.SearchResponse;
+import com.cp470.groupproject.data.remote.dto.SubstituteRequest;
+import com.cp470.groupproject.data.remote.dto.SubstituteResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -47,5 +49,7 @@ public interface AiApiService {
     @POST("recipes/recommend")
     Call<RecommendResponse> recommendRecipes(@Body RecommendRequest request);
 
-    // substitute is added in step 5.7
+    /** POST /api/v1/recipes/substitute: local swap list first, Claude only for other ingredients. */
+    @POST("recipes/substitute")
+    Call<SubstituteResponse> substitute(@Body SubstituteRequest request);
 }

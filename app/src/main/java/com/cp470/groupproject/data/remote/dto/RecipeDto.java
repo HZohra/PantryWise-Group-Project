@@ -18,7 +18,10 @@ public class RecipeDto {
     @Nullable public Double servings;
     /** null when Edamam doesn't know the time. */
     @Nullable public Double totalTimeMinutes;
+    /** Calories of the WHOLE recipe; per-serving values are in {@link #nutrition}. */
     @Nullable public Double calories;
+    /** Calories, protein, carbs and fat per serving. */
+    @Nullable public NutritionDto nutrition;
     public List<String> ingredientLines;
     public List<String> ingredientNames;
     public List<String> dietLabels;
