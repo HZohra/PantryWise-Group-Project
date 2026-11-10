@@ -11,6 +11,7 @@
     <string name="ai_chat_thinking">Assistant is thinking…</string>
     <string name="ai_chat_you">You</string>
     <string name="ai_chat_assistant">Assistant</string>
+    <string name="ai_chat_message_a11y">%1$s: %2$s</string>
     <string name="ai_chat_cleared">Started a new chat</string>
 
     <!-- Consent dialog (US-6) -->
