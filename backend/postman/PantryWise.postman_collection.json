@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "PantryWise AI API",
-    "description": "AI Kitchen Assistant & Recipe Engine (Team Member 5).\n\nBefore running: start the backend with `npm run dev` inside `backend/`.\nRun the whole collection at most once per minute (rate limits: 10 AI calls/min, 20 recipe calls/min).\nEach full run makes about 2 Claude calls (common substitutions come from the local list) and at most 4 Edamam calls (fewer when the 10-minute cache has the answer).",
+    "description": "AI Kitchen Assistant & Recipe Engine (Team Member 5).\n\nBefore running: start the backend with `npm run dev` inside `backend/`.\nRun the whole collection at most once per minute (rate limits: 10 AI calls/min, 20 recipe calls/min).\nEach full run makes about 4 Claude calls (2 chat + 2 AI recipes; common substitutions come from the local list) and at most 5 Edamam calls (fewer when the 10-minute cache has the answer).\nThe AI rate limiter sees exactly 10 requests per run, so wait a full minute after any manual AI call before running.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -15,7 +15,10 @@
         "exec": [
           "// Runs after EVERY request in the collection",
           "pm.test('responds with JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
-          "pm.test('responds in under 30 s', () => pm.expect(pm.response.responseTime).to.be.below(30000));"
+          "// A full AI recipe (with one possible retry) can take longer than a chat reply",
+          "const isAiRecipe = pm.request.url.toString().includes('/ai/recipe');",
+          "const limitMs = isAiRecipe ? 90000 : 30000;",
+          "pm.test(`responds in under ${limitMs / 1000} s`, () => pm.expect(pm.response.responseTime).to.be.below(limitMs));"
         ]
       }
     }
@@ -97,6 +100,95 @@
       ]
     },
     {
+      "name": "AI Recipe",
+      "item": [
+        {
+          "name": "AI recipe - uses expiring food",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const body = pm.response.json();",
+            "const recipe = body.recipe || {};",
+            "const ingredients = recipe.ingredients || [];",
+            "const steps = recipe.steps || [];",
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('recipeId uses the ai: prefix', () => pm.expect(recipe.recipeId).to.match(/^ai:[0-9a-f-]{36}$/));",
+            "pm.test('keeps the requested 2 servings', () => pm.expect(recipe.servings).to.eql(2));",
+            "pm.test('expiring items are spinach then feta (expired milk ignored)', () => {",
+            "  pm.expect(body.usedExpiring).to.be.true;",
+            "  pm.expect(body.expiringItems).to.eql(['spinach', 'feta']);",
+            "});",
+            "pm.test('recipe uses at least one expiring item', () => pm.expect(ingredients.some(i => i.expiring)).to.be.true);",
+            "pm.test('2 to 25 ingredients, each with name, amount and flags', () => {",
+            "  pm.expect(ingredients.length).to.be.within(2, 25);",
+            "  ingredients.forEach(i => pm.expect(i).to.have.keys('name', 'amount', 'inPantry', 'expiring', 'staple'));",
+            "});",
+            "pm.test('2 to 15 steps, without step numbers', () => {",
+            "  pm.expect(steps.length).to.be.within(2, 15);",
+            "  steps.forEach(s => pm.expect(s).to.not.match(/^\\s*\\d+\\s*[.)-]/));",
+            "});",
+            "pm.test('one ingredient line per ingredient', () => pm.expect(recipe.ingredientLines).to.have.lengthOf(ingredients.length));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"locale\": \"en\",\n  \"servings\": 2,\n  \"inventory\": [\n    { \"name\": \"spinach\", \"quantity\": 1, \"unit\": \"bag\", \"daysUntilExpiry\": 1 },\n    { \"name\": \"feta\", \"quantity\": 200, \"unit\": \"g\", \"daysUntilExpiry\": 2 },\n    { \"name\": \"eggs\", \"quantity\": 6, \"unit\": \"pcs\", \"daysUntilExpiry\": 10 },\n    { \"name\": \"milk\", \"quantity\": 1, \"unit\": \"L\", \"daysUntilExpiry\": -1 },\n    { \"name\": \"rice\", \"quantity\": 1, \"unit\": \"kg\" }\n  ]\n}" },
+            "url": "{{baseUrl}}/ai/recipe"
+          }
+        },
+        {
+          "name": "AI recipe - Spanish, peanut allergy",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const body = pm.response.json();",
+            "const recipe = body.recipe || {};",
+            "const ingredients = recipe.ingredients || [];",
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('no peanut ingredient (allergy)', () => ingredients.forEach(i => pm.expect(i.name).to.not.include('peanut')));",
+            "pm.test('ingredient names stay English, so they match the pantry', () => pm.expect(ingredients.some(i => i.inPantry)).to.be.true);",
+            "pm.test('steps are written in Spanish', () => pm.expect((recipe.steps || []).join(' ').toLowerCase()).to.match(/\\b(el|la|los|las|con|una|un|y)\\b/));",
+            "pm.test('flags that expiring food was used', () => pm.expect(body.usedExpiring).to.be.true);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"locale\": \"es\",\n  \"inventory\": [\n    { \"name\": \"peanut butter\", \"quantity\": 1, \"unit\": \"jar\", \"daysUntilExpiry\": 1 },\n    { \"name\": \"banana\", \"quantity\": 3, \"unit\": \"pcs\", \"daysUntilExpiry\": 1 },\n    { \"name\": \"greek yogurt\", \"quantity\": 2, \"unit\": \"cups\", \"daysUntilExpiry\": 2 },\n    { \"name\": \"oats\", \"quantity\": 500, \"unit\": \"g\" }\n  ],\n  \"preferences\": { \"allergies\": [\"peanut\"] }\n}" },
+            "url": "{{baseUrl}}/ai/recipe"
+          }
+        },
+        {
+          "name": "AI recipe - only expired food (400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const body = pm.response.json();",
+            "pm.test('400', () => pm.response.to.have.status(400));",
+            "pm.test('code VALIDATION_ERROR', () => pm.expect(body.error.code).to.eql('VALIDATION_ERROR'));",
+            "pm.test('says it needs an item that is not expired', () => pm.expect(body.error.details).to.include('inventory needs at least one item that is not expired'));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } },
+              "raw": "{ \"inventory\": [ { \"name\": \"milk\", \"quantity\": 1, \"unit\": \"L\", \"daysUntilExpiry\": -2 } ] }" },
+            "url": "{{baseUrl}}/ai/recipe"
+          }
+        },
+        {
+          "name": "AI recipe - invalid body (400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const body = pm.response.json();",
+            "pm.test('400', () => pm.response.to.have.status(400));",
+            "pm.test('lists all 3 problems', () => pm.expect(body.error.details).to.have.lengthOf(3));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"servings\": 20,\n  \"locale\": 5,\n  \"inventory\": [{ \"name\": \"\" }]\n}" },
+            "url": "{{baseUrl}}/ai/recipe"
+          }
+        }
+      ]
+    },
+    {
       "name": "Recipes",
       "item": [
         {
@@ -128,6 +220,15 @@
             "pm.test('lists all 3 problems', () => pm.expect(body.error.details).to.have.lengthOf(3));"
           ] } }],
           "request": { "method": "GET", "url": "{{baseUrl}}/recipes/search?q=soup&diet=keto&maxTime=abc&limit=50" }
+        },
+        {
+          "name": "Search - maxCalories too low (400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const body = pm.response.json();",
+            "pm.test('400', () => pm.response.to.have.status(400));",
+            "pm.test('explains the calorie range', () => pm.expect(body.error.details).to.include('maxCalories must be a whole number from 50 to 3000'));"
+          ] } }],
+          "request": { "method": "GET", "url": "{{baseUrl}}/recipes/search?q=soup&maxCalories=10" }
         },
         {
           "name": "Recommend - expiring first (standard)",
@@ -163,6 +264,27 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": { "mode": "raw", "options": { "raw": { "language": "json" } },
               "raw": "{\n  \"mode\": \"zeroWaste\",\n  \"inventory\": [\n    { \"name\": \"milk\", \"quantity\": 1, \"unit\": \"L\", \"daysUntilExpiry\": 2 },\n    { \"name\": \"eggs\", \"quantity\": 6, \"unit\": \"pcs\", \"daysUntilExpiry\": 10 },\n    { \"name\": \"spinach\", \"quantity\": 1, \"unit\": \"bag\", \"daysUntilExpiry\": 1 },\n    { \"name\": \"chicken breast\", \"quantity\": 2, \"unit\": \"pcs\", \"daysUntilExpiry\": 0 },\n    { \"name\": \"rice\", \"quantity\": 1, \"unit\": \"kg\" },\n    { \"name\": \"yogurt\", \"quantity\": 1, \"unit\": \"cup\", \"daysUntilExpiry\": -1 }\n  ],\n  \"limit\": 5\n}" },
+            "url": "{{baseUrl}}/recipes/recommend"
+          }
+        },
+        {
+          "name": "Recommend - max 500 kcal per serving",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const body = pm.response.json();",
+            "const recipes = body.recipes || [];",
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('finds at least one recipe', () => pm.expect(recipes.length).to.be.above(0));",
+            "pm.test('every recipe is at most 500 kcal per serving', () => recipes.forEach(r => {",
+            "  pm.expect(r.nutrition.perServing).to.be.true;",
+            "  pm.expect(r.nutrition.calories).to.be.at.most(500);",
+            "}));",
+            "pm.test('nutrition has calories, protein, carbs and fat', () => recipes.forEach(r => pm.expect(r.nutrition).to.include.keys('calories', 'protein', 'carbs', 'fat')));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"pasta\",\n  \"inventory\": [],\n  \"preferences\": { \"maxCalories\": 500 },\n  \"limit\": 5\n}" },
             "url": "{{baseUrl}}/recipes/recommend"
           }
         },
