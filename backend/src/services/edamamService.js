@@ -5,7 +5,7 @@ const BASE_URL = 'https://api.edamam.com/api/recipes/v2';
 
 // Only ask Edamam for the fields we use: smaller, faster responses
 const FIELDS = [
-  'uri', 'label', 'image', 'source', 'url', 'yield', 'totalTime', 'calories',
+  'uri', 'label', 'image', 'source', 'url', 'yield', 'totalTime', 'calories', 'totalNutrients',
   'ingredientLines', 'ingredients', 'dietLabels', 'healthLabels', 'cuisineType',
 ];
 
@@ -26,18 +26,45 @@ function buildUrl({ query, diet, health = [], cuisineType, mealType, maxTimeMinu
   return `${BASE_URL}?${params.toString()}`;
 }
 
+/** Grams of one nutrient for the whole recipe (Edamam codes: PROCNT, CHOCDF, FAT), or null. */
+function nutrientTotal(totalNutrients, code) {
+  const quantity = totalNutrients && totalNutrients[code] ? totalNutrients[code].quantity : null;
+  return Number.isFinite(quantity) && quantity >= 0 ? quantity : null;
+}
+
+/**
+ * Calories, protein, carbs and fat PER SERVING, rounded.
+ * Edamam gives totals for the whole dish; without a serving count we keep the totals
+ * and say so with perServing: false.
+ */
+function buildNutrition(raw, servings) {
+  const divideBy = servings || 1;
+  const per = (value) => (value === null ? null : Math.round(value / divideBy));
+  const calories = Number.isFinite(raw.calories) && raw.calories > 0 ? raw.calories : null;
+  const nutrients = raw.totalNutrients || {};
+  return {
+    perServing: servings !== null,
+    calories: per(calories),
+    protein: per(nutrientTotal(nutrients, 'PROCNT')),
+    carbs: per(nutrientTotal(nutrients, 'CHOCDF')),
+    fat: per(nutrientTotal(nutrients, 'FAT')),
+  };
+}
+
 /** Converts one Edamam recipe into our own shape. */
 function normalizeRecipe(raw) {
   const id = (raw.uri || '').split('#recipe_')[1] || '';
+  const servings = raw.yield > 0 ? raw.yield : null;
   return {
     recipeId: `edamam:${id}`,
     title: raw.label || 'Untitled recipe',
     image: raw.image || null,
     sourceName: raw.source || null,
     sourceUrl: raw.url || null,
-    servings: raw.yield > 0 ? raw.yield : null,
+    servings,
     totalTimeMinutes: raw.totalTime > 0 ? raw.totalTime : null, // Edamam uses 0 for "unknown"
-    calories: raw.calories ? Math.round(raw.calories) : null,
+    calories: raw.calories ? Math.round(raw.calories) : null,   // whole recipe (kept for compatibility)
+    nutrition: buildNutrition(raw, servings),                  // per serving
     ingredientLines: raw.ingredientLines || [],
     ingredientNames: [...new Set((raw.ingredients || [])
       .map((i) => (i.food || '').toLowerCase().trim())
@@ -73,12 +100,13 @@ function mapEdamamError(err, status) {
 
 /**
  * Searches Edamam and returns recipes in our own format.
- * @param {object} options  { query, diet, health[], cuisineType, mealType, maxTimeMinutes, limit }
+ * maxCalories is checked here on the per-serving value the app shows (unknown calories are left out).
+ * @param {object} options  { query, diet, health[], cuisineType, mealType, maxTimeMinutes, maxCalories, limit }
  * @returns {Promise<object[]>}
  * @throws {AppError}
  */
 async function searchRecipes(options) {
-  const { limit = 10 } = options;
+  const { limit = 10, maxCalories } = options;
   let response;
   try {
     response = await fetch(buildUrl(options), {
@@ -96,7 +124,8 @@ async function searchRecipes(options) {
   return (data.hits || [])
     .map((hit) => normalizeRecipe(hit.recipe))
     .filter((r) => r.recipeId !== 'edamam:') // drop recipes without a usable id
+    .filter((r) => !maxCalories || (r.nutrition.calories !== null && r.nutrition.calories <= maxCalories))
     .slice(0, limit);
 }
 
-module.exports = { searchRecipes, normalizeRecipe, mapEdamamError };
+module.exports = { searchRecipes, normalizeRecipe, mapEdamamError, buildNutrition };

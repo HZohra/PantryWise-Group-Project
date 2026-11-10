@@ -17,6 +17,8 @@ const LIMITS = Object.freeze({
   allergiesMax: 20,
   allergyMax: 50,
   localeMax: 20,
+  caloriesMin: 50,    // per serving
+  caloriesMax: 3000,  // per serving
 });
 
 // Values Edamam accepts. Checking them here gives a clear 400 instead of a confusing 502.
@@ -150,7 +152,7 @@ function checkInventoryItems(items, errors) {
 
 /**
  * Checks the preferences object (shared by /ai/chat, /recipes/recommend and /recipes/substitute).
- * Returns the option names edamamService expects (cuisineType, maxTimeMinutes)
+ * Returns the option names edamamService expects (cuisineType, maxTimeMinutes, maxCalories)
  * plus AI-only fields (allergies, fitnessGoal), which Edamam calls simply ignore.
  */
 function checkPreferences(prefs, errors) {
@@ -172,6 +174,14 @@ function checkPreferences(prefs, errors) {
       errors.push(`preferences.maxTime must be a whole number from 1 to ${LIMITS.maxTimeMax}`);
     } else {
       clean.maxTimeMinutes = prefs.maxTime;
+    }
+  }
+  if (prefs.maxCalories !== undefined) {
+    if (!Number.isInteger(prefs.maxCalories)
+        || prefs.maxCalories < LIMITS.caloriesMin || prefs.maxCalories > LIMITS.caloriesMax) {
+      errors.push(`preferences.maxCalories must be a whole number from ${LIMITS.caloriesMin} to ${LIMITS.caloriesMax} (per serving)`);
+    } else {
+      clean.maxCalories = prefs.maxCalories;
     }
   }
   if (prefs.allergies !== undefined) {
@@ -277,13 +287,16 @@ function checkRecipeSearchQuery(query) {
   const maxTime = get('maxTime');
   if (maxTime) clean.maxTimeMinutes = intIn('maxTime', maxTime, 1, LIMITS.maxTimeMax);
 
+  const maxCalories = get('maxCalories');
+  if (maxCalories) clean.maxCalories = intIn('maxCalories', maxCalories, LIMITS.caloriesMin, LIMITS.caloriesMax);
+
   const limit = get('limit');
   if (limit) clean.limit = intIn('limit', limit, 1, LIMITS.searchLimitMax) ?? 10;
 
   return { errors, clean };
 }
 
-/** POST /api/v1/recipes/recommend */
+/** POST /api/v1/recipes/recommend (an empty pantry is allowed: the service then suggests defaults) */
 function checkRecommendRequest(body) {
   const errors = [];
   const clean = {
@@ -325,12 +338,6 @@ function checkRecommendRequest(body) {
       clean.mode = body.mode;
     }
   }
-
-//  // Needs something to search for: a query, or at least one item that isn't expired
-//  const hasUsableItem = clean.inventory.some((i) => i.daysUntilExpiry === null || i.daysUntilExpiry >= 0);
-//  if (!clean.query && !hasUsableItem) {
-//    errors.push('Provide a query or at least one inventory item that is not expired');
-//  }
 
   return { errors, clean };
 }
@@ -378,6 +385,7 @@ function checkSubstituteRequest(body) {
   clean.locale = checkLocale(body.locale, errors);                 // reused from chat
   return { errors, clean };
 }
+
 // =====================================================================
 // Middleware factories
 // =====================================================================

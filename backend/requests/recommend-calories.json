@@ -1,0 +1,6 @@
+{
+  "query": "pasta",
+  "inventory": [],
+  "preferences": { "maxCalories": 500 },
+  "limit": 5
+}
