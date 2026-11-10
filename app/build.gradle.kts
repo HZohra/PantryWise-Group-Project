@@ -98,6 +98,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // NEW: loads recipe photos from URLs with caching (Team Member 5)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }
 
 // Generate Javadoc documentation
