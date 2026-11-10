@@ -29,13 +29,14 @@ function buildMessages(history, message) {
 }
 
 /**
- * @param {{message: string, history: object[], inventory: object[]}} input  already validated
+ * @param {{message: string, history: object[], inventory: object[], preferences: object, locale: string}} input
+ *        already validated by checkChatRequest
  * @returns {Promise<string>} the assistant's reply
  * @throws {AppError} from claudeService
  */
-async function getChatReply({ message, history, inventory }) {
+async function getChatReply({ message, history, inventory, preferences, locale }) {
   return generateReply({
-    system: buildChatSystemPrompt(inventory),
+    system: buildChatSystemPrompt(inventory, preferences, locale),
     messages: buildMessages(history, message),
     maxTokens: MAX_REPLY_TOKENS,
   });

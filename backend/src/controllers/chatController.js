@@ -6,7 +6,7 @@ const { getChatReply } = require('../services/chatService');
  * By the time this runs, the request has already been:
  *   1. rate-limited (aiLimiter)
  *   2. validated and cleaned (validateBody(checkChatRequest))
- * so req.body is guaranteed to be { message, history, inventory }.
+ * so req.body is guaranteed to be { message, history, inventory, preferences, locale }.
  *
  * Errors from Claude are AppErrors. Express 5 forwards errors thrown in
  * async handlers to errorHandler automatically, so there's no try/catch here.
