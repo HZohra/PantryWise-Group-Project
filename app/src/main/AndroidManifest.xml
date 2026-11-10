@@ -32,6 +32,14 @@
             android:exported="false"
             android:parentActivityName=".ui.inventory.InventoryActivity" />
 
+        <activity
+            android:name=".ui.addfood.AddFoodActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

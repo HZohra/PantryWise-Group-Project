@@ -43,4 +43,25 @@
         <item>Últimos 30 días</item>
         <item>Todo el tiempo</item>
     </string-array>
+
+    <!-- Inventory screen -->
+    <string name="title_inventory">Mi despensa</string>
+    <string name="hint_search_food">Buscar alimentos</string>
+    <string name="location_fridge">Refrigerador</string>
+    <string name="location_freezer">Congelador</string>
+    <string name="location_pantry">Despensa</string>
+    <string name="action_add_food">Agregar alimento</string>
+    <string name="status_fresh">Fresco</string>
+    <string name="status_use_soon">Usar pronto</string>
+    <string name="status_expired">Vencido</string>
+    <string name="inventory_empty">Todavía no hay alimentos en esta ubicación.</string>
+    <string name="status_no_date">Sin fecha de vencimiento</string>
+
+    <string name="inventory_no_search_results">No se encontraron alimentos.</string>
+
+    <string-array name="storage_locations">
+        <item>Refrigerador</item>
+        <item>Congelador</item>
+        <item>Despensa</item>
+    </string-array>
 </resources>
