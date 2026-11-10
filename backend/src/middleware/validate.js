@@ -14,7 +14,9 @@ const LIMITS = Object.freeze({
   titleMax: 150,
   ingredientLinesMax: 50,
   lineMax: 200,
-
+  allergiesMax: 20,
+  allergyMax: 50,
+  localeMax: 20,
 });
 
 // Values Edamam accepts. Checking them here gives a clear 400 instead of a confusing 502.
@@ -32,6 +34,18 @@ const CUISINES = [
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack', 'teatime'];
 
 const RECOMMEND_MODES = ['standard', 'zeroWaste'];
+
+// Fitness goals the app offers (AI only). A fixed list, so the prompt only ever gets known values.
+const FITNESS_GOALS = ['lose-weight', 'build-muscle', 'maintain-weight', 'eat-healthier'];
+
+// Languages the app ships strings for. Any other language falls back to English instead of failing.
+const SUPPORTED_LOCALES = ['en', 'es'];
+const DEFAULT_LOCALE = 'en';
+
+// Allergy names: letters in any alphabet, spaces, hyphens, apostrophes (e.g. "tree nuts", "maní")
+const ALLERGY_PATTERN = /^\p{L}[\p{L}\s'-]*$/u;
+// Language tags like "en", "es", "es-MX", "es_US"
+const LOCALE_PATTERN = /^[a-z]{2,3}([-_][a-z0-9]{2,8})*$/i;
 
 const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 const isNonEmptyString = (v) => typeof v === 'string' && v.trim().length > 0;
@@ -58,7 +72,43 @@ function checkHealthLabels(name, labels, errors) {
   return [...new Set(cleaned)];
 }
 
-/** Checks an inventory array (shared by /ai/chat and /recipes/recommend). */
+/** Checks a list of free-text allergies; returns them lowercased, single-spaced and de-duplicated. */
+function checkAllergies(name, list, errors) {
+  if (!Array.isArray(list)) {
+    errors.push(`${name} must be an array`);
+    return [];
+  }
+  if (list.length > LIMITS.allergiesMax) {
+    errors.push(`${name} must have at most ${LIMITS.allergiesMax} items`);
+    return [];
+  }
+  const cleaned = [];
+  for (const entry of list) {
+    const v = typeof entry === 'string' ? entry.trim().toLowerCase().replace(/\s+/g, ' ') : '';
+    if (!v || v.length > LIMITS.allergyMax || !ALLERGY_PATTERN.test(v)) {
+      errors.push(`${name} entries must be words of at most ${LIMITS.allergyMax} characters (letters, spaces, - and ' only)`);
+      return [];
+    }
+    cleaned.push(v);
+  }
+  return [...new Set(cleaned)];
+}
+
+/**
+ * Checks the app language. Missing → "en". A valid tag in an unsupported language
+ * (e.g. "fr") → "en", so a phone in another language still gets answers.
+ */
+function checkLocale(value, errors) {
+  if (value === undefined || value === null) return DEFAULT_LOCALE;
+  if (typeof value !== 'string' || value.length > LIMITS.localeMax || !LOCALE_PATTERN.test(value.trim())) {
+    errors.push('locale must be a language code such as "en" or "es-MX"');
+    return DEFAULT_LOCALE;
+  }
+  const language = value.trim().split(/[-_]/)[0].toLowerCase();
+  return SUPPORTED_LOCALES.includes(language) ? language : DEFAULT_LOCALE;
+}
+
+/** Checks an inventory array (shared by /ai/chat, /recipes/recommend and /recipes/substitute). */
 function checkInventoryItems(items, errors) {
   const clean = [];
   if (items === undefined) return clean;
@@ -98,9 +148,13 @@ function checkInventoryItems(items, errors) {
   return clean;
 }
 
-/** Checks the preferences object of /recommend. Returns option names edamamService expects. */
+/**
+ * Checks the preferences object (shared by /ai/chat, /recipes/recommend and /recipes/substitute).
+ * Returns the option names edamamService expects (cuisineType, maxTimeMinutes)
+ * plus AI-only fields (allergies, fitnessGoal), which Edamam calls simply ignore.
+ */
 function checkPreferences(prefs, errors) {
-  const clean = { health: [] };
+  const clean = { health: [], allergies: [] };
   if (prefs === undefined) return clean;
   if (!isPlainObject(prefs)) {
     errors.push('preferences must be an object');
@@ -120,6 +174,12 @@ function checkPreferences(prefs, errors) {
       clean.maxTimeMinutes = prefs.maxTime;
     }
   }
+  if (prefs.allergies !== undefined) {
+    clean.allergies = checkAllergies('preferences.allergies', prefs.allergies, errors);
+  }
+  if (prefs.fitnessGoal !== undefined) {
+    clean.fitnessGoal = pickFrom('preferences.fitnessGoal', prefs.fitnessGoal, FITNESS_GOALS, errors);
+  }
   return clean;
 }
 
@@ -130,7 +190,13 @@ function checkPreferences(prefs, errors) {
 /** POST /api/v1/ai/chat */
 function checkChatRequest(body) {
   const errors = [];
-  const clean = { message: '', history: [], inventory: [] };
+  const clean = {
+    message: '',
+    history: [],
+    inventory: [],
+    preferences: { health: [], allergies: [] },
+    locale: DEFAULT_LOCALE,
+  };
 
   if (!isPlainObject(body)) {
     return { errors: ['Body must be a JSON object'], clean };
@@ -163,6 +229,8 @@ function checkChatRequest(body) {
   }
 
   clean.inventory = checkInventoryItems(body.inventory, errors);
+  clean.preferences = checkPreferences(body.preferences, errors);
+  clean.locale = checkLocale(body.locale, errors);
   return { errors, clean };
 }
 
@@ -218,7 +286,13 @@ function checkRecipeSearchQuery(query) {
 /** POST /api/v1/recipes/recommend */
 function checkRecommendRequest(body) {
   const errors = [];
-  const clean = { query: undefined, inventory: [], preferences: { health: [] }, limit: 5, mode: 'standard' };
+  const clean = {
+    query: undefined,
+    inventory: [],
+    preferences: { health: [], allergies: [] },
+    limit: 5,
+    mode: 'standard',
+  };
 
   if (!isPlainObject(body)) {
     return { errors: ['Body must be a JSON object'], clean };
@@ -243,13 +317,14 @@ function checkRecommendRequest(body) {
       clean.limit = body.limit;
     }
   }
-    if (body.mode !== undefined) {
-      if (!RECOMMEND_MODES.includes(body.mode)) {
-        errors.push(`mode must be one of: ${RECOMMEND_MODES.join(', ')}`);
-      } else {
-        clean.mode = body.mode;
-      }
+
+  if (body.mode !== undefined) {
+    if (!RECOMMEND_MODES.includes(body.mode)) {
+      errors.push(`mode must be one of: ${RECOMMEND_MODES.join(', ')}`);
+    } else {
+      clean.mode = body.mode;
     }
+  }
 
   // Needs something to search for: a query, or at least one item that isn't expired
   const hasUsableItem = clean.inventory.some((i) => i.daysUntilExpiry === null || i.daysUntilExpiry >= 0);
@@ -259,10 +334,18 @@ function checkRecommendRequest(body) {
 
   return { errors, clean };
 }
+
 /** POST /api/v1/recipes/substitute */
 function checkSubstituteRequest(body) {
   const errors = [];
-  const clean = { recipeTitle: '', ingredient: '', ingredientLines: [], inventory: [], preferences: { health: [] } };
+  const clean = {
+    recipeTitle: '',
+    ingredient: '',
+    ingredientLines: [],
+    inventory: [],
+    preferences: { health: [], allergies: [] },
+    locale: DEFAULT_LOCALE,
+  };
 
   if (!isPlainObject(body)) {
     return { errors: ['Body must be a JSON object'], clean };
@@ -291,11 +374,10 @@ function checkSubstituteRequest(body) {
   }
 
   clean.inventory = checkInventoryItems(body.inventory, errors);   // reused from chat/recommend
-  clean.preferences = checkPreferences(body.preferences, errors);  // reused from recommend
+  clean.preferences = checkPreferences(body.preferences, errors);  // reused from chat/recommend
+  clean.locale = checkLocale(body.locale, errors);                 // reused from chat
   return { errors, clean };
 }
-
-
 // =====================================================================
 // Middleware factories
 // =====================================================================
@@ -337,4 +419,6 @@ module.exports = {
   CUISINES,
   MEAL_TYPES,
   RECOMMEND_MODES,
+  FITNESS_GOALS,
+  SUPPORTED_LOCALES,
 };

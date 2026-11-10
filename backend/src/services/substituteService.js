@@ -44,6 +44,21 @@ function parseSubstitutes(text) {
   };
 }
 
+/**
+ * US-4 safety net: the prompt already forbids allergens, but if Claude still suggests one,
+ * it is dropped here. Uses the same name-matching rules as the pantry (e.g. "peanuts" ~ "peanut").
+ */
+function removeAllergens(substitutes, allergies = []) {
+  const blocked = allergies.map(normalizeName).filter(Boolean);
+  if (blocked.length === 0) return substitutes;
+  return substitutes.filter((s) => {
+    const key = normalizeName(s.name);
+    const hit = blocked.find((allergy) => namesMatch(key, allergy) || namesMatch(allergy, key));
+    if (hit) console.warn(`[substitute] dropped "${s.name}": matches an allergy`);
+    return !hit;
+  });
+}
+
 /** Our code decides inPantry, not Claude: reuses the 4.5 matching rules. */
 function markPantryItems(substitutes, inventory) {
   const pantry = preparePantry(inventory); // also drops expired items
@@ -54,7 +69,7 @@ function markPantryItems(substitutes, inventory) {
 }
 
 /**
- * @param {{recipeTitle, ingredient, ingredientLines, inventory, preferences}} input  validated
+ * @param {{recipeTitle, ingredient, ingredientLines, inventory, preferences, locale}} input  validated
  * @returns {Promise<{ingredient: string, substitutes: object[], tip: string}>}
  */
 async function suggestSubstitutes(input) {
@@ -66,10 +81,11 @@ async function suggestSubstitutes(input) {
   });
 
   const { substitutes, tip } = parseSubstitutes(text);
-  const marked = markPantryItems(substitutes, input.inventory);
+  const safe = removeAllergens(substitutes, input.preferences.allergies);
+  const marked = markPantryItems(safe, input.inventory);
   marked.sort((a, b) => Number(b.inPantry) - Number(a.inPantry)); // pantry items first; otherwise keeps Claude's order
 
   return { ingredient: input.ingredient, substitutes: marked, tip };
 }
 
-module.exports = { suggestSubstitutes, parseSubstitutes, extractJson };
+module.exports = { suggestSubstitutes, parseSubstitutes, extractJson, removeAllergens };
