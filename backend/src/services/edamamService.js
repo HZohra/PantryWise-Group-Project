@@ -9,6 +9,13 @@ const FIELDS = [
   'ingredientLines', 'ingredients', 'dietLabels', 'healthLabels', 'cuisineType',
 ];
 
+// Short-lived cache: the plan allows only 10 Edamam hits per minute, and the app repeats
+// the same searches often (Zero-Waste toggle, reopening the screen). Image URLs last ~1 hour.
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const CACHE_MAX_ENTRIES = 200;
+/** search key → { expiresAt, promise }. Stores the promise, so identical requests in flight share one call. */
+const cache = new Map();
+
 /** Builds the request URL. Contains the API key: NEVER log the result. */
 function buildUrl({ query, diet, health = [], cuisineType, mealType, maxTimeMinutes }) {
   const params = new URLSearchParams({
@@ -24,6 +31,21 @@ function buildUrl({ query, diet, health = [], cuisineType, mealType, maxTimeMinu
   if (maxTimeMinutes) params.append('time', `1-${maxTimeMinutes}`);
   FIELDS.forEach((f) => params.append('field', f));
   return `${BASE_URL}?${params.toString()}`;
+}
+
+/**
+ * Cache key: only what Edamam searches on (never the URL, which holds the API key).
+ * maxCalories and limit are left out because they are applied after the cache.
+ */
+function cacheKey({ query, diet, health = [], cuisineType, mealType, maxTimeMinutes }) {
+  return JSON.stringify([
+    String(query || '').trim().toLowerCase(),
+    diet || null,
+    [...health].sort(),
+    cuisineType || null,
+    mealType || null,
+    maxTimeMinutes || null,
+  ]);
 }
 
 /** Grams of one nutrient for the whole recipe (Edamam codes: PROCNT, CHOCDF, FAT), or null. */
@@ -99,14 +121,12 @@ function mapEdamamError(err, status) {
 }
 
 /**
- * Searches Edamam and returns recipes in our own format.
- * maxCalories is checked here on the per-serving value the app shows (unknown calories are left out).
- * @param {object} options  { query, diet, health[], cuisineType, mealType, maxTimeMinutes, maxCalories, limit }
- * @returns {Promise<object[]>}
+ * One real Edamam call (counts toward the per-minute limit).
+ * @returns {Promise<object[]>} every usable recipe from the page, in our format
  * @throws {AppError}
  */
-async function searchRecipes(options) {
-  const { limit = 10, maxCalories } = options;
+async function fetchFromEdamam(options) {
+  console.log('[edamam] request'); // no query or URL in logs
   let response;
   try {
     response = await fetch(buildUrl(options), {
@@ -123,9 +143,54 @@ async function searchRecipes(options) {
   const data = await response.json();
   return (data.hits || [])
     .map((hit) => normalizeRecipe(hit.recipe))
-    .filter((r) => r.recipeId !== 'edamam:') // drop recipes without a usable id
+    .filter((r) => r.recipeId !== 'edamam:'); // drop recipes without a usable id
+}
+
+/**
+ * Returns the cached result for this search, or starts one Edamam call and caches it.
+ * Failures are never cached, so a retry really asks Edamam again.
+ * Callers must not modify the returned recipes (they are shared between requests).
+ */
+function fetchCached(options) {
+  const key = cacheKey(options);
+  const now = Date.now();
+  const entry = cache.get(key);
+  if (entry && entry.expiresAt > now) {
+    console.log('[edamam] cache hit');
+    return entry.promise;
+  }
+  if (entry) cache.delete(key); // expired
+
+  const promise = fetchFromEdamam(options);
+  cache.set(key, { expiresAt: now + CACHE_TTL_MS, promise });
+  promise.catch(() => {
+    if (cache.get(key)?.promise === promise) cache.delete(key);
+  });
+
+  while (cache.size > CACHE_MAX_ENTRIES) {
+    cache.delete(cache.keys().next().value); // oldest first (a Map keeps insertion order)
+  }
+  return promise;
+}
+
+/** Empties the cache (for tests). */
+function clearCache() {
+  cache.clear();
+}
+
+/**
+ * Searches Edamam (through the cache) and returns recipes in our own format.
+ * maxCalories is checked here on the per-serving value the app shows (unknown calories are left out).
+ * @param {object} options  { query, diet, health[], cuisineType, mealType, maxTimeMinutes, maxCalories, limit }
+ * @returns {Promise<object[]>}
+ * @throws {AppError}
+ */
+async function searchRecipes(options) {
+  const { limit = 10, maxCalories } = options;
+  const recipes = await fetchCached(options);
+  return recipes
     .filter((r) => !maxCalories || (r.nutrition.calories !== null && r.nutrition.calories <= maxCalories))
     .slice(0, limit);
 }
 
-module.exports = { searchRecipes, normalizeRecipe, mapEdamamError, buildNutrition };
+module.exports = { searchRecipes, normalizeRecipe, mapEdamamError, buildNutrition, clearCache };
