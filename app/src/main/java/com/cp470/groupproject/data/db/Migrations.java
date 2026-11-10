@@ -133,6 +133,37 @@ public final class Migrations {
         }
     };
 
+    /**
+     * version 3 to 4: favorite recipes keep more details so they can be opened offline.
+     * favorite_recipes gets optional columns (image, source, servings, time, ai tip and
+     * nutrition per serving) and the new table favorite_recipe_steps holds the cooking steps.
+     * existing favorites keep all their data; the new columns start empty (null), so no table
+     * has to be rebuilt.
+     */
+    public static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            String[] newColumns = {
+                    "`imageUrl` TEXT", "`sourceName` TEXT", "`sourceUrl` TEXT",
+                    "`servings` INTEGER", "`totalTimeMinutes` INTEGER", "`tip` TEXT",
+                    "`calories` REAL", "`protein` REAL", "`carbs` REAL", "`fat` REAL"
+            };
+            for (String column : newColumns) {
+                db.execSQL("ALTER TABLE `favorite_recipes` ADD COLUMN " + column);
+            }
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS `favorite_recipe_steps` ("
+                    + "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                    + "`favoriteId` INTEGER NOT NULL, "
+                    + "`position` INTEGER NOT NULL, "
+                    + "`text` TEXT NOT NULL, "
+                    + "FOREIGN KEY(`favoriteId`) REFERENCES `favorite_recipes`(`id`) "
+                    + "ON UPDATE NO ACTION ON DELETE CASCADE )");
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_favorite_recipe_steps_favoriteId` "
+                    + "ON `favorite_recipe_steps` (`favoriteId`)");
+        }
+    };
+
     /** @return {id, old ingredients text} of every row of a table that still has the old column */
     private static List<Object[]> readOldIngredients(SupportSQLiteDatabase db, String table) {
         List<Object[]> rows = new ArrayList<>();
@@ -158,7 +189,7 @@ public final class Migrations {
             Object[] values = parsed == null
                     ? new Object[]{ownerId, position, text, "", 0.0, "", 0}
                     : new Object[]{ownerId, position, text, parsed.normalizedName,
-                            parsed.quantity, parsed.unit, parsed.explicitQuantity ? 1 : 0};
+                    parsed.quantity, parsed.unit, parsed.explicitQuantity ? 1 : 0};
             db.execSQL("INSERT INTO `" + table + "` (`" + ownerColumn + "`, `position`, `text`, "
                     + "`normalizedName`, `quantity`, `unit`, `explicitQuantity`) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?)", values);
@@ -166,6 +197,7 @@ public final class Migrations {
         }
     }
 
-    public static final Migration[] ALL = new Migration[] { MIGRATION_1_2, MIGRATION_2_3 };
+    public static final Migration[] ALL = new Migration[] {
+            MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4 };
     private Migrations() { }
 }
