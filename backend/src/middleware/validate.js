@@ -19,6 +19,7 @@ const LIMITS = Object.freeze({
   localeMax: 20,
   caloriesMin: 50,    // per serving
   caloriesMax: 3000,  // per serving
+  servingsMax: 12,    // AI recipe
 });
 
 // Values Edamam accepts. Checking them here gives a clear 400 instead of a confusing 502.
@@ -110,7 +111,7 @@ function checkLocale(value, errors) {
   return SUPPORTED_LOCALES.includes(language) ? language : DEFAULT_LOCALE;
 }
 
-/** Checks an inventory array (shared by /ai/chat, /recipes/recommend and /recipes/substitute). */
+/** Checks an inventory array (shared by /ai/chat, /ai/recipe, /recipes/recommend and /recipes/substitute). */
 function checkInventoryItems(items, errors) {
   const clean = [];
   if (items === undefined) return clean;
@@ -151,7 +152,7 @@ function checkInventoryItems(items, errors) {
 }
 
 /**
- * Checks the preferences object (shared by /ai/chat, /recipes/recommend and /recipes/substitute).
+ * Checks the preferences object (shared by every endpoint that takes one).
  * Returns the option names edamamService expects (cuisineType, maxTimeMinutes, maxCalories)
  * plus AI-only fields (allergies, fitnessGoal), which Edamam calls simply ignore.
  */
@@ -241,6 +242,39 @@ function checkChatRequest(body) {
   clean.inventory = checkInventoryItems(body.inventory, errors);
   clean.preferences = checkPreferences(body.preferences, errors);
   clean.locale = checkLocale(body.locale, errors);
+  return { errors, clean };
+}
+
+/** POST /api/v1/ai/recipe (needs at least one item that isn't expired) */
+function checkAiRecipeRequest(body) {
+  const errors = [];
+  const clean = {
+    inventory: [],
+    preferences: { health: [], allergies: [] },
+    locale: DEFAULT_LOCALE,
+    servings: 2,
+  };
+
+  if (!isPlainObject(body)) {
+    return { errors: ['Body must be a JSON object'], clean };
+  }
+
+  clean.inventory = checkInventoryItems(body.inventory, errors);
+  clean.preferences = checkPreferences(body.preferences, errors);
+  clean.locale = checkLocale(body.locale, errors);
+
+  if (body.servings !== undefined) {
+    if (!Number.isInteger(body.servings) || body.servings < 1 || body.servings > LIMITS.servingsMax) {
+      errors.push(`servings must be a whole number from 1 to ${LIMITS.servingsMax}`);
+    } else {
+      clean.servings = body.servings;
+    }
+  }
+
+  const hasUsableItem = clean.inventory.some((i) => i.daysUntilExpiry === null || i.daysUntilExpiry >= 0);
+  if (errors.length === 0 && !hasUsableItem) {
+    errors.push('inventory needs at least one item that is not expired');
+  }
   return { errors, clean };
 }
 
@@ -418,6 +452,7 @@ module.exports = {
   validateBody,
   validateQuery,
   checkChatRequest,
+  checkAiRecipeRequest,
   checkRecipeSearchQuery,
   checkRecommendRequest,
   checkSubstituteRequest,

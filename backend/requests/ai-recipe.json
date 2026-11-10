@@ -1,0 +1,11 @@
+{
+  "locale": "en",
+  "servings": 2,
+  "inventory": [
+    { "name": "spinach", "quantity": 1, "unit": "bag", "daysUntilExpiry": 1 },
+    { "name": "feta", "quantity": 200, "unit": "g", "daysUntilExpiry": 2 },
+    { "name": "eggs", "quantity": 6, "unit": "pcs", "daysUntilExpiry": 10 },
+    { "name": "milk", "quantity": 1, "unit": "L", "daysUntilExpiry": -1 },
+    { "name": "rice", "quantity": 1, "unit": "kg" }
+  ]
+}
