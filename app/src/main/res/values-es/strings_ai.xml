@@ -88,4 +88,21 @@
     <string name="ai_sub_in_pantry">Lo tienes</string>
     <string name="ai_sub_none">No se encontró un sustituto seguro.</string>
 
+    <!-- Receta con IA a partir de lo que caduca (5.8) -->
+    <string name="ai_gen_button">Crear una receta con lo que caduca</string>
+    <string name="ai_gen_title">Receta con IA</string>
+    <string name="ai_gen_loading">Creando una receta con tus alimentos…</string>
+    <string name="ai_gen_made_for">Pensada para aprovechar: %1$s</string>
+    <string name="ai_gen_nothing_expiring">No hay nada por caducar; esta idea usa lo que tienes.</string>
+    <string name="ai_gen_note">Creada por IA. Revisa las etiquetas por si hay alérgenos.</string>
+    <string name="ai_gen_expiring">Caduca pronto</string>
+    <string name="ai_gen_steps">Pasos</string>
+    <string name="ai_gen_tip">Consejo: %1$s</string>
+    <string name="ai_gen_try_another">Probar otra</string>
+    <string name="ai_gen_try_again">Intentar de nuevo</string>
+    <string name="ai_gen_error_failed">No se pudo crear una receta. Inténtalo de nuevo.</string>
+    <string name="ai_gen_error_unsafe">No se pudo crear una receta sin tus alérgenos. Inténtalo de nuevo.</string>
+    <string name="ai_gen_error_empty_pantry">Primero añade a tu despensa algún alimento que no esté caducado.</string>
+    <string name="ai_consent_recipe_message">Para crear una receta, se enviará a un servicio de IA una lista de los productos de tu despensa (nombres, cantidades y fechas de caducidad). Si cancelas, no se envía nada.</string>
+
 </resources>

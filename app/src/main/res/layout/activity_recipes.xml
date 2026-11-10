@@ -64,6 +64,16 @@
             android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
+        <!-- UC-2 / Zero-Waste "Ask AI": an AI recipe built from expiring food -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/ai_recipes_generate"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/ai_screen_padding"
+            android:layout_marginTop="@dimen/ai_item_gap"
+            android:text="@string/ai_gen_button" />
+
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/ai_recipes_progress"
             android:layout_width="match_parent"

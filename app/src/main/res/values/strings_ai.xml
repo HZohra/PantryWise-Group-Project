@@ -89,4 +89,22 @@
     <string name="ai_sub_in_pantry">You have this</string>
     <string name="ai_sub_none">No safe substitute found.</string>
 
+    <!-- AI recipe from expiring food (5.8) -->
+    <string name="ai_gen_button">Generate a recipe from expiring food</string>
+    <string name="ai_gen_title">AI recipe</string>
+    <string name="ai_gen_loading">Creating a recipe from your food…</string>
+    <string name="ai_gen_made_for">Made to use up: %1$s</string>
+    <string name="ai_gen_nothing_expiring">Nothing is expiring soon, so this idea uses what you have.</string>
+    <string name="ai_gen_note">Created by AI. Check ingredient labels for allergens.</string>
+    <string name="ai_gen_expiring">Expiring soon</string>
+    <string name="ai_gen_steps">Steps</string>
+    <string name="ai_gen_step_number" translatable="false">%1$d.</string>
+    <string name="ai_gen_tip">Tip: %1$s</string>
+    <string name="ai_gen_try_another">Try another</string>
+    <string name="ai_gen_try_again">Try again</string>
+    <string name="ai_gen_error_failed">Couldn\'t create a recipe. Please try again.</string>
+    <string name="ai_gen_error_unsafe">Couldn\'t create a recipe without your allergens. Please try again.</string>
+    <string name="ai_gen_error_empty_pantry">Add some food that isn\'t expired to your pantry first.</string>
+    <string name="ai_consent_recipe_message">To create a recipe, a list of your pantry items (names, amounts and expiry dates) will be sent to an AI service. Nothing is sent if you cancel.</string>
+
 </resources>
