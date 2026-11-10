@@ -72,7 +72,8 @@ public class RecipesActivity extends AppCompatActivity {
 
         applyWindowInsets();
 
-        adapter = new RecipeAdapter(null); // card taps open Recipe details in 5.7
+        // Tapping a card opens Recipe details (the recipe is passed along, no new backend call)
+        adapter = new RecipeAdapter(recipe -> startActivity(RecipeDetailActivity.newIntent(this, recipe)));
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
 

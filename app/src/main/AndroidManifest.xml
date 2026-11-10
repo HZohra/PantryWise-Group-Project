@@ -78,6 +78,12 @@
             android:label="@string/ai_recipes_title"
             android:parentActivityName=".ui.inventory.InventoryActivity"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.ai.RecipeDetailActivity"
+            android:exported="false"
+            android:label="@string/ai_detail_title"
+            android:parentActivityName=".ui.ai.RecipesActivity" />
     </application>
 
 </manifest>

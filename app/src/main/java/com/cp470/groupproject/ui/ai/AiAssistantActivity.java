@@ -32,6 +32,7 @@ import java.util.List;
 /**
  * AI kitchen assistant chat screen (View in MVVM).
  * Only draws state from {@link AiChatViewModel} and forwards user actions to it.
+ * Can be opened with a ready-made question (see {@link ChatLauncher}).
  */
 public class AiAssistantActivity extends AppCompatActivity {
 
@@ -87,6 +88,27 @@ public class AiAssistantActivity extends AppCompatActivity {
         viewModel.getError().observe(this, this::showError);
 
         sendButton.setOnClickListener(v -> onSendClicked());
+
+        if (savedInstanceState == null) {
+            applyDraft(); // only on first open: after rotation Android restores the box itself
+        }
+    }
+
+    /**
+     * Puts a question from another screen (e.g. "Ask assistant how to make this") in the input box.
+     * It is NOT sent: the user reviews it, and the consent dialog still applies (US-6).
+     */
+    private void applyDraft() {
+        String draft = getIntent().getStringExtra(ChatLauncher.EXTRA_DRAFT);
+        if (draft == null || draft.trim().isEmpty()) {
+            return;
+        }
+        input.setText(draft);
+        Editable text = input.getText();
+        if (text != null) {
+            input.setSelection(text.length()); // cursor at the end, ready to add to it
+        }
+        input.requestFocus();
     }
 
     /** Keeps the toolbar below the status bar and the input bar above the navigation bar and keyboard. */
