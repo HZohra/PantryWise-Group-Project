@@ -5,6 +5,17 @@
     <!-- required from android 13 to show notifications (expiration alerts) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Required for barcode scanning -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Camera is optional because users can enter barcodes manually -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <!-- Required for USDA FoodData Central API requests -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- android 11+ hides other apps unless declared: needed so resolveActivity() sees apps that
          can receive the shared shopping list -->
     <queries>
@@ -61,6 +72,12 @@
             android:exported="false"
             android:parentActivityName=".ui.inventory.InventoryActivity"
             android:theme="@style/Theme.CP470GroupProject.Shopping" />
+
+        <!-- Barcode scanning screen -->
+        <activity
+            android:name=".scanner.ScannerActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
 
     </application>
 
