@@ -18,6 +18,12 @@
             android:name=".ui.ai.AiAssistantActivity"
             android:exported="true"
             tools:replace="android:exported" />
+
+        <!-- Member 5, debug only: same for the Recipes screen. -->
+        <activity
+            android:name=".ui.ai.RecipesActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
     </application>
 
 </manifest>

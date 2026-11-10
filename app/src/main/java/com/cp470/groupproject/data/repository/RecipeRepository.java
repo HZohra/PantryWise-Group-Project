@@ -85,7 +85,7 @@ public class RecipeRepository {
 
     /** Trimmed and capped at the backend limit; null when there is nothing to search for. */
     @Nullable
-    static String cleanQuery(@Nullable String query) {
+    public static String cleanQuery(@Nullable String query) {
         if (query == null) return null;
         String trimmed = query.trim();
         if (trimmed.isEmpty()) return null;
