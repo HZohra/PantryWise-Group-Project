@@ -30,4 +30,29 @@
     <string name="ai_error_generic">Something went wrong. Please try again.</string>
     <string name="ai_retry">Retry</string>
 
+    <!-- Recipes screen (5.6) -->
+    <string name="ai_recipes_title">Recipes</string>
+    <string name="ai_recipes_search_hint">Search recipes or ingredients</string>
+    <string name="ai_recipes_zero_waste">Zero-Waste Mode</string>
+    <string name="ai_recipes_zero_waste_hint">Only recipes that use food expiring soon</string>
+    <plurals name="ai_recipes_have_count">
+        <item quantity="one">You have %1$d of %2$d ingredient</item>
+        <item quantity="other">You have %1$d of %2$d ingredients</item>
+    </plurals>
+    <string name="ai_recipes_uses_expiring">Uses expiring: %1$s</string>
+    <string name="ai_recipes_minutes">%1$d min</string>
+    <string name="ai_recipes_image_description">Photo of %1$s</string>
+
+    <!-- Recipes screen notices and empty states -->
+    <string name="ai_recipes_empty_pantry">Add food to your pantry to get personalized suggestions.</string>
+    <string name="ai_recipes_broadened">No exact matches, so here are similar recipes.</string>
+    <string name="ai_recipes_nothing_expiring">Nothing is expiring soon, so here are your usual suggestions.</string>
+    <string name="ai_recipes_no_results">No recipes found. Try a different word or fewer filters.</string>
+    <string name="ai_recipes_search_empty">Type something to search.</string>
+
+    <!-- Recipes screen errors -->
+    <string name="ai_recipes_error_network">Can\'t load recipes. Check your connection.</string>
+    <string name="ai_recipes_error_busy">Too many searches. Try again shortly.</string>
+    <string name="ai_recipes_error_generic">Couldn\'t load recipes. Please try again.</string>
+
 </resources>

@@ -30,4 +30,29 @@
     <string name="ai_error_generic">Algo salió mal. Inténtalo de nuevo.</string>
     <string name="ai_retry">Reintentar</string>
 
+    <!-- Pantalla de recetas (5.6) -->
+    <string name="ai_recipes_title">Recetas</string>
+    <string name="ai_recipes_search_hint">Busca recetas o ingredientes</string>
+    <string name="ai_recipes_zero_waste">Modo Cero Desperdicio</string>
+    <string name="ai_recipes_zero_waste_hint">Solo recetas que usan alimentos que caducan pronto</string>
+    <plurals name="ai_recipes_have_count">
+        <item quantity="one">Tienes %1$d de %2$d ingrediente</item>
+        <item quantity="other">Tienes %1$d de %2$d ingredientes</item>
+    </plurals>
+    <string name="ai_recipes_uses_expiring">Usa lo que caduca: %1$s</string>
+    <string name="ai_recipes_minutes">%1$d min</string>
+    <string name="ai_recipes_image_description">Foto de %1$s</string>
+
+    <!-- Avisos y estados vacíos -->
+    <string name="ai_recipes_empty_pantry">Añade alimentos a tu despensa para recibir sugerencias personalizadas.</string>
+    <string name="ai_recipes_broadened">No hubo coincidencias exactas; aquí tienes recetas parecidas.</string>
+    <string name="ai_recipes_nothing_expiring">No hay nada por caducar; aquí tienes tus sugerencias habituales.</string>
+    <string name="ai_recipes_no_results">No se encontraron recetas. Prueba otra palabra o menos filtros.</string>
+    <string name="ai_recipes_search_empty">Escribe algo para buscar.</string>
+
+    <!-- Errores de recetas -->
+    <string name="ai_recipes_error_network">No se pueden cargar las recetas. Revisa tu conexión.</string>
+    <string name="ai_recipes_error_busy">Demasiadas búsquedas. Inténtalo de nuevo en un momento.</string>
+    <string name="ai_recipes_error_generic">No se pudieron cargar las recetas. Inténtalo de nuevo.</string>
+
 </resources>
