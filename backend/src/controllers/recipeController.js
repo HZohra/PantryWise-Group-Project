@@ -8,10 +8,10 @@ async function search(req, res) {
   res.status(200).json({ count: recipes.length, recipes });
 }
 
-/** POST /api/v1/recipes/recommend → 200 { mode, searchedFor, count, recipes } */
+/** POST /api/v1/recipes/recommend → 200 { mode, personalized, broadened, searchedFor, count, recipes } */
 async function recommend(req, res) {
-  const { mode, searchedFor, recipes } = await recommendRecipes(req.body);
-  res.status(200).json({ mode, searchedFor, count: recipes.length, recipes });
+  const { mode, personalized, broadened, searchedFor, recipes } = await recommendRecipes(req.body);
+  res.status(200).json({ mode, personalized, broadened, searchedFor, count: recipes.length, recipes });
 }
 
 /** POST /api/v1/recipes/substitute → 200 { ingredient, substitutes, tip } */

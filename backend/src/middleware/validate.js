@@ -326,11 +326,11 @@ function checkRecommendRequest(body) {
     }
   }
 
-  // Needs something to search for: a query, or at least one item that isn't expired
-  const hasUsableItem = clean.inventory.some((i) => i.daysUntilExpiry === null || i.daysUntilExpiry >= 0);
-  if (!clean.query && !hasUsableItem) {
-    errors.push('Provide a query or at least one inventory item that is not expired');
-  }
+//  // Needs something to search for: a query, or at least one item that isn't expired
+//  const hasUsableItem = clean.inventory.some((i) => i.daysUntilExpiry === null || i.daysUntilExpiry >= 0);
+//  if (!clean.query && !hasUsableItem) {
+//    errors.push('Provide a query or at least one inventory item that is not expired');
+//  }
 
   return { errors, clean };
 }
