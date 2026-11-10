@@ -28,7 +28,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 /**
- * Recipes screen (View in MVVM): pantry recommendations, keyword search and Zero-Waste Mode.
+ * Recipes screen (View in MVVM): pantry recommendations, keyword search, Zero-Waste Mode,
+ * and the entry point to the AI recipe built from expiring food.
  * Only draws state from {@link RecipeViewModel} and forwards user actions to it.
  */
 public class RecipesActivity extends AppCompatActivity {
@@ -76,6 +77,10 @@ public class RecipesActivity extends AppCompatActivity {
         adapter = new RecipeAdapter(recipe -> startActivity(RecipeDetailActivity.newIntent(this, recipe)));
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
+
+        // UC-2 / Zero-Waste "Ask AI": the AI recipe screen asks for consent itself
+        findViewById(R.id.ai_recipes_generate).setOnClickListener(
+                v -> startActivity(AiRecipeActivity.newIntent(this)));
 
         viewModel = new ViewModelProvider(this).get(RecipeViewModel.class);
 

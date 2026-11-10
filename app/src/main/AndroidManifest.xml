@@ -84,6 +84,12 @@
             android:exported="false"
             android:label="@string/ai_detail_title"
             android:parentActivityName=".ui.ai.RecipesActivity" />
+
+        <activity
+            android:name=".ui.ai.AiRecipeActivity"
+            android:exported="false"
+            android:label="@string/ai_gen_title"
+            android:parentActivityName=".ui.ai.RecipesActivity" />
     </application>
 
 </manifest>
