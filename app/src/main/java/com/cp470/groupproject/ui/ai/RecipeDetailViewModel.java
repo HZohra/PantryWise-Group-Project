@@ -7,11 +7,14 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
+import com.cp470.groupproject.data.entity.FavoriteRecipe;
 import com.cp470.groupproject.data.remote.AiError;
 import com.cp470.groupproject.data.remote.dto.MatchDto;
 import com.cp470.groupproject.data.remote.dto.RecipeDto;
 import com.cp470.groupproject.data.remote.dto.SubstituteResponse;
+import com.cp470.groupproject.data.repository.PantryRepository;
 import com.cp470.groupproject.data.repository.RecipeRepository;
 
 import java.util.ArrayList;
@@ -21,7 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * State and logic for Recipe details (MVVM: no Views here).
- * Holds the recipe across rotation, marks each ingredient line, and runs substitute requests.
+ * Holds the recipe across rotation, marks each ingredient line, runs substitute requests and
+ * saves or removes the recipe from the favourites.
  * RecipeRepository calls back on a background thread, so those updates use postValue().
  */
 public class RecipeDetailViewModel extends AndroidViewModel {
@@ -73,16 +77,28 @@ public class RecipeDetailViewModel extends AndroidViewModel {
     /** Only the newest substitute request may update the sheet. */
     private final AtomicInteger latestRequest = new AtomicInteger();
 
+    /** Local database for the favourites; created on first use so tests without a database still work. */
+    @Nullable private PantryRepository pantryRepository;
+    /** True while the recipe is saved; created on first use. */
+    @Nullable private LiveData<Boolean> favorite;
+
     @Nullable private RecipeDto recipe;
     @NonNull private List<IngredientRow> rows = Collections.emptyList();
 
     public RecipeDetailViewModel(@NonNull Application application) {
-        this(application, new RecipeRepository(application));
+        this(application, new RecipeRepository(application), null);
     }
 
     RecipeDetailViewModel(@NonNull Application application, @NonNull RecipeRepository repository) {
+        this(application, repository, null);
+    }
+
+    /** @param pantryRepository the favourites storage, or null to create the real one when needed */
+    RecipeDetailViewModel(@NonNull Application application, @NonNull RecipeRepository repository,
+                          @Nullable PantryRepository pantryRepository) {
         super(application);
         this.repository = repository;
+        this.pantryRepository = pantryRepository;
     }
 
     /**
@@ -100,6 +116,55 @@ public class RecipeDetailViewModel extends AndroidViewModel {
     @Nullable public RecipeDto getRecipe() { return recipe; }
     @NonNull public List<IngredientRow> getRows() { return rows; }
     public LiveData<SubstituteState> getSubstitute() { return substitute; }
+
+    // ---------------------------------------------------------------- favourites
+
+    /** True when the recipe has an id, so it can be saved and found again. */
+    public boolean canFavorite() {
+        RecipeDto current = recipe;
+        return current != null && current.recipeId != null && !current.recipeId.trim().isEmpty();
+    }
+
+    /** Main thread. Emits true while the recipe is in the favourites (follows the database). */
+    @NonNull
+    public LiveData<Boolean> getIsFavorite() {
+        if (favorite == null) {
+            RecipeDto current = recipe;
+            if (current == null || !canFavorite()) {
+                favorite = new MutableLiveData<>(false);
+            } else {
+                favorite = Transformations.map(pantry().isFavorite(current.recipeId.trim()),
+                        count -> count != null && count > 0);
+            }
+        }
+        return favorite;
+    }
+
+    /**
+     * Main thread. Saves the recipe, or removes it when it is already saved.
+     * @return TRUE when it was saved, FALSE when it was removed, null when it can't be saved
+     */
+    @Nullable
+    public Boolean toggleFavorite() {
+        FavoriteRecipe toSave = FavoriteRecipeMapper.fromEdamam(recipe);
+        if (toSave == null) return null;
+        if (Boolean.TRUE.equals(getIsFavorite().getValue())) {
+            pantry().removeFavoriteRecipe(toSave.recipeId);
+            return false;
+        }
+        pantry().saveFavoriteRecipe(toSave);
+        return true;
+    }
+
+    @NonNull
+    private PantryRepository pantry() {
+        if (pantryRepository == null) {
+            pantryRepository = new PantryRepository(getApplication());
+        }
+        return pantryRepository;
+    }
+
+    // ---------------------------------------------------------------- substitutes
 
     /** Main thread. Opens the sheet in "loading" state and asks the backend. */
     public void findSubstitute(@NonNull String ingredient) {

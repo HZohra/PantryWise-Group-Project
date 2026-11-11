@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,8 +38,8 @@ import com.google.gson.JsonParseException;
 
 /**
  * Recipe details (View in MVVM): photo, ingredients marked In pantry / Missing, nutrition,
- * "View original recipe" (implicit Intent), "Find substitute" (bottom sheet) and
- * "Ask assistant how to make this" (opens the chat with a draft).
+ * "View original recipe" (implicit Intent), "Find substitute" (bottom sheet),
+ * "Ask assistant how to make this" (opens the chat with a draft) and the favourites heart.
  */
 public class RecipeDetailActivity extends AppCompatActivity {
 
@@ -54,6 +56,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
     private View root;
     @Nullable private BottomSheetDialog sheet;
     @Nullable private View sheetView;
+    /** Last known favourite state; null until the database answers (the heart stays hidden). */
+    @Nullable private Boolean favorite;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,6 +85,12 @@ public class RecipeDetailActivity extends AppCompatActivity {
         bindNutrition(recipe.nutrition);
 
         viewModel.getSubstitute().observe(this, this::renderSubstitutes);
+        if (viewModel.canFavorite()) {
+            viewModel.getIsFavorite().observe(this, saved -> {
+                favorite = saved;
+                invalidateOptionsMenu(); // redraws the heart
+            });
+        }
     }
 
     @Nullable
@@ -320,6 +330,41 @@ public class RecipeDetailActivity extends AppCompatActivity {
     protected void onDestroy() {
         closeSheetQuietly(); // on rotation the ViewModel keeps the state and the new screen re-opens it
         super.onDestroy();
+    }
+
+    // ---------------------------------------------------------------- favourites heart
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_ai_favorite, menu);
+        return true;
+    }
+
+    /** Shows the filled or outline heart; hidden until the saved state is known. */
+    @Override
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
+        MenuItem item = menu.findItem(R.id.ai_action_favorite);
+        boolean known = viewModel != null && viewModel.canFavorite() && favorite != null;
+        item.setVisible(known);
+        if (known) {
+            boolean saved = favorite;
+            item.setIcon(saved ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);
+            item.setTitle(saved ? R.string.ai_fav_remove : R.string.ai_fav_add);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.ai_action_favorite) {
+            Boolean saved = viewModel.toggleFavorite();
+            if (saved != null) {
+                Snackbar.make(root, saved ? R.string.ai_fav_saved : R.string.ai_fav_removed,
+                        Snackbar.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /** Back to the Recipes list. */

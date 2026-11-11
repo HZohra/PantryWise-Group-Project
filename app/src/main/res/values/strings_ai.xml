@@ -107,4 +107,10 @@
     <string name="ai_gen_error_empty_pantry">Add some food that isn\'t expired to your pantry first.</string>
     <string name="ai_consent_recipe_message">To create a recipe, a list of your pantry items (names, amounts and expiry dates) will be sent to an AI service. Nothing is sent if you cancel.</string>
 
+    <!-- Favourites heart (6.1) -->
+    <string name="ai_fav_add">Save to favourites</string>
+    <string name="ai_fav_remove">Remove from favourites</string>
+    <string name="ai_fav_saved">Saved to favourites</string>
+    <string name="ai_fav_removed">Removed from favourites</string>
+
 </resources>
