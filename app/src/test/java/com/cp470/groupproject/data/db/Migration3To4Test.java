@@ -139,4 +139,20 @@ public class Migration3To4Test {
                 "SELECT COUNT(*) FROM favorite_recipe_ingredients WHERE favoriteId = 5"));
         assertEquals(1, count(db, "SELECT tip IS NULL FROM favorite_recipes WHERE id = 5"));
     }
+
+
+    /**
+     * Review follow-up (Nora): the full path from the very first version. The helper builds a real
+     * version 1 database from {@code 1.json}, runs every migration in ALL, and checks every table,
+     * column and index against {@code 4.json}.
+     */
+    @Test
+    public void migrate1To4_fromTheFirstVersion_reachesTheVersion4Schema() throws IOException {
+        helper.createDatabase(DB_NAME, 1).close();
+
+        SupportSQLiteDatabase db = helper.runMigrationsAndValidate(DB_NAME, 4, true, Migrations.ALL);
+
+        assertEquals(0, count(db, "SELECT COUNT(*) FROM favorite_recipes"));
+        assertEquals(0, count(db, "SELECT COUNT(*) FROM favorite_recipe_steps"));
+    }
 }
