@@ -3,35 +3,55 @@ package com.cp470.groupproject.scanner;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.cp470.groupproject.BuildConfig;
-import com.cp470.groupproject.scanner.api.RetrofitClient;
-import com.cp470.groupproject.scanner.api.UsdaApiService;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
+import com.cp470.groupproject.R;
+import com.cp470.groupproject.data.remote.AiApiService;
+import com.cp470.groupproject.data.remote.ApiClient;
+import com.cp470.groupproject.data.remote.dto.ProductResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * State and logic of the barcode scanner: validates a barcode and asks the PantryWise backend for
+ * the product name. The backend holds the USDA key, so the app never contains it.
+ */
 public class BarcodeViewModel extends ViewModel {
 
+    private static final String TAG = "BarcodeViewModel";
+
+    /** HTTP status the backend uses when the barcode is not in the USDA database. */
+    private static final int HTTP_NOT_FOUND = 404;
+
     private final MutableLiveData<String> productName = new MutableLiveData<>();
-    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Integer> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
-    private final UsdaApiService usdaApiService =
-            RetrofitClient.getUsdaApiService();
+    private final AiApiService apiService;
+
+    /** Creates the view model with the shared backend client. */
+    public BarcodeViewModel() {
+        this(ApiClient.getService());
+    }
+
+    /** Lets tests pass a fake backend. */
+    public BarcodeViewModel(@NonNull AiApiService apiService) {
+        this.apiService = apiService;
+    }
 
     public LiveData<String> getProductName() {
         return productName;
     }
 
-    public LiveData<String> getErrorMessage() {
+    /** string resource id of the last lookup error, so this class needs no context */
+    @StringRes
+    public LiveData<Integer> getErrorMessage() {
         return errorMessage;
     }
 
@@ -39,124 +59,49 @@ public class BarcodeViewModel extends ViewModel {
         return isLoading;
     }
 
+    /**
+     * Checks the barcode and looks up the product name. The result arrives in {@link #getProductName()}
+     * or, when something goes wrong, as a string resource id in {@link #getErrorMessage()}.
+     *
+     * @param barcode digits of a UPC or EAN code (8, 12, 13 or 14 digits)
+     */
     public void lookupProduct(String barcode) {
         isLoading.setValue(true);
         errorMessage.setValue(null);
         productName.setValue(null);
 
-        // Validate the barcode
         if (barcode == null || !barcode.matches("\\d{8}|\\d{12}|\\d{13}|\\d{14}")) {
-            errorMessage.setValue(
-                    "Invalid barcode. Please scan a valid UPC or EAN barcode."
-            );
+            errorMessage.setValue(R.string.scanner_error_invalid_barcode_scan);
             isLoading.setValue(false);
             return;
         }
 
-        // Convert 12-digit UPC-A to 14-digit GTIN for USDA lookup
-        String searchBarcode = barcode;
-
-        if (barcode.length() == 12) {
-            searchBarcode = "00" + barcode;
-        }
-
-        // Request product information from USDA
-        Call<JsonObject> call = usdaApiService.searchFood(
-                searchBarcode,
-                "Branded",
-                BuildConfig.USDA_API_KEY
-        );
-
-        call.enqueue(new Callback<JsonObject>() {
+        apiService.lookupProduct(barcode).enqueue(new Callback<ProductResponse>() {
 
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(@NonNull Call<ProductResponse> call,
+                                   @NonNull Response<ProductResponse> response) {
                 isLoading.setValue(false);
+                Log.d(TAG, "lookup response code: " + response.code());
 
-                // Log the HTTP response code to help identify API errors
-                Log.d("BarcodeViewModel",
-                        "USDA response code: " + response.code());
-
-                // Check whether the API request was successful
-                if (!response.isSuccessful() || response.body() == null) {
-                    Log.e("BarcodeViewModel",
-                            "USDA request unsuccessful. HTTP code: " + response.code());
-
-                    errorMessage.setValue(
-                            "Unable to retrieve product information. Please try again."
-                    );
+                if (response.code() == HTTP_NOT_FOUND) {
+                    errorMessage.setValue(R.string.scanner_error_not_in_database);
                     return;
                 }
-
-                // Get the list of products returned by USDA
-                JsonObject jsonResponse = response.body();
-                JsonArray foods = jsonResponse.getAsJsonArray("foods");
-
-                Log.d("BarcodeViewModel",
-                        "USDA returned " + (foods == null ? 0 : foods.size()) + " products");
-
-                // Check if any products were found
-                if (foods == null || foods.size() == 0) {
-                    errorMessage.setValue(
-                            "Product not found. Please enter the food manually."
-                    );
+                ProductResponse body = response.body();
+                if (!response.isSuccessful() || body == null
+                        || body.name == null || body.name.trim().isEmpty()) {
+                    errorMessage.setValue(R.string.scanner_error_lookup_failed);
                     return;
                 }
-
-                // Find a product with the same barcode
-                JsonObject matchedProduct = null;
-
-                for (int i = 0; i < foods.size(); i++) {
-                    JsonObject food = foods.get(i).getAsJsonObject();
-
-                    if (food.has("gtinUpc") && !food.get("gtinUpc").isJsonNull()) {
-                        String productBarcode = food.get("gtinUpc").getAsString();
-
-                        // Compare barcodes in their 14-digit GTIN format
-                        String normalizedScannedBarcode =
-                                String.format("%014d", Long.parseLong(barcode));
-
-                        String normalizedProductBarcode =
-                                String.format("%014d", Long.parseLong(productBarcode));
-
-                        if (normalizedProductBarcode.equals(normalizedScannedBarcode)) {
-                            matchedProduct = food;
-                            break;
-                        }
-                    }
-                }
-
-                // No product matched the scanned barcode
-                if (matchedProduct == null) {
-                    errorMessage.setValue(
-                            "Product not found in USDA database. Please enter it manually."
-                    );
-                    return;
-                }
-
-                // Get the product name from the matching result
-                if (matchedProduct.has("description")
-                        && !matchedProduct.get("description").isJsonNull()) {
-
-                    String name = matchedProduct.get("description").getAsString();
-
-                    productName.setValue(name);
-
-                } else {
-                    errorMessage.setValue(
-                            "Product information is incomplete. Please enter it manually."
-                    );
-                }
+                productName.setValue(body.name.trim());
             }
 
             @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
+            public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
                 isLoading.setValue(false);
-
-                Log.e("BarcodeViewModel",
-                        "USDA API request failed", t);
-
-                errorMessage.setValue("Network error. Please try again.");
+                Log.e(TAG, "barcode lookup failed", t);
+                errorMessage.setValue(R.string.scanner_error_network);
             }
         });
     }

@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant OS as Android system
+    participant App as PantryWiseApp
+    participant WM as WorkManager
+    participant W as ExpirationWorker
+    participant C as ExpirationChecker
+    participant R as PantryRepository
+    participant N as NotificationHelper
+    participant U as User
+
+    OS->>App: process starts (onCreate)
+    App->>N: createChannel()
+    App->>WM: enqueue unique periodic work, 1 day,<br/>first run at the next 09:00, policy KEEP
+    Note over WM: repeats every day, only if the battery is not low
+    WM->>W: doWork()
+    W->>C: run(now)
+    C->>R: active items that expired or expire within 3 days
+    R-->>C: list
+    alt the list is not empty
+        C->>N: showExpirationNotification(list)
+        N-->>U: notification (needs POST_NOTIFICATIONS)
+        U->>N: taps it
+        N->>OS: TaskStackBuilder: MainActivity then ShoppingListActivity
+    else nothing to report
+        C-->>W: 0 items, no notification
+    end
+    W-->>WM: success (retry up to 3 times if an exception occurs)

@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.cp470.groupproject.R;
+import com.cp470.groupproject.util.WindowInsetsHelper;
 import com.cp470.groupproject.ui.settings.DisplayPreferences;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -26,6 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        WindowInsetsHelper.applySystemBarPadding(findViewById(R.id.root));
         DisplayPreferences.applyTextSize(this);
 
         preferences = getSharedPreferences("PantryPreferences", MODE_PRIVATE);
@@ -39,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress,
                                                   boolean fromUser) {
-                        textSizeValue.setText(progress + "sp");
+                        textSizeValue.setText(getString(R.string.settings_text_size_value, progress));
                     }
 
                     @Override
@@ -76,7 +78,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         textSizeSlider.setProgress(textSize);
-        textSizeValue.setText(textSize + "sp");
+        textSizeValue.setText(getString(R.string.settings_text_size_value, textSize));
     }
 
     private void savePreferences() {
@@ -99,7 +101,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         applyTheme(theme);
 
-        Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show();
         finish();
     }
 

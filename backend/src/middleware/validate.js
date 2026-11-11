@@ -459,9 +459,25 @@ function validateQuery(checker) {
   };
 }
 
+/** Barcodes the scanner can produce: EAN-8, UPC-A (12), EAN-13 or GTIN-14, digits only. */
+const BARCODE_PATTERN = /^(\d{8}|\d{12}|\d{13}|\d{14})$/;
+
+/** Checks the :code path parameter of the product lookup and leaves the clean value in req.validatedBarcode. */
+function validateBarcodeParam(req, res, next) {
+  const code = typeof req.params.code === 'string' ? req.params.code.trim() : '';
+  if (!BARCODE_PATTERN.test(code)) {
+    return next(new AppError(400, 'VALIDATION_ERROR', 'Barcode is invalid', [
+      { field: 'code', message: 'must be 8, 12, 13 or 14 digits' },
+    ]));
+  }
+  req.validatedBarcode = code;
+  return next();
+}
+
 module.exports = {
   validateBody,
   validateQuery,
+  validateBarcodeParam,
   checkChatRequest,
   checkAiRecipeRequest,
   checkRecipeSearchQuery,

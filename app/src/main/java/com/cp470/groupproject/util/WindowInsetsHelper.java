@@ -16,14 +16,18 @@ public final class WindowInsetsHelper {
     private WindowInsetsHelper() { }
 
     /**
-     * adds the space taken by the system bars as padding of {@code root}
+     * adds the space taken by the system bars to the padding {@code root} already has
      *
      * @param root outermost view of the screen
      */
     public static void applySystemBarPadding(View root) {
+        final int left = root.getPaddingLeft();
+        final int top = root.getPaddingTop();
+        final int right = root.getPaddingRight();
+        final int bottom = root.getPaddingBottom();
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            v.setPadding(left + bars.left, top + bars.top, right + bars.right, bottom + bars.bottom);
             return insets;
         });
     }

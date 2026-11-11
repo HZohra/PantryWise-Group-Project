@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:id="@+id/root" xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@android:color/white">
+    android:background="@color/main_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +17,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="start"
-            android:backgroundTint="#E8EEF5"
+            android:backgroundTint="@color/main_surface"
             android:gravity="center"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -26,40 +27,48 @@
             android:minHeight="0dp"
             android:padding="0dp"
             android:text="←"
-            android:textColor="#263B50"
+            android:textColor="@color/main_text"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:contentDescription="Back" />
+            android:contentDescription="@string/content_description_back" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add Food"
+            android:text="@string/action_add_food"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#263B50"
+            android:textColor="@color/main_text"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/scanBarcodeButton"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/action_scan_barcode" />
 
         <EditText
             android:id="@+id/foodNameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Food Name"
+            android:hint="@string/form_food_name_label"
             android:inputType="textCapWords" />
 
         <EditText
             android:id="@+id/foodQuantityInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Quantity"
+            android:hint="@string/label_quantity"
             android:inputType="numberDecimal" />
 
         <EditText
             android:id="@+id/foodUnitInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Unit (e.g. kg, pieces)" />
+            android:hint="@string/form_unit_hint_add" />
 
         <Spinner
             android:id="@+id/foodLocationSpinner"
@@ -71,7 +80,7 @@
             android:id="@+id/expirationDateText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="No expiration date selected"
+            android:text="@string/form_no_expiration_selected"
             android:layout_marginTop="16dp"
             android:textSize="16sp" />
 
@@ -79,14 +88,14 @@
             android:id="@+id/selectExpirationDateButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Expiration Date" />
+            android:text="@string/form_select_expiration" />
 
         <Button
             android:id="@+id/saveFoodButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Save Food" />
+            android:text="@string/form_save_food" />
 
     </LinearLayout>
 </ScrollView>

@@ -2,7 +2,8 @@
 
 A small Node + Express API used by the PantryWise Android app (CP470, Group 7).
 It is the only place that talks to **Claude** (AI chat, substitutions, AI recipes) and
-**Edamam** (recipe search), so the API keys never ship inside the app.
+**Edamam** (recipe search), and the only one that talks to **USDA FoodData Central** (barcode lookup of the scanner),
+so the API keys never ship inside the app.
 
 Owner: Team Member 5 (AI kitchen assistant and recipe engine), branch `feature/ai-assistant-recipes`.
 
@@ -34,6 +35,7 @@ Open `backend/.env` and fill in the values:
 | `ANTHROPIC_API_KEY` | Your Anthropic API key |
 | `EDAMAM_APP_ID` | Your Edamam application id |
 | `EDAMAM_APP_KEY` | Your Edamam application key |
+| `USDA_API_KEY` | Your USDA FoodData Central key (free: https://fdc.nal.usda.gov/api-key-signup). Only the barcode lookup needs it: without it that endpoint answers `503 PRODUCT_LOOKUP_NOT_CONFIGURED` and the rest works. `DEMO_KEY` works but is rate limited |
 
 Optional (leave them out to use the defaults in `src/config/env.js`):
 
@@ -41,6 +43,7 @@ Optional (leave them out to use the defaults in `src/config/env.js`):
 |---|---|
 | `ANTHROPIC_TIMEOUT_MS` | Timeout for Claude requests, in milliseconds |
 | `EDAMAM_TIMEOUT_MS` | Timeout for Edamam requests, in milliseconds |
+| `USDA_TIMEOUT_MS` | Timeout for USDA requests, in milliseconds (default 10000) |
 | `API_RATE_LIMIT_PER_15_MIN` | General limit per 15 minutes (default 100) |
 | `AI_RATE_LIMIT_PER_MINUTE` | AI limit per minute (default 10) |
 | `RECIPES_RATE_LIMIT_PER_MINUTE` | Recipe limit per minute (default 20) |
@@ -114,6 +117,7 @@ Base URL: `http://localhost:3000/api/v1`. Every request and response body is JSO
 | GET | `/recipes/search` | Edamam | Search recipes by text and filters |
 | POST | `/recipes/recommend` | Edamam | Recipes ranked by what the user already has (standard or Zero-Waste) |
 | POST | `/recipes/substitute` | Local list, then Claude | Replacements for a missing ingredient |
+| GET | `/products/barcode/:code` | USDA | Product name of a scanned barcode |
 
 ### Shared pieces
 
@@ -206,6 +210,21 @@ Response:
 `inPantry`, `expiring` and `staple` are decided by our code, not by the AI.
 If Claude's answer is unusable or contains an allergy ingredient, the server asks once more,
 then answers `502 AI_BAD_FORMAT` or `502 AI_UNSAFE_RECIPE`.
+
+### GET `/products/barcode/:code`
+
+```
+/products/barcode/049000028911
+```
+
+`code` is 8, 12, 13 or 14 digits. The server asks USDA for branded foods and accepts a result only when its
+`gtinUpc` equals the barcode (USDA's search is fuzzy). It shares the recipe rate limiter.
+
+Response: `{ "barcode": "049000028911", "name": "COCA-COLA" }`
+
+Errors: `400 VALIDATION_ERROR` (bad code), `404 PRODUCT_NOT_FOUND`, `429 PRODUCT_RATE_LIMITED`,
+`502 PRODUCT_CONFIG_ERROR` (USDA rejected the key), `503 PRODUCT_LOOKUP_NOT_CONFIGURED` (no key in `.env`),
+`503 PRODUCT_UNAVAILABLE`, `504 PRODUCT_TIMEOUT`.
 
 ### GET `/recipes/search`
 

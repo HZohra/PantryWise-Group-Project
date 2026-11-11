@@ -1,0 +1,37 @@
+flowchart LR
+    user(["Household member"])
+    sys(["Android system"])
+    usda(["USDA (through the backend)"])
+    subgraph app["PantryWise"]
+        uc1(["UC-01 Browse and search the pantry"])
+        uc2(["UC-02 Add a food item"])
+        uc3(["UC-03 Add food by scanning a barcode"])
+        uc4(["UC-04 Edit or delete a food item"])
+        uc5(["UC-05 Record what happened to a food item"])
+        uc6(["UC-06 View the waste summary"])
+        uc7(["UC-07 Receive the expiration reminder"])
+        uc8(["UC-08 Manage the shopping list"])
+        uc9(["UC-09 Share the shopping list"])
+        uc10(["UC-10 Plan a meal"])
+        uc11(["UC-11 Generate the shopping list from the plan"])
+        uc12(["UC-12 Change appearance and read the help"])
+        ai(["AI-UC 1 to 10 Assistant and recipes"])
+    end
+    user --- uc1
+    user --- uc2
+    user --- uc3
+    user --- uc4
+    user --- uc5
+    user --- uc6
+    user --- uc8
+    user --- uc9
+    user --- uc10
+    user --- uc11
+    user --- uc12
+    user --- ai
+    uc7 --- sys
+    uc7 --- user
+    uc3 --- usda
+    uc3 -. "includes" .-> uc2
+    uc11 -. "uses" .-> uc10
+    uc5 -. "extends" .-> uc4

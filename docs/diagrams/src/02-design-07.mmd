@@ -1,0 +1,26 @@
+flowchart LR
+    subgraph inv["Inventory: FoodItem, status ACTIVE, expires in 30 days"]
+        milk["milk : FoodItem<br/>name = Whole Milk 1L<br/>normalizedName = whole milk<br/>quantity = 1, unit = L<br/>category = DAIRY, place = FRIDGE"]
+        flour["flour : FoodItem<br/>name = Flour<br/>quantity = 300, unit = g<br/>category = PANTRY, place = PANTRY"]
+        eggs["eggs : FoodItem<br/>name = Eggs<br/>quantity = 1, unit = pcs<br/>category = DAIRY, place = FRIDGE"]
+        rice["rice : FoodItem<br/>name = Rice<br/>quantity = 1, unit = kg<br/>category = PANTRY, place = PANTRY"]
+    end
+    subgraph plan["Meal plan"]
+        dinner["dinner : MealPlan<br/>planDate = today<br/>mealType = DINNER<br/>recipeTitle = Pancakes<br/>completed = false"]
+        lunch["lunch : MealPlan<br/>planDate = tomorrow<br/>mealType = LUNCH<br/>recipeTitle = Rice bowl<br/>completed = false"]
+    end
+    d1["200 g flour : MealPlanIngredient"]
+    d2["2 eggs : MealPlanIngredient"]
+    d3["300 ml milk : MealPlanIngredient"]
+    d4["1 tbsp sugar : MealPlanIngredient"]
+    l1["150 g rice : MealPlanIngredient"]
+    l2["2 eggs : MealPlanIngredient"]
+    l3["soy sauce : MealPlanIngredient<br/>explicitQuantity = false"]
+
+    dinner --- d1
+    dinner --- d2
+    dinner --- d3
+    dinner --- d4
+    lunch --- l1
+    lunch --- l2
+    lunch --- l3

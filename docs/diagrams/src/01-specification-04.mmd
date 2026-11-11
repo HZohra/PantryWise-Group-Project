@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> ToBuy : added by hand
+    [*] --> ToBuyAuto : generated from the plan
+    ToBuy --> Bought : tick
+    ToBuyAuto --> Bought : tick
+    Bought --> ToBuy : untick
+    ToBuy --> ToBuy : edit
+    ToBuy --> PendingDelete : delete
+    Bought --> PendingDelete : delete
+    PendingDelete --> ToBuy : Undo
+    PendingDelete --> [*] : snackbar closes
+    Bought --> [*] : Clear completed
+    ToBuyAuto --> [*] : replaced by a new generation

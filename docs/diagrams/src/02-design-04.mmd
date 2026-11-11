@@ -1,0 +1,56 @@
+classDiagram
+    class ShoppingListActivity
+    class ShoppingListViewModel {
+        +addItem(name, qty, unit, store) boolean
+        +setChecked(item, checked)
+        +deleteItem(item)
+        +undoDelete()
+        +generateFromPlan(from, to)
+        +buildShareText(header) String
+    }
+    class MealPlannerActivity
+    class MealPlannerViewModel {
+        +saveMeal(day, mealType, recipeId, ...) boolean
+        +generateForDisplayedWeek()
+        +toggleCooked(plan)
+    }
+    class ShoppingListGenerator {
+        +generate(from, to, callback)
+    }
+    class ShoppingCalculator {
+        +computeMissing(plans, stock, currentList)$ List
+    }
+    class IngredientParser {
+        +parse(line)$ Parsed
+    }
+    class UnitUtils
+    class IngredientNormalizer
+    class StoreAdvisor
+    class StoreGrouper
+    class StorePreferences
+    class ShoppingListFormatter
+    class ShoppingInputValidator
+    class WeekUtils
+    class MealPlanGrouper
+    class PantryRepository
+
+    ShoppingListActivity --> ShoppingListViewModel
+    MealPlannerActivity --> MealPlannerViewModel
+    ShoppingListViewModel --> PantryRepository
+    ShoppingListViewModel --> ShoppingListGenerator
+    ShoppingListViewModel --> StorePreferences
+    ShoppingListViewModel --> StoreGrouper
+    ShoppingListViewModel --> ShoppingListFormatter
+    ShoppingListViewModel --> ShoppingInputValidator
+    StoreGrouper --> StoreAdvisor
+    MealPlannerViewModel --> PantryRepository
+    MealPlannerViewModel --> ShoppingListGenerator
+    MealPlannerViewModel --> WeekUtils
+    MealPlannerViewModel --> MealPlanGrouper
+    ShoppingListGenerator --> PantryRepository
+    ShoppingListGenerator --> ShoppingCalculator
+    ShoppingCalculator --> UnitUtils
+    ShoppingCalculator --> IngredientNormalizer
+    ShoppingCalculator ..> IngredientParser : amounts written in the text
+    MealPlannerActivity ..> ShoppingListActivity : explicit intent
+    ShoppingListActivity ..> MealPlannerActivity : explicit intent

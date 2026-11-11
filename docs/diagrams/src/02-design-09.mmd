@@ -1,0 +1,10 @@
+flowchart LR
+    req["request : ChatRequest<br/>message = What can I cook with the milk?<br/>history = empty list<br/>locale = en<br/>preferences = null"]
+    i1["InventoryItemDto<br/>name = whole milk, quantity = 1<br/>unit = L, daysUntilExpiry = 30"]
+    i2["InventoryItemDto<br/>name = flour, quantity = 300<br/>unit = g, daysUntilExpiry = 30"]
+    i3["InventoryItemDto<br/>name = eggs, quantity = 1<br/>unit = pcs, daysUntilExpiry = 30"]
+    i4["InventoryItemDto<br/>name = rice, quantity = 1<br/>unit = kg, daysUntilExpiry = 30"]
+    req --- i1
+    req --- i2
+    req --- i3
+    req --- i4

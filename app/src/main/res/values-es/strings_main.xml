@@ -1,0 +1,33 @@
+<resources>
+    <!-- Main screen navigation hub -->
+    <string name="nav_shopping_list">Lista de la compra</string>
+    <string name="nav_meal_planner">Planificador</string>
+    <string name="nav_waste_summary">Desperdicio</string>
+    <string name="nav_ai_assistant">Asistente IA</string>
+    <string name="nav_recipes">Recetas</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="content_description_help">Ayuda</string>
+    <string name="content_description_settings">Ajustes</string>
+    <string name="content_description_dev_tools">Herramientas de desarrollo</string>
+    <string name="dev_tools_label">DEV</string>
+
+    <string name="main_title">PantryWise</string>
+    <string name="main_subtitle">Tu cocina, organizada.</string>
+    <string name="main_search_hint">Busca tus alimentos...</string>
+    <string name="main_section_quick_access">ACCESO RÁPIDO</string>
+    <string name="main_section_discover">DESCUBRE</string>
+    <string name="main_section_storage">MI ALMACENAMIENTO</string>
+
+    <!-- Help guide dialog -->
+    <string name="help_title">Guía de ayuda de PantryWise</string>
+    <string name="help_close">Cerrar</string>
+    <string name="help_guide">BIENVENIDO A PANTRYWISE\n\n1. AGREGAR ALIMENTOS\nPulsa Agregar alimento para escribir el nombre, la cantidad, la unidad, la ubicación y la fecha de caducidad. También puedes escanear un código de barras para rellenar el nombre.\n\n2. UBICACIONES\nUsa Refrigerador, Congelador y Despensa para ver lo que hay en cada sitio.\n\n3. BUSCAR ALIMENTOS\nUsa la barra de búsqueda para encontrar alimentos en la ubicación elegida.\n\n4. ESTADO DE CADUCIDAD\nFresco: el alimento no está cerca de caducar.\nUsar pronto: caduca en 3 días o menos.\nVencido: la fecha de caducidad ya pasó.\nCada mañana PantryWise te envía un solo aviso con lo que necesita atención.\n\n5. EDITAR ALIMENTOS\nPulsa un alimento para editar sus datos o registrar qué pasó con él: consumido, desperdiciado, vencido o donado.\n\n6. RECETAS E IA\nBusca recetas, pregunta al asistente de IA qué cocinar con lo que está por caducar y guarda tus favoritas.\n\n7. PLANIFICADOR Y LISTA DE LA COMPRA\nPlanifica las comidas de la semana. La lista de la compra solo añade los ingredientes que aún no tienes, y puedes compartirla.\n\n8. DESPERDICIO\nConsulta cuánta comida consumiste, desperdiciaste o donaste.</string>
+
+    <!-- Add food: barcode scanning and messages -->
+    <string name="action_scan_barcode">Escanear código de barras</string>
+    <string name="add_food_fill_all">Rellena todos los campos</string>
+    <string name="add_food_invalid_quantity">Introduce una cantidad válida</string>
+    <string name="add_food_quantity_positive">La cantidad debe ser mayor que cero</string>
+    <string name="add_food_saved">Alimento guardado</string>
+    <string name="content_description_back">Volver</string>
+</resources>

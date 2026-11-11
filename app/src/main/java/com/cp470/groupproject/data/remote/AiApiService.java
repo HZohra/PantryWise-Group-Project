@@ -7,6 +7,7 @@ import com.cp470.groupproject.data.remote.dto.AiRecipeResponse;
 import com.cp470.groupproject.data.remote.dto.ChatRequest;
 import com.cp470.groupproject.data.remote.dto.ChatResponse;
 import com.cp470.groupproject.data.remote.dto.HealthResponse;
+import com.cp470.groupproject.data.remote.dto.ProductResponse;
 import com.cp470.groupproject.data.remote.dto.RecommendRequest;
 import com.cp470.groupproject.data.remote.dto.RecommendResponse;
 import com.cp470.groupproject.data.remote.dto.SearchResponse;
@@ -17,6 +18,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -54,6 +56,13 @@ public interface AiApiService {
     /** POST /api/v1/recipes/substitute: local swap list first, Claude only for other ingredients. */
     @POST("recipes/substitute")
     Call<SubstituteResponse> substitute(@Body SubstituteRequest request);
+
+    /**
+     * GET /api/v1/products/barcode/{code}: product name of a scanned barcode (the backend asks USDA).
+     * Answers HTTP 404 when the barcode is not in the database.
+     */
+    @GET("products/barcode/{code}")
+    Call<ProductResponse> lookupProduct(@Path("code") String code);
 
     /** POST /api/v1/ai/recipe: one validated, allergy-safe recipe built around expiring food. */
     @POST("ai/recipe")

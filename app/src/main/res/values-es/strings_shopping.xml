@@ -127,7 +127,6 @@
     <string name="planner_next_week">Semana siguiente</string>
 
     <!-- atajo temporal en la pantalla de resumen de desperdicio, solo visible en builds debug -->
-    <string name="test_panel_open">Probar avisos, lista y planificador</string>
 
     <!-- tienda sugerida: grupos de la lista de la compra y "mis tiendas" -->
     <string name="store_type_butcher">Carnicería</string>

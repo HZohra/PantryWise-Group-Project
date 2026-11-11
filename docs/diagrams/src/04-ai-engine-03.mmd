@@ -1,0 +1,21 @@
+flowchart TD
+    a(["Recipes screen opens or Zero-Waste is toggled"]) --> b["Send the pantry, the mode and an optional keyword"]
+    b --> c{"Keyword given?"}
+    c -->|"yes"| d["Search terms = the keyword"]
+    c -->|"no"| e{"Usable pantry items?<br/>(not expired)"}
+    e -->|"yes"| f["Search terms = the 2 most urgent items"]
+    e -->|"no"| g["Default searches: pasta, soup<br/>personalized = false"]
+    d --> h
+    f --> h
+    g --> h["Search Edamam for each term (in parallel, cached 10 min)"]
+    h --> i["Merge, remove duplicates, drop recipes with the user's allergens"]
+    i --> j{"Any recipe?"}
+    j -->|"no"| k["Broaden once: drop cuisine, meal type and time,<br/>shorten the keyword or use the next items<br/>broadened = true"]
+    k --> l["Search again"]
+    j -->|"yes"| m
+    l --> m["Score and sort each recipe against the pantry"]
+    m --> n{"Zero-Waste?"}
+    n -->|"yes"| o["Keep only recipes that use expiring food<br/>(unless that leaves nothing)"]
+    n -->|"no"| p
+    o --> p["Top N recipes with their match data"]
+    p --> q["App shows cards: have X of Y, Uses expiring badge, notice if personalized is false or broadened is true"]

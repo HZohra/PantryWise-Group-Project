@@ -1,0 +1,21 @@
+flowchart TD
+    subgraph Android["Android system"]
+        s1(["Process starts or the day changes"]) --> s2["PantryWiseApp schedules a unique daily job at 09:00"]
+        s2 --> s3["WorkManager runs the worker<br/>(battery not low)"]
+    end
+    subgraph App["PantryWise"]
+        s3 --> a1["Read active items"]
+        a1 --> a2{"Classify each item"}
+        a2 -->|"expired"| a3["add to expired list"]
+        a2 -->|"3 days or fewer"| a4["add to soon list"]
+        a2 -->|"fresh or no date"| a5["ignore"]
+        a3 --> a6{"Any item to report?"}
+        a4 --> a6
+        a5 --> a6
+        a6 -->|"no"| a7(["Success, no notification"])
+        a6 -->|"yes"| a8{"Notification permission granted?"}
+        a8 -->|"no"| a7
+        a8 -->|"yes"| a9["Show one notification with counts and lines"]
+        a9 --> a10(["Success"])
+    end
+    a9 -. "user taps it" .-> u1["Open the shopping list above the main screen"]

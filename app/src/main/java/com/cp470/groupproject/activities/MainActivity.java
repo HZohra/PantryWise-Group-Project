@@ -32,13 +32,17 @@ import com.cp470.groupproject.ui.settings.DisplayPreferences;
 import com.cp470.groupproject.ui.ai.AiAssistantActivity;
 import com.cp470.groupproject.ui.ai.RecipesActivity;
 import com.cp470.groupproject.ui.ai.FavoritesActivity;
-import com.cp470.groupproject.ui.shoppinglist.ShoppingListActivity;
+import com.cp470.groupproject.notification.NotificationPermissionHelper;
 import com.cp470.groupproject.ui.mealplanner.MealPlannerActivity;
+import com.cp470.groupproject.ui.shoppinglist.ShoppingListActivity;
 import com.cp470.groupproject.ui.wastesummary.WasteSummaryActivity;
 import com.cp470.groupproject.data.preferences.AiPreferencesStore;
 import com.cp470.groupproject.ui.profile.FoodProfileActivity;
 
 public class MainActivity extends AppCompatActivity {
+
+    /** debug-only screen, referenced by name because it is not compiled into release builds */
+    private static final String DEV_TOOLS_CLASS = "com.cp470.groupproject.ui.dev.DevToolsActivity";
 
     private InventoryViewModel viewModel;
     private FoodAdapter adapter;
@@ -86,25 +90,24 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.favoritesButton).setOnClickListener(v ->
                 startActivity(FavoritesActivity.newIntent(this)));
 
-        findViewById(R.id.shoppingListButton).setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ShoppingListActivity.class);
-            startActivity(intent);
-        });
+        findViewById(R.id.shoppingListButton).setOnClickListener(v ->
+                startActivity(ShoppingListActivity.newIntent(this)));
 
-        findViewById(R.id.mealPlannerButton).setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MealPlannerActivity.class);
-            startActivity(intent);
-        });
+        findViewById(R.id.mealPlannerButton).setOnClickListener(v ->
+                startActivity(MealPlannerActivity.newIntent(this)));
 
-        findViewById(R.id.wasteSummaryButton).setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, WasteSummaryActivity.class);
-            startActivity(intent);
-        });
+        findViewById(R.id.wasteSummaryButton).setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, WasteSummaryActivity.class)));
 
-        // findViewById(R.id.scannerButton).setOnClickListener(v -> {
-            //Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
-            //startActivity(intent);
-        //});
+        // the launcher must be registered while the activity is being created, so the helper is
+        // built here; the expiration reminders need the permission on android 13 and later
+        new NotificationPermissionHelper(this).ensurePermission();
+
+        // opens the add food form already in scan mode, so a scanned product ends up in the pantry
+        findViewById(R.id.scannerButton).setOnClickListener(v ->
+                startActivity(AddFoodActivity.newIntent(this, true)));
+
+        configureDevToolsButton();
 
         TextView inventoryTitle = findViewById(R.id.inventoryTitle);
         inventoryTitle.setTextSize(DisplayPreferences.getTextSize(this));
@@ -124,8 +127,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, AddFoodActivity.class);
             startActivity(intent);
         });
-
-        findViewById(R.id.helpButton).setOnClickListener(v -> showHelpGuide());
 
         findViewById(R.id.helpButton).setOnClickListener(v -> showHelpGuide());
 
@@ -195,28 +196,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showHelpGuide() {
-        String guide =
-                "WELCOME TO PANTRYWISE\n\n" +
-                        "1. ADD FOOD\n" +
-                        "Tap Add Food to enter a food name, quantity, unit, storage location, and expiration date.\n\n" +
-                        "2. STORAGE LOCATIONS\n" +
-                        "Use Fridge, Freezer, and Pantry to view food stored in each location.\n\n" +
-                        "3. SEARCH FOOD\n" +
-                        "Use the search bar to find food items in the selected location.\n\n" +
-                        "4. EXPIRATION STATUS\n" +
-                        "Fresh: Food is not close to expiring.\n" +
-                        "Use Soon: Food expires within 3 days.\n" +
-                        "Expired: The expiration date has passed.\n\n" +
-                        "5. EDIT FOOD\n" +
-                        "Tap a food item to edit its details.\n\n" +
-                        "6. FOOD ACTIONS\n" +
-                        "Use Consumed, Wasted, Expired, or Donated to record what happened to an item.";
+    /**
+     * shows the shortcut to the developer screen, which only exists in debug builds. the class is
+     * referenced by name because main code cannot import it, and the button stays hidden in release
+     * because the screen cannot be resolved there.
+     */
+    private void configureDevToolsButton() {
+        Intent intent = new Intent().setClassName(this, DEV_TOOLS_CLASS);
+        if (intent.resolveActivity(getPackageManager()) == null) {
+            return;
+        }
+        View button = findViewById(R.id.devToolsButton);
+        button.setVisibility(View.VISIBLE);
+        button.setOnClickListener(v -> startActivity(intent));
+    }
 
+    private void showHelpGuide() {
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("PantryWise Help Guide")
-                .setMessage(guide)
-                .setPositiveButton("Close", null)
+                .setTitle(R.string.help_title)
+                .setMessage(R.string.help_guide)
+                .setPositiveButton(R.string.help_close, null)
                 .create();
 
         dialog.setOnShowListener(d -> {

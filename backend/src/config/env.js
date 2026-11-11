@@ -19,6 +19,12 @@ const config = Object.freeze({
     timeoutMs: Number(process.env.EDAMAM_TIMEOUT_MS) || 10000, // NEW
   },
 
+  // Optional: without it only the barcode lookup is unavailable (503), everything else works
+  usda: {
+    apiKey: process.env.USDA_API_KEY,
+    timeoutMs: Number(process.env.USDA_TIMEOUT_MS) || 10000,
+  },
+
    rateLimit: {
      apiPer15Min: Number(process.env.API_RATE_LIMIT_PER_15_MIN) || 100,
      aiPerMinute: Number(process.env.AI_RATE_LIMIT_PER_MINUTE) || 10,
