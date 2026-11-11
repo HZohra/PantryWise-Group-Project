@@ -16,6 +16,7 @@ import com.cp470.groupproject.data.remote.dto.RecipeDto;
 import com.cp470.groupproject.data.remote.dto.SubstituteResponse;
 import com.cp470.groupproject.data.repository.PantryRepository;
 import com.cp470.groupproject.data.repository.RecipeRepository;
+import com.cp470.groupproject.data.entity.MealPlan;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -165,6 +166,22 @@ public class RecipeDetailViewModel extends AndroidViewModel {
      */
     public void addMissingToShoppingList(@NonNull PantryRepository.ResultCallback<Integer> callback) {
         pantry().addShoppingItemsIfMissing(MissingIngredients.fromDetailRows(rows), callback);
+    }
+
+
+    /**
+     * Main thread. Plans the recipe for a day and meal (ingredients are saved as a snapshot).
+     * @return false when the recipe has no id, so nothing is saved
+     */
+    public boolean planMeal(long planDate, @NonNull String mealType,
+                            @NonNull PantryRepository.ResultCallback<Long> callback) {
+        RecipeDto current = recipe;
+        if (current == null || !canFavorite()) return false;
+        List<String> lines = current.ingredientLines == null
+                ? Collections.<String>emptyList() : current.ingredientLines;
+        pantry().addMealPlan(new MealPlan(planDate, mealType, current.recipeId.trim(),
+                current.title.trim(), lines), callback);
+        return true;
     }
 
     @NonNull

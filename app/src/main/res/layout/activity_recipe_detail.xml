@@ -113,6 +113,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/ai_shop_add" />
 
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ai_detail_plan"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ai_plan_button" />
                 <!-- Ingredients: rows are added from code (item_recipe_ingredient) -->
                 <TextView
                     android:layout_width="match_parent"

@@ -80,6 +80,8 @@ public class AiRecipeActivity extends AppCompatActivity {
             invalidateOptionsMenu(); // redraws the heart
         });
         againButton.setOnClickListener(v -> viewModel.generate());
+        findViewById(R.id.ai_gen_plan).setOnClickListener(v -> MealPlanPicker.show(this, this::onMealPicked));
+        MealPlanPicker.reattach(this, this::onMealPicked); // the date picker survives rotation
 
         if (viewModel.isIdle()) {
             if (viewModel.needsConsent()) {
@@ -219,6 +221,12 @@ public class AiRecipeActivity extends AppCompatActivity {
                 ? getResources().getQuantityString(R.plurals.ai_shop_added, added, added)
                 : getString(R.string.ai_shop_already);
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void onMealPicked(long planDate, @NonNull String mealType) {
+        viewModel.planMeal(planDate, mealType,
+                id -> runOnUiThread(() -> MealPlanPicker.showPlanned(this, planDate, mealType)));
     }
 
     private void bindSteps(@NonNull AiRecipeDto recipe) {

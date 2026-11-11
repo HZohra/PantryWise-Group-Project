@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Plan this meal" on the recipe screens (Team Member 5, 6.3). Spanish: values-es -->
+<resources>
+    <string name="ai_plan_button">Plan this meal</string>
+    <string name="ai_plan_pick_day">Which day?</string>
+    <string name="ai_plan_pick_meal">Which meal?</string>
+    <string name="ai_plan_save">Plan</string>
+    <string name="ai_plan_breakfast">Breakfast</string>
+    <string name="ai_plan_lunch">Lunch</string>
+    <string name="ai_plan_dinner">Dinner</string>
+    <string name="ai_plan_snack">Snack</string>
+    <string name="ai_plan_done">Planned for %1$s on %2$s</string>
+</resources>

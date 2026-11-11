@@ -153,6 +153,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/ai_item_gap"
                     android:text="@string/ai_shop_add" />
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ai_gen_plan"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ai_plan_button" />
             </LinearLayout>
 
             <!-- "Try another" when a recipe is shown, "Try again" after an error -->

@@ -88,6 +88,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
         bindRecipe(recipe);
         bindIngredients();
         bindShoppingButton(recipe);
+        bindPlanButton();
+        MealPlanPicker.reattach(this, this::onMealPicked); // the date picker survives rotation
         bindNutrition(recipe.nutrition);
 
         viewModel.getSubstitute().observe(this, this::renderSubstitutes);
@@ -249,6 +251,22 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 ? getResources().getQuantityString(R.plurals.ai_shop_added, added, added)
                 : getString(R.string.ai_shop_already);
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+
+    /** Hidden when the recipe has no id (it couldn't be found again from the plan). */
+    private void bindPlanButton() {
+        MaterialButton button = findViewById(R.id.ai_detail_plan);
+        if (!viewModel.canFavorite()) {
+            button.setVisibility(View.GONE);
+            return;
+        }
+        button.setOnClickListener(v -> MealPlanPicker.show(this, this::onMealPicked));
+    }
+
+    private void onMealPicked(long planDate, @NonNull String mealType) {
+        viewModel.planMeal(planDate, mealType,
+                id -> runOnUiThread(() -> MealPlanPicker.showPlanned(this, planDate, mealType)));
     }
 
     private void bindNutrition(@Nullable NutritionDto nutrition) {

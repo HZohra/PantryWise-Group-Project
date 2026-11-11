@@ -16,6 +16,7 @@ import com.cp470.groupproject.data.remote.dto.AiRecipeDto;
 import com.cp470.groupproject.data.remote.dto.AiRecipeResponse;
 import com.cp470.groupproject.data.repository.AiRepository;
 import com.cp470.groupproject.data.repository.PantryRepository;
+import com.cp470.groupproject.data.entity.MealPlan;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -199,6 +200,23 @@ public class AiRecipeViewModel extends AndroidViewModel {
         UiState current = state.getValue();
         if (current == null || current.response == null) return;
         pantry().addShoppingItemsIfMissing(MissingIngredients.fromAi(current.response.recipe), callback);
+    }
+
+
+    /**
+     * Main thread. Plans the recipe on screen for a day and meal (ingredients saved as a snapshot).
+     * @return false when there is no recipe with an id on screen
+     */
+    public boolean planMeal(long planDate, @NonNull String mealType,
+                            @NonNull PantryRepository.ResultCallback<Long> callback) {
+        UiState current = state.getValue();
+        String id = recipeIdOf(current);
+        if (id == null) return false;
+        AiRecipeDto recipe = current.response.recipe;
+        String title = recipe.title == null ? "" : recipe.title.trim();
+        pantry().addMealPlan(new MealPlan(planDate, mealType, id, title,
+                FavoriteRecipeMapper.aiIngredientLines(recipe)), callback);
+        return true;
     }
 
     @NonNull
