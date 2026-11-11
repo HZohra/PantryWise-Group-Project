@@ -5,7 +5,15 @@
     <!-- required from android 13 to show notifications (expiration alerts) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- lets the AI assistant call the PantryWise backend -->
+    <!-- Required for barcode scanning -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Camera is optional because users can enter barcodes manually -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <!-- lets the AI assistant call the PantryWise backend and the scanner call USDA FoodData Central -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- android 11+ hides other apps unless declared: needed so resolveActivity() sees apps that
@@ -102,6 +110,12 @@
             android:exported="false"
             android:label="@string/ai_gen_title"
             android:parentActivityName=".ui.ai.FavoritesActivity" />
+
+        <!-- Barcode scanning screen (Team Member 3) -->
+        <activity
+            android:name=".scanner.ScannerActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
 
     </application>
 
