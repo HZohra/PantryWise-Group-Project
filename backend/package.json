@@ -10,7 +10,7 @@
     "dev": "node --watch src/server.js",
     "smoke:claude": "node scripts/smokeClaude.js",
     "smoke:edamam": "node scripts/smokeEdamam.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "try:ranking": "node scripts/tryRanking.js",
     "test:api": "npx newman run postman/PantryWise.postman_collection.json"
   },
