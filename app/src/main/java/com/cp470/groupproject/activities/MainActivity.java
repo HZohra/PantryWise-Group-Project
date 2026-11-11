@@ -32,6 +32,10 @@ import com.cp470.groupproject.ui.settings.DisplayPreferences;
 import com.cp470.groupproject.ui.ai.AiAssistantActivity;
 import com.cp470.groupproject.ui.ai.RecipesActivity;
 import com.cp470.groupproject.ui.ai.FavoritesActivity;
+import com.cp470.groupproject.ui.shoppinglist.ShoppingListActivity;
+import com.cp470.groupproject.ui.mealplanner.MealPlannerActivity;
+import com.cp470.groupproject.ui.wastesummary.WasteSummaryActivity;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -80,6 +84,26 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.favoritesButton).setOnClickListener(v ->
                 startActivity(FavoritesActivity.newIntent(this)));
+
+        findViewById(R.id.shoppingListButton).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ShoppingListActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.mealPlannerButton).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MealPlannerActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.wasteSummaryButton).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, WasteSummaryActivity.class);
+            startActivity(intent);
+        });
+
+        // findViewById(R.id.scannerButton).setOnClickListener(v -> {
+            //Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
+            //startActivity(intent);
+        //});
 
         TextView inventoryTitle = findViewById(R.id.inventoryTitle);
         inventoryTitle.setTextSize(DisplayPreferences.getTextSize(this));
