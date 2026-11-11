@@ -20,6 +20,9 @@ public class RecommendRequest {
     public int limit;
     public String mode;
 
+    /** true = recipes with the user's allergens are removed; false = kept, flagged and listed last. */
+    public boolean hideAllergens;
+
     public RecommendRequest(List<InventoryItemDto> inventory, @Nullable String query,
                             @Nullable PreferencesDto preferences, int limit, String mode) {
         this.inventory = inventory;

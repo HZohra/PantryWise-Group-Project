@@ -48,7 +48,8 @@ public class RecipeAdapter extends ListAdapter<RecipeDto, RecipeAdapter.RecipeVi
                     && Objects.equals(oldItem.sourceName, newItem.sourceName)
                     && (a == null) == (b == null)
                     && (a == null || (a.haveCount == b.haveCount && a.totalCount == b.totalCount
-                    && Objects.equals(RecipeCardFormatter.expiringNames(a), RecipeCardFormatter.expiringNames(b))));
+                    && Objects.equals(RecipeCardFormatter.expiringNames(a), RecipeCardFormatter.expiringNames(b))
+                    && Objects.equals(Allergens.names(a), Allergens.names(b))));
         }
     };
 
@@ -85,6 +86,8 @@ public class RecipeAdapter extends ListAdapter<RecipeDto, RecipeAdapter.RecipeVi
         private final TextView expiring;
         private final TextView meta;
 
+        private final TextView allergen;
+
         RecipeViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.ai_recipe_image);
@@ -92,6 +95,7 @@ public class RecipeAdapter extends ListAdapter<RecipeDto, RecipeAdapter.RecipeVi
             have = itemView.findViewById(R.id.ai_recipe_have);
             expiring = itemView.findViewById(R.id.ai_recipe_expiring);
             meta = itemView.findViewById(R.id.ai_recipe_meta);
+            allergen = itemView.findViewById(R.id.ai_recipe_allergen);
         }
 
         void bind(@NonNull RecipeDto recipe, @Nullable OnRecipeClickListener listener) {
@@ -126,6 +130,15 @@ public class RecipeAdapter extends ListAdapter<RecipeDto, RecipeAdapter.RecipeVi
                 expiring.setVisibility(View.VISIBLE);
             } else {
                 expiring.setVisibility(View.GONE);
+            }
+
+            // "⚠ Contains your allergen: peanut butter" (the backend lists these recipes last)
+            String allergenText = Allergens.names(match);
+            if (allergenText != null) {
+                allergen.setText(context.getString(R.string.ai_allergen_card, allergenText));
+                allergen.setVisibility(View.VISIBLE);
+            } else {
+                allergen.setVisibility(View.GONE);
             }
 
             // "25 min · BBC Good Food"

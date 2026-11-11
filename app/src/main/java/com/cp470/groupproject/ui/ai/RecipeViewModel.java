@@ -122,7 +122,8 @@ public class RecipeViewModel extends AndroidViewModel {
      */
     public void reloadIfPreferencesChanged() {
         if (!loaded) return;
-        String current = preferencesKey(AiPreferencesStore.currentDto(getApplication()));
+        String current = preferencesKey(AiPreferencesStore.currentDto(getApplication()))
+                + "|" + AiPreferencesStore.currentHideAllergens(getApplication());
         if (!current.equals(loadedWithPreferences)) {
             load();
         }
@@ -152,8 +153,9 @@ public class RecipeViewModel extends AndroidViewModel {
         error.setValue(null);
 
         PreferencesDto preferences = AiPreferencesStore.currentDto(getApplication());
-        loadedWithPreferences = preferencesKey(preferences);
-        repository.recommend(query, preferences, zeroWasteRequested, RESULT_LIMIT, result -> {
+        boolean hideAllergens = AiPreferencesStore.currentHideAllergens(getApplication());
+        loadedWithPreferences = preferencesKey(preferences) + "|" + hideAllergens;
+        repository.recommend(query, preferences, hideAllergens, zeroWasteRequested, RESULT_LIMIT, result -> {
             // background thread from here on
             if (request != latestRequest.get()) {
                 return; // a newer search or toggle replaced this request

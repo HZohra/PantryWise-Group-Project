@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Allergen warnings on recipes (Team Member 5, 6.5). Spanish: values-es/strings_allergen.xml -->
+<resources>
+    <string name="ai_allergen_card">⚠ Contains your allergen: %1$s</string>
+    <string name="ai_allergen_banner">⚠ This recipe contains %1$s, which is on your allergy list. Tap \"Find substitute\" next to it, or choose another dish.</string>
+    <string name="ai_detail_allergen">Allergen</string>
+    <string name="profile_hide_allergens">Hide recipes that contain my allergies</string>
+    <string name="profile_hide_allergens_hint">When off, they are listed last with a warning, so you can swap the ingredient.</string>
+</resources>

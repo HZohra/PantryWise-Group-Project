@@ -126,6 +126,21 @@
                 android:textColor="?attr/colorError"
                 android:visibility="gone" />
 
+            <!-- Off (default): recipes with an allergen are shown last with a warning -->
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/profile_hide_allergens"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ai_item_gap"
+                android:text="@string/profile_hide_allergens" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_hide_allergens_hint"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
             <!-- Must be (optional) -->
             <TextView
                 android:layout_width="match_parent"

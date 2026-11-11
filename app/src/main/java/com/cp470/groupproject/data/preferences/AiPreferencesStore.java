@@ -32,7 +32,7 @@ public class AiPreferencesStore {
     static final String KEY_NAME = "profile_name";
     static final String KEY_NO_ALLERGIES = "profile_no_allergies";
     static final String KEY_SETUP_DONE = "profile_setup_done";
-
+    static final String KEY_HIDE_ALLERGENS = "pref_hide_allergens";
     /** Allergies can't contain a newline (letters, spaces, - and ' only), so it is a safe separator. */
     private static final String ALLERGY_SEPARATOR = "\n";
     /** Health labels are fixed words without commas. */
@@ -98,6 +98,26 @@ public class AiPreferencesStore {
         return prefs.getBoolean(KEY_SETUP_DONE, false);
     }
 
+
+    /** "Hide recipes that contain my allergies" (off by default: they are shown with a warning). */
+    public boolean loadHideAllergens() {
+        return prefs.getBoolean(KEY_HIDE_ALLERGENS, false);
+    }
+
+    public void saveHideAllergens(boolean hide) {
+        prefs.edit().putBoolean(KEY_HIDE_ALLERGENS, hide).apply();
+    }
+
+    /** The switch, read now; false when it can't be read (the safe default for an unread file is "show with warning"). */
+    public static boolean currentHideAllergens(@Nullable Context context) {
+        if (context == null) return false;
+        try {
+            return from(context).loadHideAllergens();
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     /** Saves the whole profile and marks the first-time setup as done. */
     public void saveProfile(@NonNull String name, @NonNull AiPreferences preferences, boolean noAllergies) {
         putPreferences(prefs.edit(), preferences)
@@ -117,6 +137,7 @@ public class AiPreferencesStore {
                 .remove(KEY_NAME)
                 .remove(KEY_NO_ALLERGIES)
                 .remove(KEY_SETUP_DONE)
+                .remove(KEY_HIDE_ALLERGENS)
                 .apply();
     }
 
