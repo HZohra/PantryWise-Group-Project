@@ -4,19 +4,25 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
+import com.cp470.groupproject.data.entity.FavoriteRecipe;
 import com.cp470.groupproject.data.remote.AiError;
+import com.cp470.groupproject.data.remote.dto.AiRecipeDto;
 import com.cp470.groupproject.data.remote.dto.AiRecipeResponse;
 import com.cp470.groupproject.data.repository.AiRepository;
+import com.cp470.groupproject.data.repository.PantryRepository;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * State and logic for the AI recipe screen (MVVM: no Views here).
- * Survives rotation, so a recipe is never generated twice by accident.
+ * Survives rotation, so a recipe is never generated twice by accident. The recipe on screen can
+ * be saved to (or removed from) the favourites with its steps.
  * AiRepository calls back on a background thread, so those updates use postValue().
  */
 public class AiRecipeViewModel extends AndroidViewModel {
@@ -43,19 +49,45 @@ public class AiRecipeViewModel extends AndroidViewModel {
         static UiState error(@NonNull AiError e) { return new UiState(Kind.ERROR, null, e); }
     }
 
+    /**
+     * Whether one recipe is in the favourites. The id says which recipe the answer is about, so
+     * after "Try another" the screen never shows the old recipe's heart on the new one.
+     */
+    public static final class FavoriteState {
+        @NonNull public final String recipeId;
+        public final boolean saved;
+
+        FavoriteState(@NonNull String recipeId, boolean saved) {
+            this.recipeId = recipeId;
+            this.saved = saved;
+        }
+    }
+
     private final AiRepository repository;
     private final MutableLiveData<UiState> state = new MutableLiveData<>(UiState.idle());
     /** Only the newest request may update the screen. */
     private final AtomicInteger latestRequest = new AtomicInteger();
     private boolean consentGiven;
 
+    /** Local database for the favourites; created on first use so tests without a database still work. */
+    @Nullable private PantryRepository pantryRepository;
+    /** Favourite state of the recipe on screen; created on first use. */
+    @Nullable private LiveData<FavoriteState> favorite;
+
     public AiRecipeViewModel(@NonNull Application application) {
-        this(application, new AiRepository(application));
+        this(application, new AiRepository(application), null);
     }
 
     AiRecipeViewModel(@NonNull Application application, @NonNull AiRepository repository) {
+        this(application, repository, null);
+    }
+
+    /** @param pantryRepository the favourites storage, or null to create the real one when needed */
+    AiRecipeViewModel(@NonNull Application application, @NonNull AiRepository repository,
+                      @Nullable PantryRepository pantryRepository) {
         super(application);
         this.repository = repository;
+        this.pantryRepository = pantryRepository;
     }
 
     public LiveData<UiState> getState() { return state; }
@@ -91,5 +123,84 @@ public class AiRecipeViewModel extends AndroidViewModel {
                 state.postValue(UiState.error(error));
             }
         });
+    }
+
+    // ---------------------------------------------------------------- favourites
+
+    /** The id of the recipe on screen, or null while loading, after an error or without an id. */
+    @Nullable
+    public String currentRecipeId() {
+        return recipeIdOf(state.getValue());
+    }
+
+    /** True when a recipe with an id is on screen, so it can be saved. */
+    public boolean canFavorite() {
+        return currentRecipeId() != null;
+    }
+
+    /**
+     * Main thread. Follows the recipe on screen: emits its favourite state from the database, or
+     * null while there is no recipe to save.
+     */
+    @NonNull
+    public LiveData<FavoriteState> getFavorite() {
+        if (favorite == null) {
+            LiveData<String> recipeId = Transformations.distinctUntilChanged(
+                    Transformations.map(state, AiRecipeViewModel::recipeIdOf));
+            favorite = Transformations.switchMap(recipeId, id -> {
+                if (id == null) {
+                    return new MutableLiveData<>((FavoriteState) null);
+                }
+                return Transformations.map(pantry().isFavorite(id),
+                        count -> new FavoriteState(id, count != null && count > 0));
+            });
+        }
+        return favorite;
+    }
+
+    /**
+     * Main thread. Saves the recipe on screen with its steps, or removes it when it is already saved.
+     * @return TRUE when it was saved, FALSE when it was removed, null when there is nothing to save
+     */
+    @Nullable
+    public Boolean toggleFavorite() {
+        UiState current = state.getValue();
+        AiRecipeDto recipe = current == null || current.response == null ? null : current.response.recipe;
+        FavoriteRecipe toSave = FavoriteRecipeMapper.fromAi(recipe);
+        if (toSave == null) return null;
+
+        FavoriteState known = getFavorite().getValue();
+        boolean saved = known != null && known.saved && toSave.recipeId.equals(known.recipeId);
+        if (saved) {
+            pantry().removeFavoriteRecipe(toSave.recipeId);
+            return false;
+        }
+        pantry().saveFavoriteRecipe(toSave);
+        return true;
+    }
+
+    /** The trimmed recipe id of a successful state, or null. */
+    @Nullable
+    static String recipeIdOf(@Nullable UiState state) {
+        if (state == null || state.kind != UiState.Kind.SUCCESS || state.response == null
+                || state.response.recipe == null || state.response.recipe.recipeId == null) {
+            return null;
+        }
+        String id = state.response.recipe.recipeId.trim();
+        return id.isEmpty() ? null : id;
+    }
+
+    @NonNull
+    private PantryRepository pantry() {
+        if (pantryRepository == null) {
+            pantryRepository = new PantryRepository(getApplication());
+        }
+        return pantryRepository;
+    }
+
+    /** Tests only: shows a recipe as if the backend had returned it (no network). Main thread. */
+    @VisibleForTesting
+    void showRecipeForTest(@NonNull AiRecipeResponse response) {
+        state.setValue(UiState.success(response));
     }
 }

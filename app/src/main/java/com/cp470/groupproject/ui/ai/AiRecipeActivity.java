@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,10 +28,12 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * AI recipe from expiring food (View in MVVM, US-2 / UC-2).
  * Asks for consent first; Cancel closes the screen and sends nothing (US-6).
+ * The heart in the toolbar saves the recipe on screen (with its steps) to the favourites.
  */
 public class AiRecipeActivity extends AppCompatActivity {
 
@@ -45,6 +49,8 @@ public class AiRecipeActivity extends AppCompatActivity {
     private TextView message;
     private MaterialButton againButton;
     @Nullable private AlertDialog consentDialog;
+    /** Last favourite state from the database; only used when it is about the recipe on screen. */
+    @Nullable private AiRecipeViewModel.FavoriteState favorite;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +73,10 @@ public class AiRecipeActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(AiRecipeViewModel.class);
         viewModel.getState().observe(this, this::render);
+        viewModel.getFavorite().observe(this, state -> {
+            favorite = state;
+            invalidateOptionsMenu(); // redraws the heart
+        });
         againButton.setOnClickListener(v -> viewModel.generate());
 
         if (viewModel.isIdle()) {
@@ -124,6 +134,7 @@ public class AiRecipeActivity extends AppCompatActivity {
             againButton.setText(R.string.ai_gen_try_again);
             againButton.setVisibility(View.VISIBLE);
         }
+        invalidateOptionsMenu(); // the heart is shown only while a recipe is on screen
     }
 
     private void bindRecipe(@NonNull AiRecipeResponse response) {
@@ -211,6 +222,42 @@ public class AiRecipeActivity extends AppCompatActivity {
             consentDialog.dismiss();
         }
         super.onDestroy();
+    }
+
+    // ---------------------------------------------------------------- favourites heart
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_ai_favorite, menu);
+        return true;
+    }
+
+    /** Filled or outline heart for the recipe on screen; hidden while loading, on errors, or until known. */
+    @Override
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
+        MenuItem item = menu.findItem(R.id.ai_action_favorite);
+        String onScreen = viewModel == null ? null : viewModel.currentRecipeId();
+        AiRecipeViewModel.FavoriteState known = favorite;
+        boolean visible = onScreen != null && known != null && onScreen.equals(known.recipeId);
+        item.setVisible(visible);
+        if (visible) {
+            item.setIcon(known.saved ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);
+            item.setTitle(known.saved ? R.string.ai_fav_remove : R.string.ai_fav_add);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.ai_action_favorite) {
+            Boolean saved = viewModel.toggleFavorite();
+            if (saved != null) {
+                Snackbar.make(root, saved ? R.string.ai_fav_saved : R.string.ai_fav_removed,
+                        Snackbar.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /** Back to the Recipes list. */
