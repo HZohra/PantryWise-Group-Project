@@ -1,0 +1,7 @@
+stateDiagram-v2
+    [*] --> Planned : save in a slot
+    Planned --> Planned : change recipe
+    Planned --> Cooked : mark as cooked
+    Cooked --> Planned : mark as not cooked
+    Planned --> [*] : remove
+    Cooked --> [*] : remove

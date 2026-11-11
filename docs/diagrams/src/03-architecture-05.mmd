@@ -1,0 +1,11 @@
+flowchart LR
+    req["HTTP request"] --> json["express.json<br/>limit 100 kB"]
+    json --> lim["apiLimiter<br/>all /api routes"]
+    lim --> route["Route<br/>+ validateBody or validateQuery<br/>+ aiLimiter or recipeLimiter"]
+    route --> ctl["Controller"]
+    ctl --> svc["Service"]
+    svc --> claude["claudeService<br/>Anthropic SDK"]
+    svc --> edamam["edamamService<br/>Edamam HTTP"]
+    svc --> usda["productService<br/>USDA HTTP"]
+    route -. "no route" .-> nf["notFound 404"]
+    ctl -. "any error" .-> eh["errorHandler<br/>one JSON error shape"]

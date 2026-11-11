@@ -21,9 +21,9 @@ import java.util.List;
  * (the repository takes care of that).
  *
  * the freshness filters split the active inventory without gaps or overlaps:
- *   - expired: 0 < expirationDate < now
- *   - use soon: now < expirationDate < useSoonLimit
- *   - fresh: expirationDate = 0 (unknown) or expirationDate > useSoonLimit
+ *   - expired: {@code 0 < expirationDate < now}
+ *   - use soon: {@code now < expirationDate < useSoonLimit}
+ *   - fresh: expirationDate = 0 (unknown) or {@code expirationDate > useSoonLimit}
  */
 
 @Dao

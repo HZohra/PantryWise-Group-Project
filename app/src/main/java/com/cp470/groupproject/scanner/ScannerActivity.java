@@ -255,7 +255,7 @@ public class ScannerActivity extends AppCompatActivity {
                             Log.d("ScannerActivity",
                                     "Barcode detected: " + barcodeValue);
 
-                            // Look up the scanned product using the USDA API
+                            // Look up the scanned product through the PantryWise backend
                             barcodeViewModel.lookupProduct(barcodeValue);
                         }
                     }

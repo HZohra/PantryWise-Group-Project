@@ -16,8 +16,6 @@
     <string name="scanner_error_invalid_barcode_scan">Código no válido. Escanea un código UPC o EAN válido.</string>
     <string name="scanner_error_invalid_barcode_manual">Introduce un código válido (8, 12, 13 o 14 dígitos)</string>
     <string name="scanner_error_lookup_failed">No se pudo obtener la información del producto. Inténtalo de nuevo.</string>
-    <string name="scanner_error_not_found">Producto no encontrado. Introduce el alimento manualmente.</string>
     <string name="scanner_error_not_in_database">Producto no encontrado en la base de datos de USDA. Introdúcelo manualmente.</string>
-    <string name="scanner_error_incomplete">La información del producto está incompleta. Introdúcelo manualmente.</string>
     <string name="scanner_error_network">Error de red. Inténtalo de nuevo.</string>
 </resources>

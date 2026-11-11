@@ -1,0 +1,16 @@
+flowchart TD
+    Main["MainActivity<br/>PantryWise home"]
+    Main --> Shop[ShoppingListActivity]
+    Main --> Plan[MealPlannerActivity]
+    Main --> Waste[WasteSummaryActivity]
+    Main --> AddFood["AddFoodActivity<br/>(optionally opens the scanner)"]
+    AddFood --> Scan[ScannerActivity]
+    Main --> Detail["ItemDetailActivity<br/>(tap a food item)"]
+    Main --> Settings[SettingsActivity]
+    Main --> AI[AiAssistantActivity]
+    Main --> Recipes[RecipesActivity]
+    Main --> Favs[FavoritesActivity]
+    Recipes --> RDetail[RecipeDetailActivity]
+    Recipes --> AIRecipe[AiRecipeActivity]
+    Favs --> Saved[SavedRecipeActivity]
+    Notif(["Expiration notification"]) --> Shop

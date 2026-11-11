@@ -1,0 +1,15 @@
+flowchart LR
+    user(["Household member"])
+    app["PantryWise<br/>Android app<br/>(Java, Room)"]
+    backend["PantryWise backend<br/>(Node.js, Express)"]
+    claude["Anthropic Claude API"]
+    edamam["Edamam<br/>Recipe Search API"]
+    usda["USDA FoodData Central"]
+    os["Android system<br/>(WorkManager, notifications,<br/>camera, share sheet)"]
+
+    user -->|"uses"| app
+    app -->|"HTTPS or local HTTP<br/>JSON, no API keys"| backend
+    backend -->|"barcode lookup"| usda
+    backend -->|"chat, AI recipe,<br/>substitutes"| claude
+    backend -->|"search, recommend,<br/>nutrition"| edamam
+    app <-->|"schedule work, show alerts,<br/>camera, share"| os

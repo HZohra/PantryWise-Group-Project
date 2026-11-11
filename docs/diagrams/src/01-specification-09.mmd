@@ -1,0 +1,27 @@
+flowchart TD
+    a(["Tap Add Food"]) --> b["Open the form"]
+    b --> c{"Tap Scan barcode?"}
+    c -->|"no"| i["Type the name"]
+    c -->|"yes"| d{"Camera permission?"}
+    d -->|"no"| e["Explain, then ask"]
+    e --> f{"Allowed?"}
+    f -->|"no"| g["Message. Type the barcode or the name"]
+    g --> i
+    f -->|"yes"| h["Camera preview"]
+    d -->|"yes"| h
+    h --> j["Read the barcode, or type it by hand"]
+    j --> k{"8, 12, 13 or 14 digits?"}
+    k -->|"no"| l["Error message"]
+    l --> h
+    k -->|"yes"| m["Ask the backend for the product"]
+    m --> n{"Answer"}
+    n -->|"name"| o["Return the name to the form"]
+    n -->|"404 or error"| p["Message. Retry or type the name"]
+    p --> h
+    o --> q["Complete quantity, unit, place and date"]
+    i --> q
+    q --> r{"Valid?"}
+    r -->|"no"| s["Show the error"]
+    s --> q
+    r -->|"yes"| t["Save as ACTIVE"]
+    t --> u(["Toast Saved, form closes"])

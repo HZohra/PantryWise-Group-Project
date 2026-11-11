@@ -1,0 +1,108 @@
+classDiagram
+    class AiRepository {
+        +sendChatMessage(message, history, callback)
+        +generateRecipe(preferences, callback)
+    }
+    class RecipeRepository {
+        +recommend(query, preferences, zeroWaste, limit, callback)
+        +substitute(recipeTitle, ingredient, lines, callback)
+        +cleanQuery(query)$ String
+    }
+    class AiApiService {
+        <<interface>>
+        +chat(ChatRequest) Call
+        +generateRecipe(AiRecipeRequest) Call
+        +searchRecipes(...) Call
+        +recommendRecipes(RecommendRequest) Call
+        +substitute(SubstituteRequest) Call
+        +lookupProduct(code) Call
+    }
+    class ApiClient {
+        +getService()$ AiApiService
+    }
+    class ApiCalls {
+        +execute(call)$ ApiResult
+    }
+    class ApiResult {
+        +isSuccess() boolean
+        +getData()
+        +getError() AiError
+    }
+    class AiError {
+        +String code
+        +int httpStatus
+        +Integer retryAfterSeconds
+        +isRateLimited() boolean
+    }
+    class InventoryMapper {
+        +toDtos(items, now)$ List
+    }
+    class ChatRequest {
+        +String message
+        +List history
+        +List inventory
+        +String locale
+        +PreferencesDto preferences
+    }
+    class ChatMessageDto {
+        +String role
+        +String content
+    }
+    class InventoryItemDto {
+        +String name
+        +Double quantity
+        +String unit
+        +Integer daysUntilExpiry
+    }
+    class PreferencesDto {
+        +String diet
+        +List health
+        +String cuisine
+        +List allergies
+        +String fitnessGoal
+    }
+    class ChatResponse {
+        +String reply
+    }
+    class AiRecipeRequest
+    class AiRecipeResponse
+    class AiRecipeDto
+    class AiRecipeIngredientDto
+    class RecommendRequest
+    class RecommendResponse
+    class RecipeDto
+    class MatchDto
+    class NutritionDto
+    class SubstituteRequest
+    class SubstituteResponse
+    class SubstituteDto
+    class ApiErrorResponse
+
+    AiRepository --> AiApiService
+    AiRepository --> ApiCalls
+    AiRepository --> InventoryMapper
+    RecipeRepository --> AiApiService
+    RecipeRepository --> ApiCalls
+    RecipeRepository --> InventoryMapper
+    ApiClient ..> AiApiService : creates
+    ApiCalls --> ApiResult
+    ApiCalls ..> ApiErrorResponse : parses errors
+    ApiResult --> AiError
+    InventoryMapper ..> InventoryItemDto
+    ChatRequest *-- ChatMessageDto
+    ChatRequest *-- InventoryItemDto
+    ChatRequest o-- PreferencesDto
+    AiApiService ..> ChatRequest
+    AiApiService ..> ChatResponse
+    AiApiService ..> AiRecipeRequest
+    AiApiService ..> AiRecipeResponse
+    AiApiService ..> RecommendRequest
+    AiApiService ..> RecommendResponse
+    AiApiService ..> SubstituteRequest
+    AiApiService ..> SubstituteResponse
+    AiRecipeResponse *-- AiRecipeDto
+    AiRecipeDto *-- AiRecipeIngredientDto
+    RecommendResponse *-- RecipeDto
+    RecipeDto *-- MatchDto
+    RecipeDto *-- NutritionDto
+    SubstituteResponse *-- SubstituteDto

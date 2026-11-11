@@ -1,0 +1,95 @@
+classDiagram
+    class AiAssistantActivity
+    class AiChatViewModel {
+        +sendMessage(text)
+        +retry()
+        +newChat()
+        +needsConsent() boolean
+        +giveConsent()
+        +getMessages() LiveData
+    }
+    class ChatMessageAdapter
+    class ChatMessage
+    class RecipesActivity
+    class RecipeViewModel {
+        +loadIfNeeded()
+        +search(query) boolean
+        +setZeroWaste(enabled)
+        +retry()
+    }
+    class RecipeAdapter
+    class RecipeCardFormatter
+    class RecipeDetailActivity
+    class RecipeDetailViewModel {
+        +findSubstitute(ingredient)
+        +toggleFavorite() Boolean
+        +addMissingToShoppingList(callback)
+        +planMeal(date, mealType, ...) boolean
+    }
+    class AiRecipeActivity
+    class AiRecipeViewModel {
+        +generate()
+        +toggleFavorite() Boolean
+        +addMissingToShoppingList(callback)
+        +planMeal(date, mealType, ...) boolean
+    }
+    class FavoritesActivity
+    class FavoritesViewModel {
+        +remove(recipe)
+        +restore(recipe)
+    }
+    class SavedRecipeActivity
+    class SavedRecipeViewModel
+    class IngredientMatcher {
+        +matchLine(line, have, missing)$ Match
+    }
+    class MissingIngredients {
+        +fromAi(recipe)$ List
+        +fromDetailRows(rows)$ List
+    }
+    class FavoriteRecipeMapper
+    class ChatLauncher {
+        +openWithDraft(context, draft)$ Intent
+    }
+    class MealPlanPicker
+    class AiErrorText
+    class RecipeErrorText
+    class AiRecipeErrorText
+    class AiRepository
+    class RecipeRepository
+    class PantryRepository
+
+    AiAssistantActivity --> AiChatViewModel
+    AiAssistantActivity --> ChatMessageAdapter
+    ChatMessageAdapter --> ChatMessage
+    AiAssistantActivity ..> AiErrorText
+    RecipesActivity --> RecipeViewModel
+    RecipesActivity --> RecipeAdapter
+    RecipeAdapter --> RecipeCardFormatter
+    RecipesActivity ..> RecipeErrorText
+    RecipesActivity ..> RecipeDetailActivity : opens
+    RecipesActivity ..> AiRecipeActivity : opens
+    RecipeDetailActivity --> RecipeDetailViewModel
+    RecipeDetailActivity ..> IngredientMatcher
+    RecipeDetailActivity ..> ChatLauncher : Ask assistant
+    RecipeDetailActivity ..> MealPlanPicker
+    AiRecipeActivity --> AiRecipeViewModel
+    AiRecipeActivity ..> AiRecipeErrorText
+    AiRecipeActivity ..> MealPlanPicker
+    FavoritesActivity --> FavoritesViewModel
+    FavoritesActivity ..> SavedRecipeActivity : opens
+    SavedRecipeActivity --> SavedRecipeViewModel
+    ChatLauncher ..> AiAssistantActivity
+    AiChatViewModel --> AiRepository
+    AiRecipeViewModel --> AiRepository
+    AiRecipeViewModel ..> MissingIngredients
+    AiRecipeViewModel ..> FavoriteRecipeMapper
+    RecipeViewModel --> RecipeRepository
+    RecipeDetailViewModel --> RecipeRepository
+    RecipeDetailViewModel ..> MissingIngredients
+    RecipeDetailViewModel ..> FavoriteRecipeMapper
+    RecipeDetailViewModel --> PantryRepository
+    FavoritesViewModel --> PantryRepository
+    SavedRecipeViewModel --> PantryRepository
+    AiRepository --> PantryRepository : reads the pantry
+    RecipeRepository --> PantryRepository : reads the pantry

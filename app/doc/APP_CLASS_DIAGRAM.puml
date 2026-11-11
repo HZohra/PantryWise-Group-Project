@@ -1,0 +1,3045 @@
+@startuml
+class com.cp470.groupproject.data.model.FavoriteRecipeWithIngredients {
++ FavoriteRecipe recipe
++ List<FavoriteRecipeIngredient> rows
++ List<FavoriteRecipeStep> stepRows
++ FavoriteRecipe toRecipe()
++ {static} List<FavoriteRecipe> toRecipes(List<FavoriteRecipeWithIngredients>)
+}
+
+
+class com.cp470.groupproject.data.entity.MealPlan {
++ long id
++ long planDate
++ String mealType
++ String recipeId
++ String recipeTitle
++ List<MealPlanIngredient> ingredients
++ boolean completed
++ long createdAt
++ List<String> ingredientTexts()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.AiRecipeIngredientDto {
++ String name
++ String amount
++ boolean inPantry
++ boolean expiring
++ boolean staple
+}
+
+class com.cp470.groupproject.data.remote.dto.ChatResponse {
++ String reply
+}
+
+class com.cp470.groupproject.util.UnitUtils {
+- {static} Map<String,Alias> ALIASES
+- {static} void add(String,double,String)
+- {static} String key(String)
++ {static} boolean isKnownUnit(String)
++ {static} String canonicalUnit(String)
++ {static} Quantity toBase(double,String)
++ {static} boolean sameDimension(String,String)
++ {static} String displayUnit(String)
++ {static} Quantity pretty(double,String)
+- {static} double round(double)
+}
+
+
+class com.cp470.groupproject.util.UnitUtils$Quantity {
++ double value
++ String unit
+}
+
+class com.cp470.groupproject.util.UnitUtils$Alias {
+~ String base
+~ double factor
+~ String canonical
+}
+
+class com.cp470.groupproject.shopping.StorePreferencesTest {
+- SharedPreferences prefs
+- SharedPreferences.Editor editor
+- StorePreferences stores
++ void setUp()
++ void getStoreNames_nothingSaved_isEmpty()
++ void getStoreNames_onlyReturnsSavedTypes()
++ void setStoreName_trimsAndSaves()
++ void setStoreName_blank_removesTheKey()
++ void setStoreName_null_removesTheKey()
++ void setStoreName_usesApplyNotCommit()
++ void isGroupByStore_nothingSaved_defaultsToTrue()
++ void isGroupByStore_savedFalse_isFalse()
++ void setGroupByStore_false_isSaved()
+}
+
+
+class com.cp470.groupproject.data.dao.FoodSql {
++ {static} String ACTIVE
++ {static} String ORDER
+}
+
+class com.cp470.groupproject.ui.ai.RecipeCardFormatter {
+~ {static} boolean hasMatch(MatchDto)
+~ {static} String expiringNames(MatchDto)
+~ {static} Integer minutes(Double)
+~ {static} String joinMeta(String)
+}
+
+class com.cp470.groupproject.data.remote.AiApiServiceSmokeTest {
+- AiApiService api
++ void health_returnsOk()
++ void chat_withInventory_returnsReply()
++ void chat_emptyMessage_returnsValidationError()
+}
+
+
+class com.cp470.groupproject.ui.mealplanner.MealPlanGrouper {
++ {static} List<DayPlan> group(List<MealPlan>,long,ZoneId)
+}
+
+class com.cp470.groupproject.util.IngredientParser {
+~ {static} Pattern QUANTITY
+- {static} Pattern LINK_WORD
++ {static} Parsed parse(String)
+- {static} Parsed withoutQuantity(String)
+~ {static} String stripLinkWord(String)
+~ {static} double toNumber(String)
+- {static} String capitalize(String)
+}
+
+
+class com.cp470.groupproject.util.IngredientParser$Parsed {
++ String normalizedName
++ String displayName
++ double quantity
++ String unit
++ boolean explicitQuantity
+}
+
+enum com.cp470.groupproject.data.model.Freshness {
++  FRESH
++  USE_SOON
++  EXPIRED
++  NO_DATE
+}
+
+class com.cp470.groupproject.data.remote.dto.AiRecipeRequest {
++ {static} int MAX_SERVINGS
++ List<InventoryItemDto> inventory
++ String locale
++ PreferencesDto preferences
++ int servings
+}
+
+class com.cp470.groupproject.ui.ai.AiRecipeErrorTextTest {
+- {static} AiError error(String)
++ void recipeSpecificCodes_getTheirOwnText()
++ void networkAndBusy_useTheAssistantTexts()
+}
+
+class com.cp470.groupproject.data.entity.FavoriteRecipeIngredient {
++ long id
++ long favoriteId
+}
+
+class com.cp470.groupproject.util.UnitUtilsTest {
++ void toBase_kgToGrams()
++ void toBase_litersToMilliliters()
++ void toBase_pieceAliases()
++ void toBase_unknownUnitIsKept()
++ void sameDimension_comparesWhatIsMeasured()
++ void isKnownUnit_acceptsOnlyListedUnits()
++ void pretty_promotesToKgAndL()
++ void pretty_roundsToTwoDecimals()
++ void displayUnit_pcsIsEmpty()
++ void toBase_gramAbbreviationAndSpanishNames()
++ void toBase_spanishKilosAndLitersAreConverted()
++ void isKnownUnit_spanishKitchenUnits()
++ void canonicalUnit_returnsTheMainNameOfTheUnit()
++ void canonicalUnit_unknownUnit_isNull()
+}
+
+interface com.cp470.groupproject.data.dao.FoodItemDao {
+~ long insert(FoodItem)
+~ List<Long> insertAll(List<FoodItem>)
+~ int update(FoodItem)
+~ int delete(FoodItem)
+~ int updateStatus(long,String)
+~ FoodItem getById(long)
+~ LiveData<FoodItem> observeById(long)
+~ FoodItem findActiveByBarcode(String)
+~ LiveData<List<FoodItem>> observeActive()
+~ LiveData<List<FoodItem>> observeByLocation(long)
+~ LiveData<List<FoodItem>> observeByCategory(long)
+~ LiveData<List<FoodItem>> observeFresh(long)
+~ LiveData<List<FoodItem>> observeUseSoon(long,long)
+~ LiveData<List<FoodItem>> observeExpired(long)
+~ List<FoodItem> getActiveSync()
+~ List<FoodItem> getExpiringSoonSync(long,long)
+~ List<FoodItem> findActiveByNormalizedName(String)
+~ List<FoodItem> searchActiveByName(String)
+~ List<StockSummary> getStockSummarySync(long)
+~ int countActive()
+}
+
+class com.cp470.groupproject.ui.ai.SavedRecipeActivity {
+- {static} String EXTRA_RECIPE_ID
+- View root
++ {static} Intent newIntent(Context,String)
+# void onCreate(Bundle)
+- void applyWindowInsets()
+- void render(FavoriteRecipe)
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.data.repository.AiRecipeRepositoryTest {
+- Application app
+- ApiResult<AiRecipeResponse> generateAndWait(AiRepository)
++ void generate_withSamplePantry_returnsCheckedRecipe()
++ void generate_serverUnreachable_returnsNetworkError()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.RecommendRequest {
++ {static} String MODE_STANDARD
++ {static} String MODE_ZERO_WASTE
++ {static} int MAX_LIMIT
++ List<InventoryItemDto> inventory
++ String query
++ PreferencesDto preferences
++ int limit
++ String mode
+}
+
+class com.cp470.groupproject.data.dao.ShoppingItemDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<ShoppingItem> __insertionAdapterOfShoppingItem
+- EntityDeletionOrUpdateAdapter<ShoppingItem> __deletionAdapterOfShoppingItem
+- EntityDeletionOrUpdateAdapter<ShoppingItem> __updateAdapterOfShoppingItem
+- SharedSQLiteStatement __preparedStmtOfSetChecked
+- SharedSQLiteStatement __preparedStmtOfDeleteChecked
+- SharedSQLiteStatement __preparedStmtOfDeleteAutoGeneratedPending
++ long insert(ShoppingItem)
++ List<Long> insertAll(List<ShoppingItem>)
++ int delete(ShoppingItem)
++ int update(ShoppingItem)
++ int setChecked(long,boolean)
++ int deleteChecked()
++ int deleteAutoGeneratedPending()
++ LiveData<List<ShoppingItem>> observeAll()
++ List<ShoppingItem> getAllSync()
++ ShoppingItem findPendingByNormalizedName(String)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.shopping.StorePreferences {
+~ {static} String FILE_NAME
+~ {static} String KEY_GROUP_BY_STORE
+- {static} String KEY_STORE_PREFIX
+- SharedPreferences prefs
++ {static} StorePreferences from(Context)
++ Map<StoreType,String> getStoreNames()
++ void setStoreName(StoreType,String)
++ boolean isGroupByStore()
++ void setGroupByStore(boolean)
+}
+
+
+class com.cp470.groupproject.util.WindowInsetsHelper {
++ {static} void applySystemBarPadding(View)
+}
+
+class com.cp470.groupproject.util.ShoppingListFormatterTest {
+- {static} ShoppingItem item(String,double,String,String,boolean)
++ void format_emptyList_onlyHeader()
++ void format_uncheckedAndChecked()
++ void format_quantityWithoutUnit()
++ void format_quantityWithUnit()
++ void format_decimalQuantity()
++ void format_withStore()
++ void format_keepsGivenOrder()
+}
+
+class com.cp470.groupproject.data.remote.ChatRequestJsonTest {
+- Gson gson
++ void localeIsSent_nullPreferencesAreLeftOut()
++ void oldConstructor_sendsNoLocaleOrPreferences()
++ void preferences_useBackendFieldNames_andSkipUnsetFields()
+}
+
+
+interface com.cp470.groupproject.data.dao.ShoppingItemDao {
+~ long insert(ShoppingItem)
+~ List<Long> insertAll(List<ShoppingItem>)
+~ int update(ShoppingItem)
+~ int delete(ShoppingItem)
+~ int setChecked(long,boolean)
+~ int deleteChecked()
+~ LiveData<List<ShoppingItem>> observeAll()
+~ List<ShoppingItem> getAllSync()
+~ ShoppingItem findPendingByNormalizedName(String)
+~ int deleteAutoGeneratedPending()
+}
+
+class com.cp470.groupproject.data.dao.FavoriteRecipeDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<FavoriteRecipe> __insertionAdapterOfFavoriteRecipe
+- SharedSQLiteStatement __preparedStmtOfDeleteByRecipeId
++ long insert(FavoriteRecipe)
++ int deleteByRecipeId(String)
++ LiveData<List<FavoriteRecipe>> observeAll()
++ List<FavoriteRecipe> getAllSync()
++ LiveData<Integer> observeIsFavorite(String)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.SubstituteResponse {
++ {static} String SOURCE_LOCAL
++ {static} String SOURCE_AI
++ String ingredient
++ String source
++ List<SubstituteDto> substitutes
++ String tip
+}
+
+class com.cp470.groupproject.data.model.ItemStatus {
++ {static} String ACTIVE
++ {static} String CONSUMED
++ {static} String WASTED
++ {static} String EXPIRED
++ {static} String DONATED
++ {static} String[] DISPOSITIONS
++ {static} boolean isDisposition(String)
++ {static} boolean isWaste(String)
+}
+
+
+class com.cp470.groupproject.work.ExpirationWorker {
+- {static} String TAG
+- {static} int MAX_ATTEMPTS
++ Result doWork()
+}
+
+
+class com.cp470.groupproject.data.dao.CategoryDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<Category> __insertionAdapterOfCategory
+- EntityDeletionOrUpdateAdapter<Category> __deletionAdapterOfCategory
+- EntityDeletionOrUpdateAdapter<Category> __updateAdapterOfCategory
++ long insert(Category)
++ int delete(Category)
++ int update(Category)
++ LiveData<List<Category>> observeAll()
++ List<Category> getAllSync()
++ LiveData<Category> observeById(long)
++ Category getByName(String)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.util.StoreAdvisor {
+- {static} Set<String> PANTRY
+- {static} Set<String> FISH
+- {static} Set<String> BUTCHER
+- {static} Set<String> BAKERY
+- {static} Set<String> PRODUCE
++ {static} StoreType suggest(String)
++ {static} String mapsUri(String)
+- {static} boolean anyWordIn(String[],Set<String>)
+- {static} boolean contains(Set<String>,String)
+- {static} Set<String> words(String)
+}
+
+
+enum com.cp470.groupproject.util.StoreType {
++  BUTCHER
++  FISH
++  PRODUCE
++  BAKERY
++  GENERAL
+- String key
++ String getKey()
+}
+
+
+class com.cp470.groupproject.work.ExpirationCheckerTest {
+- {static} long NOW
+- {static} long DAY
+~ PantryRepository repo
+~ NotificationHelper notifier
+- {static} FoodItem item(String,long)
++ void run_expiredAndSoon_notifiesWithRightPartition()
++ void run_onlyFreshOrNoDate_doesNotNotify()
++ void run_emptyInventory_doesNotNotify()
++ void run_exactlyAtWindowLimit_isIncluded()
++ void run_justBeyondWindow_isNotIncluded()
++ void run_expirationEqualsNow_isSoonNotExpired()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.SubstituteRequest {
++ String recipeTitle
++ String ingredient
++ List<String> ingredientLines
++ List<InventoryItemDto> inventory
++ String locale
++ PreferencesDto preferences
+}
+
+class com.cp470.groupproject.data.entity.FavoriteRecipeStep {
++ long id
++ long favoriteId
++ int position
++ String text
+}
+
+class com.cp470.groupproject.ui.settings.SettingsActivity {
+- SharedPreferences preferences
+- RadioGroup themeOptions
+- SeekBar textSizeSlider
+- TextView textSizeValue
+# void onCreate(Bundle)
+- void loadPreferences()
+- void savePreferences()
+- void applyTheme(String)
+}
+
+
+interface com.cp470.groupproject.data.dao.MealPlanDao {
+~ long insert(MealPlan)
+~ int update(MealPlan)
+~ int delete(MealPlan)
+~ int setCompleted(long,boolean)
+~ void insertIngredients(List<MealPlanIngredient>)
+~ int deleteIngredients(long)
+~ LiveData<List<MealPlanWithIngredients>> observeBetween(long,long)
+~ List<MealPlanWithIngredients> getBetweenSync(long,long)
+~ int deleteBefore(long)
+}
+
+class com.cp470.groupproject.ui.shoppinglist.UiMessage {
++ int resId
++ int quantity
++ Object[] args
++ boolean isPlural
++ boolean offerUndo
++ {static} UiMessage of(int,Object)
++ {static} UiMessage plural(int,int)
++ {static} UiMessage undoable(int)
+}
+
+
+class com.cp470.groupproject.data.entity.FavoriteRecipe {
++ {static} String AI_ID_PREFIX
++ long id
++ String recipeId
++ String title
++ List<FavoriteRecipeIngredient> ingredients
++ List<FavoriteRecipeStep> steps
++ long savedAt
++ String imageUrl
++ String sourceName
++ String sourceUrl
++ Integer servings
++ Integer totalTimeMinutes
++ String tip
++ Double calories
++ Double protein
++ Double carbs
++ Double fat
++ List<String> ingredientTexts()
++ boolean isAi()
++ List<String> stepTexts()
+}
+
+
+class com.cp470.groupproject.ui.mealplanner.IngredientEditor {
+- Context context
+- AutoCompleteTextView name
+- EditText quantity
+- Spinner unit
+- ChipGroup chips
+- List<String> ingredients
+~ void setIngredients(List<String>)
+~ List<String> getIngredients()
+~ boolean addTyped()
+- void clearInputs()
+- void showChips()
+- void edit(int)
+}
+
+
+class com.cp470.groupproject.ui.ai.RecipeCardFormatterTest {
+- {static} ExpiringItemDto expiring(String,int)
++ void hasMatch_onlyWhenThereAreIngredients()
++ void expiringNames_joinsInOrder_orNullWhenNone()
++ void minutes_roundsAndHidesUnknown()
++ void joinMeta_skipsEmptyParts()
+}
+
+interface com.cp470.groupproject.data.dao.FavoriteRecipeDao {
+~ long insert(FavoriteRecipe)
+~ int deleteByRecipeId(String)
+~ void insertIngredients(List<FavoriteRecipeIngredient>)
+~ void insertSteps(List<FavoriteRecipeStep>)
+~ LiveData<List<FavoriteRecipeWithIngredients>> observeAll()
+~ List<FavoriteRecipeWithIngredients> getAllSync()
+~ FavoriteRecipeWithIngredients getByRecipeIdSync(String)
+~ LiveData<Integer> observeIsFavorite(String)
+}
+
+class com.cp470.groupproject.data.remote.dto.ApiErrorResponse {
++ ErrorBody error
+}
+
+class com.cp470.groupproject.data.remote.dto.ApiErrorResponse$ErrorBody {
++ String code
++ String message
++ List<String> details
+}
+
+class com.cp470.groupproject.work.ExpirationSchedulerTest {
+- WorkManager workManager
+- ExpirationScheduler scheduler
++ void setUp()
++ void scheduleDaily_enqueuesUniquePeriodicWorkWithKeepPolicy()
++ void schedulePeriodic_usesGivenPolicyAndName()
++ void cancel_cancelsUniqueWorkByName()
++ void runNow_enqueuesOneTimeWorkWithReplace()
+}
+
+
+class com.cp470.groupproject.data.ShoppingAddMissingTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository repository
++ void setUp()
++ void tearDown()
++ void addsNewItems_andReportsHowMany()
++ void itemAlreadyPending_isNotAddedAgain()
++ void tickedItem_canBeAddedAgain()
++ void repeatsInsideTheSameRequest_areAddedOnce()
+}
+
+
+class com.cp470.groupproject.util.ExpirationTiming {
++ {static} int calendarDaysUntil(long,long,ZoneId)
++ {static} long delayUntilNextHour(long,int,ZoneId)
+}
+
+abstract class com.cp470.groupproject.data.db.PantryDatabase {
++ {static} String DATABASE_NAME
++ {static} ExecutorService WRITE_EXECUTOR
+- {static} PantryDatabase instance
++ {abstract}FoodItemDao foodItemDao()
++ {abstract}CategoryDao categoryDao()
++ {abstract}StorageLocationDao storageLocationDao()
++ {abstract}ShoppingItemDao shoppingItemDao()
++ {abstract}FavoriteRecipeDao favoriteRecipeDao()
++ {abstract}ConsumptionHistoryDao consumptionHistoryDao()
++ {abstract}MealPlanDao mealPlanDao()
++ {static} PantryDatabase getInstance(Context)
++ {static} RoomDatabase.Callback seedCallback()
++ {static} void seed(SupportSQLiteDatabase)
+}
+
+
+class com.cp470.groupproject.ui.settings.DisplayPreferences {
++ {static} int getTextSize(Context)
++ {static} void applyTextSize(Activity)
+- {static} void applyToView(View,int)
+}
+
+class com.cp470.groupproject.ui.ai.ChatMessageAdapter {
+~ {static} int TYPE_USER
+~ {static} int TYPE_AI
+~ {static} DiffUtil.ItemCallback<ChatMessage> DIFF_CALLBACK
++ int getItemViewType(int)
++ MessageViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(MessageViewHolder,int)
+}
+
+
+class com.cp470.groupproject.ui.ai.ChatMessageAdapter$MessageViewHolder {
+- TextView textView
+~ void bind(ChatMessage)
+}
+
+
+class com.cp470.groupproject.data.FavoriteRecipeRepositoryTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository repository
++ void setUp()
++ void tearDown()
+- {static} FavoriteRecipe aiRecipe(String,List<String>,List<String>)
+- int countRows(String)
++ void saveFavorite_withSteps_loadsThemInPositionOrder()
++ void saveFavorite_withDetails_keepsThem()
++ void saveFavorite_withoutDetails_leavesThemNull()
++ void saveFavorite_sameRecipeAgain_replacesStepsWithoutDuplicates()
++ void saveFavorite_loadedFromDatabaseAndSavedAgain_doesNotDuplicateRows()
++ void removeFavorite_withSteps_deletesItsStepRows()
++ void getFavoriteRecipeSync_returnsTheSavedRecipeOrNull()
++ void getFavoriteRecipes_observed_includesSteps()
++ void isAi_dependsOnTheRecipeIdPrefix()
+}
+
+
+class com.cp470.groupproject.data.repository.RecipeRepositoryLimitsTest {
+- {static} String repeat(char,int)
++ void clampText_trimsAndCuts()
++ void cleanLines_dropsBlanks_andRespectsLimits()
+}
+
+class com.cp470.groupproject.shopping.ShoppingListGeneratorTest {
+- {static} long FROM
+- {static} long TO
+~ PantryRepository repo
+~ ArgumentCaptor<List<ShoppingItem>> captor
+~ ArgumentCaptor<PantryRepository.ResultCallback<Integer>> callbackCaptor
+- {static} MealPlan plan(String)
+- {static} StockSummary stock(String,String,double)
+- void givenPlans(MealPlan)
+- ShoppingListGenerator.Result generateAndFinish(int)
++ void generate_readsPlanStockAndList_thenReplacesAutoItems()
++ void generate_nothingMissing_stillReplacesWithEmptyList()
++ void generate_callbackGetsTheNumberOfItemsAdded()
++ void generate_callbackGetsTheNumberOfPendingMeals()
++ void generate_noMealsInThePeriod_reportsZeroMeals()
++ void generate_onlyCookedMeals_reportsZeroMeals()
++ void generate_mealsButNothingMissing_reportsMealsWithZeroAdded()
+}
+
+
+class com.cp470.groupproject.work.ExpirationChecker {
+- PantryRepository repository
+- NotificationHelper notifier
++ int run(long)
+}
+
+
+class com.cp470.groupproject.data.LiveDataTestUtil {
++ {static} T getValue(LiveData<T>)
+}
+
+class com.cp470.groupproject.notification.NotificationHelper {
+- {static} String TAG
++ {static} String CHANNEL_ID
++ {static} int NOTIFICATION_ID
+- {static} int MAX_LINES
+- Context context
++ void createChannel()
++ void showExpirationNotification(List<FoodItem>,List<FoodItem>,long)
+- List<String> buildLines(List<FoodItem>,List<FoodItem>,long)
+}
+
+
+class com.cp470.groupproject.data.model.WasteStats {
++ int totalCount
++ int consumedCount
++ int wastedCount
++ int expiredCount
++ int donatedCount
++ int getWasteCount()
++ double getWastePercent()
++ double getConsumedPercent()
+}
+
+
+class com.cp470.groupproject.scanner.BarcodeViewModelTest {
++ InstantTaskExecutorRule rule
+- AiApiService api
+- Call<ProductResponse> call
+- BarcodeViewModel viewModel
++ void setUp()
+- Callback<ProductResponse> captureCallback()
+- {static} ProductResponse product(String)
++ void lookupProduct_invalidBarcode_setsErrorAndDoesNotCallBackend()
++ void lookupProduct_nullBarcode_setsError()
++ void lookupProduct_validBarcode_isLoadingUntilTheAnswerArrives()
++ void lookupProduct_success_publishesTheTrimmedName()
++ void lookupProduct_http404_saysTheProductIsNotInTheDatabase()
++ void lookupProduct_http503_saysTheLookupFailed()
++ void lookupProduct_blankName_saysTheLookupFailed()
++ void lookupProduct_networkFailure_saysNetworkError()
++ void lookupProduct_afterAnError_aNewLookupClearsIt()
+}
+
+
+class com.cp470.groupproject.data.remote.InventoryMapperTest {
+- {static} long NOW
+- {static} long DAY
+- {static} long HOUR
+- {static} FoodItem item(String,String,double,String,long)
++ void daysUntilExpiry_noDate_isNull()
++ void daysUntilExpiry_roundsDown_likeExpiryUtils()
++ void negativeDays_matchesExpiredFreshness()
++ void toDto_prefersNormalizedName_andCleansEmptyValues()
++ void toDto_fallsBackToName_andClampsLongValues()
++ void toDtos_sortsMostUrgentFirst_unknownLast()
++ void toDtos_keepsAtMostMaxItems()
+}
+
+
+class com.cp470.groupproject.ui.ai.AiRecipeFavoriteTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository pantry
+- AiRecipeViewModel viewModel
+- Observer<AiRecipeViewModel.FavoriteState> ignore
++ void setUp()
++ void tearDown()
+- {static} AiRecipeResponse response(String,String)
++ void beforeAnyRecipe_thereIsNothingToSave()
++ void recipeOnScreen_startsNotSaved()
++ void toggle_savesTheRecipeWithItsStepsAndTip()
++ void toggle_twice_removesTheRecipe()
++ void tryAnother_newRecipeStartsNotSaved_andTheOldOneStaysSaved()
++ void tryAnother_thenSave_savesTheNewRecipeNotTheOldOne()
++ void recipeWithoutId_cannotBeSaved()
+}
+
+
+class com.cp470.groupproject.ui.ai.FavoriteRecipeMapperTest {
+- {static} RecipeDto edamam()
+- {static} AiRecipeDto ai()
+- {static} AiRecipeIngredientDto ingredient(String,String)
++ void fromEdamam_copiesIdTitleAndIngredientLines()
++ void fromEdamam_copiesImageAndSource_andRoundsServingsAndTime()
++ void fromEdamam_zeroServingsAndTime_meanUnknown()
++ void fromEdamam_blankTexts_becomeNull()
++ void fromEdamam_nutritionPerServing_isKept()
++ void fromEdamam_nutritionForTheWholeRecipe_isNotStored()
++ void fromEdamam_partlyKnownNutrition_keepsOnlyTheKnownValues()
++ void fromEdamam_withoutIdOrNull_returnsNull()
++ void fromEdamam_missingListsAndTitle_doNotCrash()
++ void fromAi_copiesStepsInOrder_andDropsBlankSteps()
++ void fromAi_copiesIdTitleIngredientsTipAndIsAi()
++ void fromAi_emptyTipAndZeroValues_becomeNull()
++ void fromAi_withoutIngredientLines_buildsThemFromAmountAndName()
++ void fromAi_missingStepsAndLists_doNotCrash()
++ void fromAi_withoutIdOrNull_returnsNull()
+}
+
+class com.cp470.groupproject.data.remote.dto.InventoryItemDto {
++ String name
++ Double quantity
++ String unit
++ Integer daysUntilExpiry
+}
+
+class com.cp470.groupproject.ui.ai.RecipeDetailViewModelTest {
+- {static} RecipeDto omelette(boolean)
++ void buildRows_marksEachLine_andSkipsBlankOnes()
++ void buildRows_withoutMatch_leavesEverythingUnmarked()
++ void buildIngredientList_staysWithinLimit()
+}
+
+class com.cp470.groupproject.data.db.PantryDatabase_Impl {
+- FoodItemDao _foodItemDao
+- CategoryDao _categoryDao
+- StorageLocationDao _storageLocationDao
+- ShoppingItemDao _shoppingItemDao
+- FavoriteRecipeDao _favoriteRecipeDao
+- ConsumptionHistoryDao _consumptionHistoryDao
+- MealPlanDao _mealPlanDao
+# SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration)
+# InvalidationTracker createInvalidationTracker()
++ void clearAllTables()
+# Map<Class<?>,List<Class<?>>> getRequiredTypeConverters()
++ Set<Class<? extends AutoMigrationSpec>> getRequiredAutoMigrationSpecs()
++ List<Migration> getAutoMigrations(Map<Class<? extends AutoMigrationSpec>,AutoMigrationSpec>)
++ FoodItemDao foodItemDao()
++ CategoryDao categoryDao()
++ StorageLocationDao storageLocationDao()
++ ShoppingItemDao shoppingItemDao()
++ FavoriteRecipeDao favoriteRecipeDao()
++ ConsumptionHistoryDao consumptionHistoryDao()
++ MealPlanDao mealPlanDao()
+}
+
+
+class com.cp470.groupproject.data.repository.RecipeSubstituteTest {
+- Application app
+- ApiResult<SubstituteResponse> substituteAndWait(String)
++ void commonIngredient_isAnsweredFromLocalList()
++ void blankIngredient_returnsValidationError()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.SubstituteDto {
++ String name
++ String amount
++ String notes
++ boolean inPantry
+}
+
+class com.cp470.groupproject.ui.ai.AiAssistantActivity {
+- AiChatViewModel viewModel
+- ChatMessageAdapter adapter
+- View root
+- View appBar
+- View content
+- View inputBar
+- RecyclerView messageList
+- TextView welcome
+- LinearProgressIndicator progress
+- TextInputEditText input
+- MaterialButton sendButton
+- Snackbar errorSnackbar
+- int baseListPaddingBottom
+# void onCreate(Bundle)
+- void applyDraft()
+- void applyWindowInsets()
+- void showMessages(List<ChatMessage>)
+- void showLoading(Boolean)
+- void showError(AiError)
+- void dismissError()
+- void reserveSpaceForSnackbar(int)
+- void onSendClicked()
+- void showConsentDialog()
+- void send(String)
++ boolean onCreateOptionsMenu(Menu)
++ boolean onOptionsItemSelected(MenuItem)
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.util.ShoppingInputValidatorTest {
++ void blankName_isRejected()
++ void emptyQuantity_defaultsToOne()
++ void commaDecimal_isAccepted()
++ void zeroOrNegativeQuantity_isRejected()
++ void nonNumericQuantity_isRejected()
++ void name_isTrimmed()
+}
+
+class com.cp470.groupproject.data.dao.StorageLocationDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<StorageLocation> __insertionAdapterOfStorageLocation
+- EntityDeletionOrUpdateAdapter<StorageLocation> __deletionAdapterOfStorageLocation
+- EntityDeletionOrUpdateAdapter<StorageLocation> __updateAdapterOfStorageLocation
++ long insert(StorageLocation)
++ int delete(StorageLocation)
++ int update(StorageLocation)
++ LiveData<List<StorageLocation>> observeAll()
++ List<StorageLocation> getAllSync()
++ LiveData<StorageLocation> observeById(long)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.util.ShoppingListFormatter {
++ {static} String format(String,List<ShoppingItem>)
+- {static} String quantityPrefix(ShoppingItem)
++ {static} String formatQuantity(double)
+}
+
+class com.cp470.groupproject.data.dao.FoodItemDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<FoodItem> __insertionAdapterOfFoodItem
+- EntityDeletionOrUpdateAdapter<FoodItem> __deletionAdapterOfFoodItem
+- EntityDeletionOrUpdateAdapter<FoodItem> __updateAdapterOfFoodItem
+- SharedSQLiteStatement __preparedStmtOfUpdateStatus
++ long insert(FoodItem)
++ List<Long> insertAll(List<FoodItem>)
++ int delete(FoodItem)
++ int update(FoodItem)
++ int updateStatus(long,String)
++ FoodItem getById(long)
++ LiveData<FoodItem> observeById(long)
++ FoodItem findActiveByBarcode(String)
++ LiveData<List<FoodItem>> observeActive()
++ LiveData<List<FoodItem>> observeByLocation(long)
++ LiveData<List<FoodItem>> observeByCategory(long)
++ LiveData<List<FoodItem>> observeFresh(long)
++ LiveData<List<FoodItem>> observeUseSoon(long,long)
++ LiveData<List<FoodItem>> observeExpired(long)
++ List<FoodItem> getActiveSync()
++ List<FoodItem> getExpiringSoonSync(long,long)
++ List<FoodItem> findActiveByNormalizedName(String)
++ List<FoodItem> searchActiveByName(String)
++ List<StockSummary> getStockSummarySync(long)
++ int countActive()
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.data.dao.StorageLocationDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<StorageLocation> __insertionAdapterOfStorageLocation
+- EntityDeletionOrUpdateAdapter<StorageLocation> __deletionAdapterOfStorageLocation
+- EntityDeletionOrUpdateAdapter<StorageLocation> __updateAdapterOfStorageLocation
++ long insert(StorageLocation)
++ int delete(StorageLocation)
++ int update(StorageLocation)
++ LiveData<List<StorageLocation>> observeAll()
++ List<StorageLocation> getAllSync()
++ LiveData<StorageLocation> observeById(long)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.NutritionDto {
++ boolean perServing
++ Integer calories
++ Integer protein
++ Integer carbs
++ Integer fat
+}
+
+class com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter {
+- {static} DiffUtil.ItemCallback<DayPlan> DIFF
+- Listener listener
+- ZoneId zone
+- {static} boolean sameMeal(MealPlan,MealPlan)
++ Holder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(Holder,int)
+- void bindSlot(Context,TextView,DayPlan,String,int)
+}
+
+
+interface com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter$Listener {
+~ void onSlotClicked(long,String,MealPlan)
+}
+
+class com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter$Holder {
+~ TextView dayTitle
+~ TextView breakfast
+~ TextView lunch
+~ TextView dinner
+~ TextView snack
+}
+
+class com.cp470.groupproject.data.FavoriteStepOrderTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository repository
++ void setUp()
++ void tearDown()
++ void stepsSavedOutOfOrder_comeBackInPositionOrder()
++ void twelveSteps_keepNumericOrder_notTextOrder()
++ void stepsOfTwoRecipes_stayWithTheirOwnRecipe()
+}
+
+
+class com.cp470.groupproject.data.ShoppingRepositoryTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository repository
++ void setUp()
++ void tearDown()
+- List<ShoppingItem> currentList()
++ void deleteShoppingItem_removesRow()
++ void updateShoppingItem_renormalizesName()
+}
+
+
+class com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter {
++ {static} int TYPE_HEADER
++ {static} int TYPE_ITEM
+- {static} DiffUtil.ItemCallback<ShoppingRow> DIFF
+- Listener listener
++ int getItemViewType(int)
++ RecyclerView.ViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(RecyclerView.ViewHolder,int)
+- void bindHeader(HeaderHolder,StoreGroup)
+- void bindItem(ItemHolder,ShoppingItem)
+- {static} String subtitle(ShoppingItem)
+}
+
+
+interface com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter$Listener {
+~ void onCheckedChanged(ShoppingItem,boolean)
+~ void onItemClicked(ShoppingItem)
+~ void onMapClicked(StoreGroup)
+}
+
+class com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter$HeaderHolder {
+~ TextView name
+~ TextView count
+~ View map
+}
+
+class com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter$ItemHolder {
+~ CheckBox check
+~ TextView title
+~ TextView subtitle
+~ TextView auto
+}
+
+class com.cp470.groupproject.util.IngredientLineTest {
+- {static} String text(String,String,String)
+- {static} void checkParts(String,String,String,String)
++ void compose_blankRow_givesEmptyText()
++ void compose_nameWithoutQuantity_isPresenceOnly()
++ void compose_quantityAndUnit()
++ void compose_pieces_haveNoUnitText()
++ void compose_commaDecimal_isAccepted()
++ void compose_trimsTheName()
++ void compose_piecesOfSomethingStartingWithAUnitWord_keepPcs()
++ void compose_quantityWithoutName_isAnError()
++ void compose_invalidQuantity_isAnError()
++ void split_quantityUnitAndName()
++ void split_countWithoutUnit()
++ void split_withoutNumber_isNameOnly()
++ void split_doesNotConvertUnits()
++ void split_fractionBecomesDecimal()
++ void split_unitAliasesBecomeFormUnits()
++ void split_emptyOrNull_isEmpty()
++ void composeAfterSplit_keepsTheSavedText()
++ void unitIndex_ignoresLetterCaseAndDefaultsToPieces()
+}
+
+class com.cp470.groupproject.util.StoreGrouperTest {
+- {static} ShoppingItem item(String,String)
+- {static} Map<StoreType,String> names(StoreType,String)
++ void group_explicitStore_beatsAdvisor()
++ void group_emptyStore_usesAdvisorType()
++ void group_blankStore_isTreatedAsEmpty()
++ void group_customName_titlesTheTypeGroup()
++ void group_sameNameDifferentCase_mergesGroups()
++ void group_generalGroup_isLast()
++ void group_namedByHandGroups_areFirstAndAlphabetical()
++ void group_preservesInputOrderInsideGroup()
++ void group_emptyList_returnsNoGroups()
++ void group_checkedItems_stayInTheirGroup()
++ void toRows_addsOneHeaderBeforeEachGroup()
++ void toRows_noGroups_returnsNoRows()
++ void flat_returnsOnlyItemRows()
+}
+
+class com.cp470.groupproject.data.remote.RecipeDetailJsonTest {
+- Gson gson
++ void recipe_parsesNutritionPerServing()
++ void substituteResponse_parsesSourceAndItems()
++ void substituteRequest_leavesOutNullPreferences()
+}
+
+
+class com.cp470.groupproject.data.FoodItemDaoTest {
+- {static} long NOW
+- {static} long DAY
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- FoodItemDao dao
++ void createDb()
++ void closeDb()
+- FoodItem item(String,String,double,long)
++ void insertThenGetById()
++ void updateChangesFields()
++ void deleteRemovesRow()
++ void expiringSoonReturnsOnlyWindowItemsSortedAndActive()
++ void updateStatusRemovesItemFromActiveInventory()
++ void stockSummarySumsByNormalizedNameAndIgnoresExpired()
++ void searchMatchesPartialNames()
++ void observeByLocationFiltersByStorage()
++ void freshUseSoonExpiredPartitionTheInventory()
+}
+
+
+class com.cp470.groupproject.util.WasteStatsCalculator {
++ {static} WasteStats fromCounts(List<DispositionCount>)
+}
+
+class com.cp470.groupproject.work.ExpirationScheduler {
+- {static} String TAG
++ {static} String RUN_NOW_WORK_NAME
++ {static} String UNIQUE_WORK_NAME
++ {static} String DEBUG_WORK_NAME
++ {static} int NOTIFY_HOUR
+- WorkManager workManager
++ {static} ExpirationScheduler from(Context)
++ void runNow()
++ void scheduleDaily(long,ZoneId)
++ void schedulePeriodic(String,long,long,TimeUnit,ExistingPeriodicWorkPolicy)
++ void cancel(String)
+}
+
+
+class com.cp470.groupproject.ui.mealplanner.DayPlan {
++ long dayStartMs
++ Map<String,MealPlan> meals
++ MealPlan get(String)
+}
+
+
+class com.cp470.groupproject.ui.dev.DevToolsActivity {
+- {static} String SAMPLE_MARKER
+- {static} String DEMO_MARKER
+- NotificationPermissionHelper permissionHelper
+# void onCreate(Bundle)
+- void fillDemoScenario()
+- void saveSampleFavorites()
+- void fillShoppingListWithSamples()
+- void addButton(LinearLayout,String,Runnable)
+- void fillDatabaseWithSampleFood()
+- void clearSampleFood()
+- void insert(PantryRepository,String,String,double,String,long,long,long)
+- void removeSample(PantryRepository,String)
+}
+
+
+class com.cp470.groupproject.data.remote.AiError {
++ {static} String NETWORK_ERROR
++ {static} String TIMEOUT
++ {static} String UNEXPECTED_RESPONSE
++ {static} String UNKNOWN
++ {static} String RATE_LIMITED
++ {static} String AI_RATE_LIMITED
++ {static} String VALIDATION_ERROR
++ String code
++ String message
++ int httpStatus
++ Integer retryAfterSeconds
++ boolean isRateLimited()
++ String toString()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.ExpiringItemDto {
++ String name
++ int daysUntilExpiry
+}
+
+class com.cp470.groupproject.ui.ai.PlanDates {
+- {static} TimeZone UTC
+~ {static} long localStartOfDay(long,TimeZone)
+~ {static} long todayAsUtcDate(long,TimeZone)
+}
+
+
+class com.cp470.groupproject.ui.ai.RecipeDetailFavoriteTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository pantry
+- RecipeDetailViewModel viewModel
+- Observer<Boolean> ignore
++ void setUp()
++ void tearDown()
+- {static} RecipeDto omelette(String)
+- void open(RecipeDto)
++ void notSavedYet_heartIsEmpty()
++ void toggle_notSaved_savesTheRecipeAndFillsTheHeart()
++ void toggle_twice_removesTheRecipeAgain()
++ void alreadySavedBefore_heartStartsFilled()
++ void recipeWithoutId_cannotBeSaved()
+}
+
+
+class com.cp470.groupproject.ui.ai.ChatLauncher {
++ {static} String EXTRA_DRAFT
++ {static} Intent openWithDraft(Context,String)
+}
+
+
+class com.cp470.groupproject.ui.ai.FavoriteAdapter {
+~ {static} DiffUtil.ItemCallback<FavoriteRecipe> DIFF_CALLBACK
+- Listener listener
++ FavoriteRecipe getItemAt(int)
++ FavoriteViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(FavoriteViewHolder,int)
++ void onViewRecycled(FavoriteViewHolder)
+}
+
+
+interface com.cp470.groupproject.ui.ai.FavoriteAdapter$Listener {
+~ void onOpen(FavoriteRecipe)
+~ void onRemove(FavoriteRecipe)
+}
+
+class com.cp470.groupproject.ui.ai.FavoriteAdapter$FavoriteViewHolder {
+~ ImageView image
+- TextView name
+- TextView meta
+- View remove
+~ void bind(FavoriteRecipe,Listener)
+}
+
+
+class com.cp470.groupproject.util.ExpirationTimingTest {
+- {static} ZoneId UTC
+- {static} long HOUR_MS
+- {static} long at(ZoneId,int,int,int,int,int)
++ void calendarDaysUntil_sameDay_isZero()
++ void calendarDaysUntil_nextDay_isOneEvenIfOnlyMinutesApart()
++ void calendarDaysUntil_past_isNegative()
++ void calendarDaysUntil_respectsTimeZone()
++ void delayUntilNextHour_beforeTarget()
++ void delayUntilNextHour_exactlyAtTarget_isNextDay()
++ void delayUntilNextHour_afterTarget()
++ void delayUntilNextHour_justBeforeMidnight()
++ void delayUntilNextHour_dstSpringForward()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.RecommendResponse {
++ String mode
++ boolean personalized
++ boolean broadened
++ List<String> searchedFor
++ int count
++ List<RecipeDto> recipes
+}
+
+class com.cp470.groupproject.ui.ai.IngredientMatcherTest {
+- {static} List<String> NONE
++ void exactMatch_isInPantry()
++ void pluralAndDescriptors_stillMatch()
++ void missingItem_returnsItsFoodName()
++ void longestNameWins()
++ void partialWord_doesNotMatch()
++ void noMatchOrNullLists_isUnknown()
++ void normalize_followsBackendRules()
+}
+
+
+class com.cp470.groupproject.data.dao.FoodItemDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<FoodItem> __insertionAdapterOfFoodItem
+- EntityDeletionOrUpdateAdapter<FoodItem> __deletionAdapterOfFoodItem
+- EntityDeletionOrUpdateAdapter<FoodItem> __updateAdapterOfFoodItem
+- SharedSQLiteStatement __preparedStmtOfUpdateStatus
++ long insert(FoodItem)
++ List<Long> insertAll(List<FoodItem>)
++ int delete(FoodItem)
++ int update(FoodItem)
++ int updateStatus(long,String)
++ FoodItem getById(long)
++ LiveData<FoodItem> observeById(long)
++ FoodItem findActiveByBarcode(String)
++ LiveData<List<FoodItem>> observeActive()
++ LiveData<List<FoodItem>> observeByLocation(long)
++ LiveData<List<FoodItem>> observeByCategory(long)
++ LiveData<List<FoodItem>> observeFresh(long)
++ LiveData<List<FoodItem>> observeUseSoon(long,long)
++ LiveData<List<FoodItem>> observeExpired(long)
++ List<FoodItem> getActiveSync()
++ List<FoodItem> getExpiringSoonSync(long,long)
++ List<FoodItem> findActiveByNormalizedName(String)
++ List<FoodItem> searchActiveByName(String)
++ List<StockSummary> getStockSummarySync(long)
++ int countActive()
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.scanner.ScannerActivity {
++ {static} String EXTRA_PRODUCT_NAME
+- PreviewView cameraPreview
+- BarcodeScanner barcodeScanner
+- BarcodeViewModel barcodeViewModel
+- boolean barcodeProcessed
+- {static} int CAMERA_PERMISSION_REQUEST_CODE
+# void onCreate(Bundle)
++ void onRequestPermissionsResult(int,String[],int[])
+- void showCameraPermissionDialog()
+- void startCamera()
+- void processImage(ImageProxy)
+- void showManualBarcodeDialog()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.ChatMessageDto {
++ {static} String ROLE_USER
++ {static} String ROLE_ASSISTANT
++ String role
++ String content
+}
+
+class com.cp470.groupproject.data.db.PantryDatabase_Impl {
+- FoodItemDao _foodItemDao
+- CategoryDao _categoryDao
+- StorageLocationDao _storageLocationDao
+- ShoppingItemDao _shoppingItemDao
+- FavoriteRecipeDao _favoriteRecipeDao
+- ConsumptionHistoryDao _consumptionHistoryDao
+- MealPlanDao _mealPlanDao
+# SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration)
+# InvalidationTracker createInvalidationTracker()
++ void clearAllTables()
+# Map<Class<?>,List<Class<?>>> getRequiredTypeConverters()
++ Set<Class<? extends AutoMigrationSpec>> getRequiredAutoMigrationSpecs()
++ List<Migration> getAutoMigrations(Map<Class<? extends AutoMigrationSpec>,AutoMigrationSpec>)
++ FoodItemDao foodItemDao()
++ CategoryDao categoryDao()
++ StorageLocationDao storageLocationDao()
++ ShoppingItemDao shoppingItemDao()
++ FavoriteRecipeDao favoriteRecipeDao()
++ ConsumptionHistoryDao consumptionHistoryDao()
++ MealPlanDao mealPlanDao()
+}
+
+
+class com.cp470.groupproject.ui.ai.RecipeDetailViewModel {
+- RecipeRepository repository
+- MutableLiveData<SubstituteState> substitute
+- AtomicInteger latestRequest
+- PantryRepository pantryRepository
+- LiveData<Boolean> favorite
+- RecipeDto recipe
+- List<IngredientRow> rows
++ boolean setRecipeIfAbsent(RecipeDto)
++ RecipeDto getRecipe()
++ List<IngredientRow> getRows()
++ LiveData<SubstituteState> getSubstitute()
++ boolean canFavorite()
++ LiveData<Boolean> getIsFavorite()
++ Boolean toggleFavorite()
++ void addMissingToShoppingList(PantryRepository.ResultCallback<Integer>)
++ boolean planMeal(long,String,PantryRepository.ResultCallback<Long>)
+- PantryRepository pantry()
++ void findSubstitute(String)
++ void closeSubstitutes()
+~ {static} List<IngredientRow> buildRows(RecipeDto)
+~ {static} String buildIngredientList(List<String>,int)
+}
+
+
+class com.cp470.groupproject.ui.ai.RecipeDetailViewModel$IngredientRow {
++ String line
++ IngredientMatcher.Status status
++ String name
+}
+
+class com.cp470.groupproject.ui.ai.RecipeDetailViewModel$SubstituteState {
++ String ingredient
++ boolean loading
++ SubstituteResponse response
++ AiError error
+~ {static} SubstituteState loading(String)
+~ {static} SubstituteState done(String,SubstituteResponse)
+~ {static} SubstituteState failed(String,AiError)
+}
+
+
+class com.cp470.groupproject.notification.NotificationPermissionHelper {
+- AppCompatActivity activity
+- ActivityResultLauncher<String> launcher
++ void ensurePermission()
++ {static} boolean isGranted(Context)
++ {static} void openNotificationSettings(Context)
+- void showDisabledHint()
+}
+
+
+class com.cp470.groupproject.data.dao.ConsumptionHistoryDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<ConsumptionHistory> __insertionAdapterOfConsumptionHistory
+- SharedSQLiteStatement __preparedStmtOfDeleteAll
++ long insert(ConsumptionHistory)
++ int deleteAll()
++ LiveData<List<ConsumptionHistory>> observeAll()
++ List<ConsumptionHistory> getBetweenSync(long,long)
++ LiveData<List<DispositionCount>> observeCountsSince(long)
++ List<DispositionCount> getCountsSinceSync(long)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.PreferencesDto {
++ {static} String GOAL_LOSE_WEIGHT
++ {static} String GOAL_BUILD_MUSCLE
++ {static} String GOAL_MAINTAIN_WEIGHT
++ {static} String GOAL_EAT_HEALTHIER
++ String diet
++ List<String> health
++ String cuisine
++ String mealType
++ Integer maxTime
++ List<String> allergies
++ String fitnessGoal
+}
+
+interface com.cp470.groupproject.data.dao.CategoryDao {
+~ long insert(Category)
+~ int update(Category)
+~ int delete(Category)
+~ LiveData<List<Category>> observeAll()
+~ List<Category> getAllSync()
+~ LiveData<Category> observeById(long)
+~ Category getByName(String)
+}
+
+class com.cp470.groupproject.ui.ai.IngredientMatcher {
+- {static} Match NO_MATCH
++ {static} Match matchLine(String,List<String>,List<String>)
+- {static} int matchLength(Set<String>,String)
+- {static} Set<String> words(String)
+~ {static} String normalize(String)
+~ {static} String singularize(String)
+}
+
+
+enum com.cp470.groupproject.ui.ai.Status {
++  IN_PANTRY
++  MISSING
++  UNKNOWN
+}
+
+class com.cp470.groupproject.ui.ai.IngredientMatcher$Match {
++ Status status
++ String name
+}
+
+class com.cp470.groupproject.data.remote.dto.MatchDto {
++ int score
++ int haveCount
++ int totalCount
++ List<String> have
++ List<String> missing
++ List<ExpiringItemDto> expiringUsed
+}
+
+class com.cp470.groupproject.data.model.StockSummary {
++ String normalizedName
++ String unit
++ double totalQuantity
+}
+
+class com.cp470.groupproject.data.remote.RecipeJsonTest {
+- Gson gson
+- {static} String RECOMMEND_JSON
++ void recommendResponse_parsesEveryField()
++ void searchResponse_recipesHaveNoMatch()
++ void recommendRequest_leavesOutNullQueryAndPreferences()
+}
+
+
+class com.cp470.groupproject.ui.mealplanner.MealPlannerActivity {
+- {static} String STATE_WEEK_START
+- MealPlannerViewModel viewModel
+- MealPlannerAdapter adapter
+- TextView txtWeekRange
+- List<FavoriteRecipe> favorites
+- List<String> inventoryNames
++ {static} Intent newIntent(Context)
+# void onCreate(Bundle)
+- void showGenerated(Event<ShoppingListGenerator.Result>)
+# void onSaveInstanceState(Bundle)
+- void showWeekRange(Long)
+- void showMessage(Event<Integer>)
+- void onSlotClicked(long,String,MealPlan)
+- void showSlotOptions(long,String,MealPlan)
+- void showMealDialog(long,String,MealPlan)
++ boolean onCreateOptionsMenu(Menu)
++ boolean onOptionsItemSelected(MenuItem)
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.ui.ai.FavoritesActivity {
+- FavoritesViewModel viewModel
+- FavoriteAdapter adapter
+- View root
+- View emptyView
++ {static} Intent newIntent(Context)
+# void onCreate(Bundle)
+- void applyWindowInsets()
+- void attachSwipeToRemove(RecyclerView)
+- void removeWithUndo(FavoriteRecipe)
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.util.ShoppingCalculator {
++ {static} List<ShoppingItem> computeMissing(List<MealPlan>,List<StockSummary>,List<ShoppingItem>)
+- {static} void collectNeeds(List<MealPlan>,Map<String,Need>,Map<String,String>)
+- {static} boolean inStock(List<StockSummary>,String)
+- {static} boolean onManualList(List<ShoppingItem>,String)
+- {static} ShoppingItem newItem(String,double,String)
+~ {static} boolean covers(String,String)
+- {static} Set<String> words(String)
+}
+
+class com.cp470.groupproject.util.ShoppingCalculator$Need {
+~ String name
+~ String displayName
+~ String unit
+~ double quantity
+}
+
+class com.cp470.groupproject.activities.MainActivity {
+- {static} String DEV_TOOLS_CLASS
+- InventoryViewModel viewModel
+- FoodAdapter adapter
+- TextView emptyInventory
+- EditText searchFood
+# void onCreate(Bundle)
+- void configureDevToolsButton()
+- void showHelpGuide()
+# void onSaveInstanceState(Bundle)
+- void updateEmptyMessage()
+# void onResume()
+}
+
+
+class com.cp470.groupproject.ui.ai.AiErrorText {
+~ {static} String message(Context,AiError)
+~ {static} boolean isRetryable(AiError)
+}
+
+class com.cp470.groupproject.ui.ai.FavoriteOpenTest {
++ void toRecipeDto_roundTrip_keepsWhatRecipeDetailsShows()
++ void toRecipeDto_withoutNutrition_hasNoNutrition()
++ void find_returnsTheRecipeWithThatIdOrNull()
+}
+
+class com.cp470.groupproject.ui.ai.RecipeDetailActivity {
+- {static} String EXTRA_RECIPE_JSON
+- {static} Gson GSON
+- RecipeDetailViewModel viewModel
+- View root
+- BottomSheetDialog sheet
+- View sheetView
+- Boolean favorite
++ {static} Intent newIntent(Context,RecipeDto)
+# void onCreate(Bundle)
+- {static} RecipeDto readRecipe(Intent)
+- void applyWindowInsets()
+- void bindRecipe(RecipeDto)
+- void showOrHide(int,String)
+- {static} boolean isWebLink(String)
+- void openOriginal(String)
+- void askAssistant(RecipeDto)
+- void bindIngredients()
+- void bindShoppingButton(RecipeDto)
+- void showAdded(int)
+- void bindPlanButton()
+- void onMealPicked(long,String)
+- void bindNutrition(NutritionDto)
+- String valueOrDash(Integer,int)
+- void renderSubstitutes(RecipeDetailViewModel.SubstituteState)
+- View ensureSheet()
+- void closeSheetQuietly()
+# void onDestroy()
++ boolean onCreateOptionsMenu(Menu)
++ boolean onPrepareOptionsMenu(Menu)
++ boolean onOptionsItemSelected(MenuItem)
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.data.remote.AiRecipeJsonTest {
+- Gson gson
+- {static} String RESPONSE_JSON
++ void response_parsesRecipeAndFlags()
++ void request_sendsLocaleAndServings_leavesOutNullPreferences()
+}
+
+
+class com.cp470.groupproject.ui.ai.PlanDatesTest {
+- {static} TimeZone TORONTO
+- {static} TimeZone UTC
+- {static} long at(TimeZone,int,int,int,int,int)
++ void pickedThursday_isSavedAsThursdayMidnightInToronto()
++ void lateEveningInToronto_todayIsStillTheLocalDate()
++ void roundTrip_todayThenBack_isLocalMidnightToday()
+}
+
+
+class com.cp470.groupproject.ui.ai.MissingIngredients {
+~ {static} List<ShoppingItem> fromDetailRows(List<RecipeDetailViewModel.IngredientRow>)
+~ {static} List<ShoppingItem> fromAi(AiRecipeDto)
+~ {static} ShoppingItem toItem(String,String)
+- {static} String capitalize(String)
+}
+
+class com.cp470.groupproject.data.remote.dto.ProductResponse {
++ String barcode
++ String name
+}
+
+class com.cp470.groupproject.util.StoreGrouper {
+- {static} Comparator<StoreGroup> ORDER
++ {static} List<StoreGroup> group(List<ShoppingItem>,Map<StoreType,String>)
++ {static} List<ShoppingRow> toRows(List<StoreGroup>)
++ {static} List<ShoppingRow> flat(List<ShoppingItem>)
+}
+
+
+class com.cp470.groupproject.util.StoreGrouper$StoreGroup {
++ String key
++ StoreType type
++ String name
+~ boolean fromHand
++ List<ShoppingItem> items
+}
+
+class com.cp470.groupproject.util.StoreGrouper$ShoppingRow {
++ StoreGroup group
++ ShoppingItem item
++ boolean isHeader()
+}
+
+
+class com.cp470.groupproject.ui.shoppinglist.ShoppingListActivity {
+- {static} String STATE_NAME
+- {static} String STATE_QTY
+- {static} String STATE_UNIT
+- {static} String STATE_STORE
+- ShoppingListViewModel viewModel
+- ShoppingListAdapter adapter
+- EditText edtName
+- EditText edtQty
+- EditText edtUnit
+- EditText edtStore
+- TextView txtSummary
+- TextView txtEmpty
+- RecyclerView recycler
+- View bannerNotifications
+- Button btnGenerate
+- boolean generating
++ {static} Intent newIntent(Context)
+# void onCreate(Bundle)
+- void bindViews()
+# void onResume()
+# void onSaveInstanceState(Bundle)
+- void restoreForm(Bundle)
+- void setupList()
+- void setupForm()
+- void addFromForm()
+- void observeViewModel()
+- void showSuggestedStore(String)
+- String suggestedStoreName(StoreType)
+- void openMap(StoreGroup)
+- void showMyStoresDialog()
+- void showMessage(Event<UiMessage>)
+- void showEditDialog(ShoppingItem)
++ boolean onCreateOptionsMenu(Menu)
++ boolean onPrepareOptionsMenu(Menu)
++ boolean onOptionsItemSelected(MenuItem)
+- void shareList()
+- void confirmClearCompleted()
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.data.remote.dto.RecipeDto {
++ String recipeId
++ String title
++ String image
++ String sourceName
++ String sourceUrl
++ Double servings
++ Double totalTimeMinutes
++ Double calories
++ NutritionDto nutrition
++ List<String> ingredientLines
++ List<String> ingredientNames
++ List<String> dietLabels
++ List<String> healthLabels
++ List<String> cuisineType
++ MatchDto match
+}
+
+class com.cp470.groupproject.data.dao.CategoryDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<Category> __insertionAdapterOfCategory
+- EntityDeletionOrUpdateAdapter<Category> __deletionAdapterOfCategory
+- EntityDeletionOrUpdateAdapter<Category> __updateAdapterOfCategory
++ long insert(Category)
++ int delete(Category)
++ int update(Category)
++ LiveData<List<Category>> observeAll()
++ List<Category> getAllSync()
++ LiveData<Category> observeById(long)
++ Category getByName(String)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.util.IngredientLine {
++ {static} String[] UNITS
++ {static} Result compose(String,String,String)
+- {static} String unitToken(String,String)
++ {static} Parts split(String)
++ {static} int unitIndex(String)
+- {static} String formUnit(String)
+}
+
+
+enum com.cp470.groupproject.util.Error {
++  NONE
++  NAME_REQUIRED
++  QUANTITY_INVALID
+}
+
+class com.cp470.groupproject.util.IngredientLine$Result {
++ Error error
++ String text
++ boolean isValid()
+}
+
+
+class com.cp470.groupproject.util.IngredientLine$Parts {
++ String name
++ String quantity
++ String unit
+}
+
+class com.cp470.groupproject.data.repository.RecipeRepositoryTest {
+- Application app
+- ApiResult<RecommendResponse> recommendAndWait(RecipeRepository,String)
++ void recommend_fromPantry_returnsRankedRecipesWithMatch()
++ void recommend_withQuery_searchesThatKeyword()
++ void recommend_serverUnreachable_returnsNetworkError()
+}
+
+
+class com.cp470.groupproject.ui.ai.FavoriteRecipeMapper {
+~ {static} FavoriteRecipe fromEdamam(RecipeDto)
+~ {static} FavoriteRecipe fromAi(AiRecipeDto)
+~ {static} RecipeDto toRecipeDto(FavoriteRecipe)
+~ {static} List<String> aiIngredientLines(AiRecipeDto)
+- {static} boolean isBlank(String)
+- {static} String blankToNull(String)
+- {static} String clean(String)
+- {static} List<String> orEmpty(List<String>)
+- {static} Integer roundedPositive(Double)
+- {static} Integer positive(Integer)
+- {static} Double toDouble(Integer)
+- {static} Integer toInteger(Double)
+}
+
+class com.cp470.groupproject.ui.inventory.InventoryViewModel {
+- PantryRepository repository
+- MutableLiveData<Long> selectedLocationId
+- LiveData<List<FoodItem>> foodItems
++ LiveData<List<FoodItem>> getFoodItems()
++ void selectLocation(long)
+}
+
+
+class com.cp470.groupproject.ui.ai.RecipeViewModelTest {
+- {static} RecipeDto recipe(boolean)
+- {static} RecommendResponse response(boolean,boolean,RecipeDto)
++ void emptyPantry_showsAddFoodNotice()
++ void broadenedSearch_showsSimilarRecipesNotice()
++ void zeroWaste_withNothingExpiring_showsNotice()
++ void normalResults_showNoNotice()
+}
+
+class com.cp470.groupproject.ExampleInstrumentedTest {
++ void useAppContext()
+}
+
+class com.cp470.groupproject.ui.ai.ChatMessageTest {
++ void factories_setSenderAndText()
++ void sameText_stillGetsDifferentIds()
++ void diffCallback_sameMessage_isSameItemAndContent()
+}
+
+class com.cp470.groupproject.data.dao.FavoriteRecipeDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<FavoriteRecipe> __insertionAdapterOfFavoriteRecipe
+- EntityInsertionAdapter<FavoriteRecipeIngredient> __insertionAdapterOfFavoriteRecipeIngredient
+- EntityInsertionAdapter<FavoriteRecipeStep> __insertionAdapterOfFavoriteRecipeStep
+- SharedSQLiteStatement __preparedStmtOfDeleteByRecipeId
++ long insert(FavoriteRecipe)
++ void insertIngredients(List<FavoriteRecipeIngredient>)
++ void insertSteps(List<FavoriteRecipeStep>)
++ int deleteByRecipeId(String)
++ LiveData<List<FavoriteRecipeWithIngredients>> observeAll()
++ List<FavoriteRecipeWithIngredients> getAllSync()
++ FavoriteRecipeWithIngredients getByRecipeIdSync(String)
++ LiveData<Integer> observeIsFavorite(String)
++ {static} List<Class<?>> getRequiredConverters()
+- void __fetchRelationshipfavoriteRecipeIngredientsAscomCp470GroupprojectDataEntityFavoriteRecipeIngredient(LongSparseArray<ArrayList<FavoriteRecipeIngredient>>)
+- void __fetchRelationshipfavoriteRecipeStepsAscomCp470GroupprojectDataEntityFavoriteRecipeStep(LongSparseArray<ArrayList<FavoriteRecipeStep>>)
+}
+
+
+class com.cp470.groupproject.data.entity.StorageLocation {
++ {static} long FRIDGE_ID
++ {static} String[] DEFAULT_KEYS
++ long id
++ String name
+}
+
+abstract class com.cp470.groupproject.data.entity.IngredientLine {
++ int position
++ String text
++ String normalizedName
++ double quantity
++ String unit
++ boolean explicitQuantity
+# void fill(String,int)
++ String displayName()
++ {static} List<String> texts(List<? extends IngredientLine>)
+}
+
+
+interface com.cp470.groupproject.data.dao.StorageLocationDao {
+~ long insert(StorageLocation)
+~ int update(StorageLocation)
+~ int delete(StorageLocation)
+~ LiveData<List<StorageLocation>> observeAll()
+~ List<StorageLocation> getAllSync()
+~ LiveData<StorageLocation> observeById(long)
+}
+
+class com.cp470.groupproject.util.IngredientNormalizer {
+- {static} String SIZE_REGEX
+- {static} Set<String> NOISE_WORDS
++ {static} String normalize(String)
+}
+
+
+class com.cp470.groupproject.util.ExpiryUtils {
++ {static} long DAY_MS
++ {static} int DEFAULT_USE_SOON_DAYS
++ {static} long useSoonLimit(long,int)
++ {static} Freshness classify(long,long,int)
++ {static} int daysUntil(long,long)
+}
+
+
+class com.cp470.groupproject.util.WeekUtilsTest {
+- {static} ZoneId UTC
+- {static} long at(ZoneId,int,int,int,int,int)
++ void startOfDay_isMidnightLocal()
++ void startOfWeek_mondayFirst()
++ void startOfWeek_sundayFirst()
++ void startOfWeek_sameDayWhenAlreadyFirst()
++ void endOfWeek_isNextWeekMinusOneMs()
++ void plusDays_acrossMonthAndYear()
++ void plusDays_acrossDstChange()
+}
+
+
+class com.cp470.groupproject.util.IngredientNormalizerTest {
++ void removesPercentAndVolume()
++ void removesWeightAndLowercases()
++ void removesNoiseWordsAndExtraSpaces()
++ void keepsAccentedLettersForSpanish()
++ void nullAndBlankGiveEmptyString()
++ void plainNameIsUnchanged()
+}
+
+class com.cp470.groupproject.data.model.MealPlanWithIngredients {
++ MealPlan plan
++ List<MealPlanIngredient> rows
++ MealPlan toMealPlan()
++ {static} List<MealPlan> toMealPlans(List<MealPlanWithIngredients>)
+}
+
+
+interface com.cp470.groupproject.data.dao.ConsumptionHistoryDao {
+~ long insert(ConsumptionHistory)
+~ LiveData<List<ConsumptionHistory>> observeAll()
+~ List<ConsumptionHistory> getBetweenSync(long,long)
+~ LiveData<List<DispositionCount>> observeCountsSince(long)
+~ List<DispositionCount> getCountsSinceSync(long)
+~ int deleteAll()
+}
+
+class com.cp470.groupproject.data.dao.MealPlanDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<MealPlan> __insertionAdapterOfMealPlan
+- EntityDeletionOrUpdateAdapter<MealPlan> __deletionAdapterOfMealPlan
+- EntityDeletionOrUpdateAdapter<MealPlan> __updateAdapterOfMealPlan
+- SharedSQLiteStatement __preparedStmtOfSetCompleted
+- SharedSQLiteStatement __preparedStmtOfDeleteBefore
++ long insert(MealPlan)
++ int delete(MealPlan)
++ int update(MealPlan)
++ int setCompleted(long,boolean)
++ int deleteBefore(long)
++ LiveData<List<MealPlan>> observeBetween(long,long)
++ List<MealPlan> getBetweenSync(long,long)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.util.WeekUtils {
++ {static} long startOfDay(long,ZoneId)
++ {static} long plusDays(long,int,ZoneId)
++ {static} long startOfWeek(long,ZoneId,DayOfWeek)
++ {static} long endOfWeek(long,ZoneId)
++ {static} DayOfWeek defaultFirstDayOfWeek()
+}
+
+class com.cp470.groupproject.ui.ai.RecipeViewModel {
+~ {static} String PREFS_NAME
+~ {static} String KEY_ZERO_WASTE
+~ {static} int RESULT_LIMIT
+- RecipeRepository repository
+- SharedPreferences prefs
+- MutableLiveData<List<RecipeDto>> recipes
+- MutableLiveData<Boolean> loading
+- MutableLiveData<Integer> notice
+- MutableLiveData<Boolean> empty
+- MutableLiveData<AiError> error
+- AtomicInteger latestRequest
+- boolean zeroWaste
+- String query
+- boolean loaded
++ LiveData<List<RecipeDto>> getRecipes()
++ LiveData<Boolean> isLoading()
++ LiveData<Integer> getNotice()
++ LiveData<Boolean> isEmpty()
++ LiveData<AiError> getError()
++ boolean isZeroWaste()
++ void loadIfNeeded()
++ boolean search(String)
++ void clearSearch()
++ void setZeroWaste(boolean)
++ void retry()
++ void onErrorShown()
+- void load()
+~ {static} int chooseNotice(RecommendResponse,boolean)
+- {static} boolean noneUseExpiring(List<RecipeDto>)
+}
+
+
+class com.cp470.groupproject.util.IngredientParserTest {
+- {static} void check(String,String,double,String,boolean)
++ void parse_quantityUnitAndName()
++ void parse_unitGluedToNumber()
++ void parse_kilogramsBecomeGrams()
++ void parse_countWithoutUnit()
++ void parse_sizeWordIsNotAUnit()
++ void parse_fraction()
++ void parse_commaDecimalAndLiters()
++ void parse_withoutQuantity_isPresenceOnly()
++ void parse_zeroDenominator_isTreatedAsNoQuantity()
++ void parse_upperCaseUnit()
++ void parse_displayNameIsCapitalized()
++ void parse_noUsableName_returnsNull()
++ void parse_oddText_doesNotFail()
++ void parse_gramAbbreviation_isAUnit()
++ void parse_spanishUnitWithDe_dropsTheLinkWord()
++ void parse_ofAfterTheUnit_isDropped()
++ void parse_ofAfterCups_isDropped()
++ void parse_ofInsideTheName_isKept()
+}
+
+class com.cp470.groupproject.ui.ai.AiRecipeActivity {
+- AiRecipeViewModel viewModel
+- View root
+- View loading
+- View content
+- TextView message
+- MaterialButton againButton
+- AlertDialog consentDialog
+- AiRecipeViewModel.FavoriteState favorite
++ {static} Intent newIntent(Context)
+# void onCreate(Bundle)
+- void applyWindowInsets()
+- void showConsentDialog()
+- void render(AiRecipeViewModel.UiState)
+- void bindRecipe(AiRecipeResponse)
+- void bindIngredients(AiRecipeDto)
+- void bindShoppingButton(AiRecipeDto)
+- void showAdded(int)
+- void onMealPicked(long,String)
+- void bindSteps(AiRecipeDto)
+# void onDestroy()
++ boolean onCreateOptionsMenu(Menu)
++ boolean onPrepareOptionsMenu(Menu)
++ boolean onOptionsItemSelected(MenuItem)
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.data.entity.ShoppingItem {
++ long id
++ String name
++ String normalizedName
++ double quantity
++ String unit
++ String store
++ boolean checked
++ boolean autoGenerated
++ long createdAt
+}
+
+interface com.cp470.groupproject.data.remote.AiApiService {
+~ Call<HealthResponse> health()
+~ Call<ChatResponse> chat(ChatRequest)
+~ Call<SearchResponse> searchRecipes(String,String,String,String,String,Integer,Integer)
+~ Call<RecommendResponse> recommendRecipes(RecommendRequest)
+~ Call<SubstituteResponse> substitute(SubstituteRequest)
+~ Call<ProductResponse> lookupProduct(String)
+~ Call<AiRecipeResponse> generateRecipe(AiRecipeRequest)
+}
+
+class com.cp470.groupproject.util.ShoppingCalculatorTest {
+- {static} MealPlan plan(boolean,String)
+- {static} MealPlan plan(String)
+- {static} StockSummary stock(String,String,double)
+- {static} List<ShoppingItem> compute(List<MealPlan>,List<StockSummary>,List<ShoppingItem>)
+- {static} ShoppingItem byName(List<ShoppingItem>,String)
++ void allMissing_whenStockEmpty()
++ void partiallyMissing_subtractsStock()
++ void fullyCovered_producesNothing()
++ void sumsSameIngredientAcrossMeals()
++ void completedMeal_isIgnored()
++ void unitConversion_kgCoversGrams()
++ void incompatibleUnits_treatedAsCovered()
++ void presenceOnly_missingAddsOne()
++ void presenceOnly_inStockIsCovered()
++ void explicitNeedWinsOverPresence()
++ void manualPendingItem_preventsDuplicate()
++ void checkedOrAutoItems_doNotPreventGeneration()
++ void covers_wordSubset()
++ void covers_simplePlural()
++ void outputsAreAutoGeneratedAndUnchecked()
++ void demoScenario_matchesExpectedList()
+}
+
+class com.cp470.groupproject.util.ShoppingInputValidator {
++ {static} Result validate(String,String)
+}
+
+enum com.cp470.groupproject.util.Error {
++  NONE
++  NAME_REQUIRED
++  QUANTITY_INVALID
+}
+
+class com.cp470.groupproject.util.ShoppingInputValidator$Result {
++ Error error
++ String name
++ double quantity
++ boolean isValid()
+}
+
+
+class com.cp470.groupproject.data.entity.FoodItem {
++ long id
++ String name
++ String normalizedName
++ double quantity
++ String unit
++ long categoryId
++ long storageLocationId
++ long purchaseDate
++ long expirationDate
++ String status
++ String barcode
++ {static} Creator<FoodItem> CREATOR
++ void writeToParcel(Parcel,int)
++ int describeContents()
++ boolean equals(Object)
++ int hashCode()
++ String toString()
+}
+
+
+class com.cp470.groupproject.ui.ai.FavoritesViewModel {
+- PantryRepository pantryRepository
+- LiveData<List<FavoriteRecipe>> favorites
++ LiveData<List<FavoriteRecipe>> getFavorites()
++ void remove(FavoriteRecipe)
++ void restore(FavoriteRecipe)
+- PantryRepository pantry()
+}
+
+
+class com.cp470.groupproject.data.entity.MealPlanIngredient {
++ long id
++ long mealPlanId
+}
+
+class com.cp470.groupproject.ui.ai.AiRecipeErrorText {
+~ {static} String AI_UNSAFE_RECIPE
+~ {static} String AI_BAD_FORMAT
+~ {static} int specificMessage(AiError)
+~ {static} String message(Context,AiError)
+}
+
+
+class com.cp470.groupproject.ui.ai.ChatMessage {
+- {static} AtomicLong NEXT_ID
++ long id
++ Sender sender
++ String text
++ {static} ChatMessage fromUser(String)
++ {static} ChatMessage fromAi(String)
++ boolean isFromUser()
++ boolean hasSameContentAs(ChatMessage)
+}
+
+
+enum com.cp470.groupproject.ui.ai.Sender {
++  USER
++  AI
+}
+
+class com.cp470.groupproject.data.FoodItemParcelTest {
++ void roundTripKeepsAllFields()
++ void nullBarcodeSurvives()
++ void creatorMakesArrays()
+}
+
+class com.cp470.groupproject.ui.ai.SavedRecipeViewModel {
+- PantryRepository pantryRepository
+- LiveData<FavoriteRecipe> recipe
++ LiveData<FavoriteRecipe> getRecipe(String)
+~ {static} FavoriteRecipe find(List<FavoriteRecipe>,String)
+- PantryRepository pantry()
+}
+
+
+class com.cp470.groupproject.data.db.MigrationsTest {
+- {static} String DB_NAME
++ MigrationTestHelper helper
+- SupportSQLiteDatabase migrate(String)
+- {static} String meal(int,String)
+- {static} int count(SupportSQLiteDatabase,String)
+- {static} String text(SupportSQLiteDatabase,String)
++ void migrate2To3_mealWithThreeLines_createsThreeParsedRowsInOrder()
++ void migrate2To3_mealWithoutIngredients_createsNoRows()
++ void migrate2To3_blankLines_areDropped()
++ void migrate2To3_mealData_isKept()
++ void migrate2To3_ingredientsOfTwoMeals_stayWithTheirOwnMeal()
++ void migrate2To3_favoriteRecipe_createsRowsAndKeepsItsData()
++ void migrate2To3_deletingTheMealAfterwards_cascadesToItsIngredients()
++ void migrate2To3_otherTables_areNotTouched()
+}
+
+
+class com.cp470.groupproject.ui.ai.AiChatViewModel {
+- AiRepository repository
+- List<ChatMessage> conversation
+- MutableLiveData<List<ChatMessage>> messages
+- MutableLiveData<Boolean> loading
+- MutableLiveData<AiError> error
+- AtomicInteger conversationId
+- boolean consentGiven
+- String failedMessage
++ LiveData<List<ChatMessage>> getMessages()
++ LiveData<Boolean> isLoading()
++ LiveData<AiError> getError()
++ boolean needsConsent()
++ void giveConsent()
++ void sendMessage(String)
++ void retry()
++ void onErrorShown()
++ void newChat()
+- void publish(ChatMessage)
+~ {static} List<ChatMessageDto> toHistory(List<ChatMessage>)
+}
+
+
+class com.cp470.groupproject.ui.ai.RecipesActivity {
+- RecipeViewModel viewModel
+- RecipeAdapter adapter
+- View root
+- View appBar
+- View content
+- TextInputLayout searchLayout
+- TextInputEditText searchInput
+- LinearProgressIndicator progress
+- TextView notice
+- TextView emptyView
+- Snackbar errorSnackbar
+# void onCreate(Bundle)
+- void applyWindowInsets()
+- void onSearch()
+- void showNotice(Integer)
+- void showError(AiError)
+- void dismissError()
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.data.db.Migrations {
++ {static} Migration MIGRATION_1_2
++ {static} Migration MIGRATION_2_3
++ {static} Migration MIGRATION_3_4
++ {static} Migration[] ALL
+- {static} List<Object[]> readOldIngredients(SupportSQLiteDatabase,String)
+- {static} void insertLines(SupportSQLiteDatabase,String,String,long,String)
+}
+
+
+class com.cp470.groupproject.data.dao.ShoppingItemDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<ShoppingItem> __insertionAdapterOfShoppingItem
+- EntityDeletionOrUpdateAdapter<ShoppingItem> __deletionAdapterOfShoppingItem
+- EntityDeletionOrUpdateAdapter<ShoppingItem> __updateAdapterOfShoppingItem
+- SharedSQLiteStatement __preparedStmtOfSetChecked
+- SharedSQLiteStatement __preparedStmtOfDeleteChecked
+- SharedSQLiteStatement __preparedStmtOfDeleteAutoGeneratedPending
++ long insert(ShoppingItem)
++ List<Long> insertAll(List<ShoppingItem>)
++ int delete(ShoppingItem)
++ int update(ShoppingItem)
++ int setChecked(long,boolean)
++ int deleteChecked()
++ int deleteAutoGeneratedPending()
++ LiveData<List<ShoppingItem>> observeAll()
++ List<ShoppingItem> getAllSync()
++ ShoppingItem findPendingByNormalizedName(String)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.ui.itemdetail.ItemDetailActivity {
++ {static} String EXTRA_FOOD_ITEM
+- ItemDetailViewModel viewModel
+- TextView txtItemName
+- TextView txtExpirationDate
+- EditText edtName
+- EditText edtQuantity
+- EditText edtUnit
+- Spinner spinnerLocation
+- Button btnUpdate
+- Button btnConsumed
+- Button btnWasted
+- Button btnExpired
+- Button btnDonated
+- Button btnDelete
+- long expirationDate
++ {static} Intent newIntent(Context,FoodItem)
+# void onCreate(Bundle)
+- void initializeViews()
+- FoodItem getReceivedItem()
+- void setupLocationSpinner()
+- void observeViewModel()
+- void configureButtons()
+- void showDatePicker()
+- void showDeleteConfirmation()
+}
+
+
+class com.cp470.groupproject.data.remote.InventoryMapper {
++ {static} int MAX_ITEMS
++ {static} int MAX_NAME_LENGTH
++ {static} int MAX_UNIT_LENGTH
++ {static} Integer daysUntilExpiry(long,long)
++ {static} InventoryItemDto toDto(FoodItem,long)
++ {static} List<InventoryItemDto> toDtos(List<FoodItem>,long)
+- {static} boolean isBlank(String)
+- {static} String clamp(String,int)
+}
+
+
+class com.cp470.groupproject.data.repository.PantryRepository {
+- PantryDatabase database
+- FoodItemDao foodItemDao
+- CategoryDao categoryDao
+- StorageLocationDao locationDao
+- ShoppingItemDao shoppingDao
+- FavoriteRecipeDao favoriteDao
+- ConsumptionHistoryDao historyDao
+- MealPlanDao mealPlanDao
+- Executor executor
++ LiveData<List<FoodItem>> getActiveItems()
++ LiveData<FoodItem> getItemById(long)
++ LiveData<List<FoodItem>> getItemsByLocation(long)
++ LiveData<List<FoodItem>> getItemsByCategory(long)
++ LiveData<List<FoodItem>> getFreshItems()
++ LiveData<List<FoodItem>> getUseSoonItems()
++ LiveData<List<FoodItem>> getExpiredItems()
++ void insertFoodItem(FoodItem,ResultCallback<Long>)
++ void updateFoodItem(FoodItem,ResultCallback<Integer>)
++ void deleteFoodItem(FoodItem,ResultCallback<Integer>)
++ void recordDisposition(FoodItem,String,ResultCallback<Long>)
++ List<FoodItem> getActiveItemsSync()
++ List<FoodItem> getExpiringSoonSync(int)
++ List<FoodItem> searchActiveByNameSync(String)
++ List<StockSummary> getStockSummarySync()
++ FoodItem findActiveByBarcodeSync(String)
++ LiveData<List<Category>> getCategories()
++ LiveData<Category> getCategoryById(long)
++ LiveData<List<StorageLocation>> getStorageLocations()
++ LiveData<StorageLocation> getStorageLocationById(long)
++ LiveData<List<ShoppingItem>> getShoppingItems()
++ void addShoppingItem(ShoppingItem,ResultCallback<Long>)
++ void addShoppingItemsIfMissing(List<ShoppingItem>,ResultCallback<Integer>)
++ void setShoppingItemChecked(long,boolean)
++ void updateShoppingItem(ShoppingItem)
++ List<ShoppingItem> getShoppingItemsSync()
++ void replaceAutoGeneratedShoppingItems(List<ShoppingItem>,ResultCallback<Integer>)
++ void deleteShoppingItem(ShoppingItem)
++ void clearCompletedShoppingItems(ResultCallback<Integer>)
++ LiveData<List<FavoriteRecipe>> getFavoriteRecipes()
++ List<FavoriteRecipe> getFavoriteRecipesSync()
++ FavoriteRecipe getFavoriteRecipeSync(String)
++ LiveData<Integer> isFavorite(String)
++ void saveFavoriteRecipe(FavoriteRecipe)
++ void removeFavoriteRecipe(String)
++ LiveData<List<ConsumptionHistory>> getHistory()
++ LiveData<WasteStats> getWasteStats(long)
++ LiveData<List<MealPlan>> getMealPlans(long,long)
++ List<MealPlan> getMealPlansSync(long,long)
++ void addMealPlan(MealPlan,ResultCallback<Long>)
++ void updateMealPlan(MealPlan)
+- void saveMealPlanIngredients(MealPlan,long)
++ void deleteMealPlan(MealPlan)
++ void setMealPlanCompleted(long,boolean)
++ List<String> getPlannedIngredientsSync(long,long)
+}
+
+
+interface com.cp470.groupproject.data.repository.PantryRepository$ResultCallback {
+~ void onResult(T)
+}
+
+class com.cp470.groupproject.data.ShoppingGenerationRepositoryTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository repository
++ void setUp()
++ void tearDown()
+- List<ShoppingItem> currentList()
+- {static} ShoppingItem auto(String)
+- {static} boolean hasName(List<ShoppingItem>,String)
++ void replaceAuto_keepsManualAndCheckedItems()
++ void replaceAuto_removesPreviousPendingAuto()
++ void replaceAuto_isIdempotent()
++ void replaceAuto_normalizesNames()
++ void replaceAuto_reportsHowManyWereInserted()
+}
+
+
+class com.cp470.groupproject.ui.ai.RecipeErrorText {
+~ {static} String RECIPES_RATE_LIMITED
+~ {static} String message(Context,AiError)
+~ {static} boolean isBusy(AiError)
+~ {static} boolean isRetryable(AiError)
+}
+
+
+class com.cp470.groupproject.data.model.DispositionCount {
++ String disposition
++ int itemCount
++ double totalQuantity
+}
+
+class com.cp470.groupproject.shopping.ShoppingListGenerator {
+- PantryRepository repository
++ void generate(long,long,PantryRepository.ResultCallback<Result>)
+}
+
+
+class com.cp470.groupproject.shopping.ShoppingListGenerator$Result {
++ int meals
++ int added
+}
+
+class com.cp470.groupproject.data.remote.dto.HealthResponse {
++ String status
++ String service
++ String timestamp
+}
+
+class com.cp470.groupproject.data.model.MealType {
++ {static} String BREAKFAST
++ {static} String LUNCH
++ {static} String DINNER
++ {static} String SNACK
++ {static} String[] ALL
+}
+
+class com.cp470.groupproject.ui.ai.FavoritesViewModelTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository pantry
+- FavoritesViewModel viewModel
+- List<FavoriteRecipe> shown
+- Observer<List<FavoriteRecipe>> observer
++ void setUp()
++ void tearDown()
+- {static} FavoriteRecipe recipe(String,String,long)
++ void nothingSaved_listIsEmpty()
++ void savedRecipes_areShownNewestFirst()
++ void remove_takesTheRecipeOffTheList()
++ void undo_bringsBackIngredientsStepsAndPosition()
+}
+
+
+class com.cp470.groupproject.ui.ai.MissingIngredientsTest {
+- {static} AiRecipeIngredientDto ai(String,String,boolean,boolean,boolean)
++ void fromAi_keepsOnlyMissingNonStapleIngredients()
++ void fromAi_nothingMissing_isEmpty()
++ void fromDetailRows_keepsOnlyMissingRows()
++ void toItem_withoutAmount_isOnePiece()
++ void toItem_withAmount_keepsAPositiveQuantityAndAUnit()
+}
+
+class com.cp470.groupproject.data.dao.MealPlanDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<MealPlan> __insertionAdapterOfMealPlan
+- EntityInsertionAdapter<MealPlanIngredient> __insertionAdapterOfMealPlanIngredient
+- EntityDeletionOrUpdateAdapter<MealPlan> __deletionAdapterOfMealPlan
+- EntityDeletionOrUpdateAdapter<MealPlan> __updateAdapterOfMealPlan
+- SharedSQLiteStatement __preparedStmtOfSetCompleted
+- SharedSQLiteStatement __preparedStmtOfDeleteIngredients
+- SharedSQLiteStatement __preparedStmtOfDeleteBefore
++ long insert(MealPlan)
++ void insertIngredients(List<MealPlanIngredient>)
++ int delete(MealPlan)
++ int update(MealPlan)
++ int setCompleted(long,boolean)
++ int deleteIngredients(long)
++ int deleteBefore(long)
++ LiveData<List<MealPlanWithIngredients>> observeBetween(long,long)
++ List<MealPlanWithIngredients> getBetweenSync(long,long)
++ {static} List<Class<?>> getRequiredConverters()
+- void __fetchRelationshipmealPlanIngredientsAscomCp470GroupprojectDataEntityMealPlanIngredient(LongSparseArray<ArrayList<MealPlanIngredient>>)
+}
+
+
+class com.cp470.groupproject.data.entity.Category {
++ {static} long DAIRY_ID
++ {static} String[] DEFAULT_KEYS
++ long id
++ String name
+}
+
+class com.cp470.groupproject.ui.ai.AiChatViewModelTest {
++ void toHistory_emptyConversation_isEmpty()
++ void toHistory_mapsRolesInOrder()
++ void toHistory_skipsUnansweredUserMessages()
+}
+
+class com.cp470.groupproject.ui.wastesummary.WasteSummaryActivity {
+- {static} int[] PERIOD_DAYS
+- {static} int DEFAULT_PERIOD
+- WasteSummaryViewModel viewModel
+- TextView txtEmpty
+- TextView txtTotal
+- TextView txtConsumed
+- TextView txtWasted
+- TextView txtExpired
+- TextView txtDonated
+- TextView txtWastePercent
+- ProgressBar progressWaste
+# void onCreate(Bundle)
+- void initializeViews()
+- void configurePeriodSpinner(boolean)
+- void showStats(WasteStats)
++ boolean onSupportNavigateUp()
+}
+
+
+class com.cp470.groupproject.BuildConfig {
++ {static} boolean DEBUG
++ {static} String APPLICATION_ID
++ {static} String BUILD_TYPE
++ {static} int VERSION_CODE
++ {static} String VERSION_NAME
++ {static} String AI_BASE_URL
+}
+
+class com.cp470.groupproject.data.db.Migration3To4Test {
+- {static} String DB_NAME
++ MigrationTestHelper helper
+- {static} String OMELETTE
+- {static} String OMELETTE_EGGS
+- SupportSQLiteDatabase migrate(String)
+- {static} int count(SupportSQLiteDatabase,String)
+- {static} String text(SupportSQLiteDatabase,String)
++ void migrate3To4_existingFavorite_keepsItsData()
++ void migrate3To4_existingFavorite_newColumnsAreNull()
++ void migrate3To4_existingIngredients_areKept()
++ void migrate3To4_stepsTable_startsEmptyAndAcceptsSteps()
++ void migrate3To4_deletingTheFavorite_cascadesToStepsAndIngredients()
++ void migrate3To4_otherTables_areNotTouched()
++ void migrate2To4_allMigrationsInARow_reachVersion4()
++ void migrate1To4_fromTheFirstVersion_reachesTheVersion4Schema()
+}
+
+
+class com.cp470.groupproject.ui.ai.AiRecipeViewModel {
+~ {static} int DEFAULT_SERVINGS
+- AiRepository repository
+- MutableLiveData<UiState> state
+- AtomicInteger latestRequest
+- boolean consentGiven
+- PantryRepository pantryRepository
+- LiveData<FavoriteState> favorite
++ LiveData<UiState> getState()
++ boolean needsConsent()
++ void giveConsent()
++ boolean isIdle()
++ void generate()
++ String currentRecipeId()
++ boolean canFavorite()
++ LiveData<FavoriteState> getFavorite()
++ Boolean toggleFavorite()
+~ {static} String recipeIdOf(UiState)
++ void addMissingToShoppingList(PantryRepository.ResultCallback<Integer>)
++ boolean planMeal(long,String,PantryRepository.ResultCallback<Long>)
+- PantryRepository pantry()
+~ void showRecipeForTest(AiRecipeResponse)
+}
+
+
+class com.cp470.groupproject.ui.ai.AiRecipeViewModel$UiState {
++ Kind kind
++ AiRecipeResponse response
++ AiError error
+~ {static} UiState idle()
+~ {static} UiState loading()
+~ {static} UiState success(AiRecipeResponse)
+~ {static} UiState error(AiError)
+}
+
+
+enum com.cp470.groupproject.ui.ai.Kind {
++  IDLE
++  LOADING
++  SUCCESS
++  ERROR
+}
+
+class com.cp470.groupproject.ui.ai.AiRecipeViewModel$FavoriteState {
++ String recipeId
++ boolean saved
+}
+
+class com.cp470.groupproject.ui.ai.RecipeAdapter {
+~ {static} DiffUtil.ItemCallback<RecipeDto> DIFF_CALLBACK
+- OnRecipeClickListener listener
++ RecipeViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(RecipeViewHolder,int)
++ void onViewRecycled(RecipeViewHolder)
+}
+
+
+interface com.cp470.groupproject.ui.ai.RecipeAdapter$OnRecipeClickListener {
+~ void onRecipeClick(RecipeDto)
+}
+
+class com.cp470.groupproject.ui.ai.RecipeAdapter$RecipeViewHolder {
+~ ImageView image
+- TextView title
+- TextView have
+- TextView expiring
+- TextView meta
+~ void bind(RecipeDto,OnRecipeClickListener)
+}
+
+
+class com.cp470.groupproject.ui.ai.MealPlanPicker {
+- {static} String TAG
+- {static} int DINNER_INDEX
+~ {static} void show(AppCompatActivity,Listener)
+~ {static} void reattach(AppCompatActivity,Listener)
+- {static} void attach(AppCompatActivity,MaterialDatePicker<Long>,Listener)
+- {static} void askMeal(AppCompatActivity,long,Listener)
+~ {static} void showPlanned(Context,long,String)
+~ {static} String label(Context,String)
+}
+
+
+interface com.cp470.groupproject.ui.ai.MealPlanPicker$Listener {
+~ void onPicked(long,String)
+}
+
+class com.cp470.groupproject.ui.mealplanner.MealPlanGrouperTest {
+- {static} ZoneId UTC
+- {static} long WEEK
+- {static} long at(int,int,int)
+- {static} MealPlan plan(long,String,long)
++ void group_alwaysReturnsSevenDays()
++ void group_placesMealOnItsDay()
++ void group_separatesMealTypes()
++ void group_duplicateSlot_keepsNewest()
++ void group_ignoresPlansOutsideWeek()
+}
+
+
+class com.cp470.groupproject.ui.itemdetail.ItemDetailViewModel {
+- PantryRepository repository
+- MutableLiveData<Long> selectedItemId
+- LiveData<FoodItem> item
+- MutableLiveData<Event<UiResult>> operationResult
++ LiveData<FoodItem> getItem()
++ LiveData<Event<UiResult>> getOperationResult()
++ void loadItem(long)
++ void updateFoodItem(String,double,String,long,long)
++ void recordDisposition(String)
++ void deleteItem()
+}
+
+
+class com.cp470.groupproject.ui.itemdetail.ItemDetailViewModel$UiResult {
++ int messageRes
++ boolean closeScreen
+}
+
+class com.cp470.groupproject.data.PantryRepositoryTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- PantryDatabase db
+- PantryRepository repository
++ void setUp()
++ void tearDown()
++ void insertNormalizesName()
++ void recordDispositionLogsAndRemovesFromInventory()
++ void recordDispositionRejectsActiveStatus()
++ void wasteStatsMixesOutcomes()
++ void clearCompletedRemovesOnlyCheckedShoppingItems()
++ void favoritesSaveQueryAndRemove()
++ void removeFavorite_withIngredients_deletesItsIngredientRows()
++ void saveFavorite_sameRecipeAgain_replacesIngredientsWithoutDuplicates()
++ void addMealPlan_withIngredients_savesParsedRowsInOrder()
++ void addMealPlan_withBlankIngredient_dropsIt()
++ void updateMealPlan_newIngredients_replacesTheOldOnes()
++ void updateMealPlan_loadedFromDatabase_doesNotDuplicateRows()
++ void deleteMealPlan_withIngredients_deletesItsIngredientRows()
++ void getMealPlans_observed_includesIngredients()
+- int countRows(String)
++ void plannedIngredientsAreNormalizedDistinctAndSkipCompleted()
+}
+
+
+class com.cp470.groupproject.ui.addfood.AddFoodActivity {
+- {static} String EXTRA_START_SCAN
+- PantryRepository repository
+- EditText foodName
+- EditText foodQuantity
+- EditText foodUnit
+- Spinner foodLocation
+- TextView expirationDateText
+- long expirationDate
++ {static} Intent newIntent(Context,boolean)
+# void onCreate(Bundle)
+- void showDatePicker()
+- void saveFood()
+}
+
+
+class com.cp470.groupproject.data.remote.ApiCalls {
+- {static} String TAG
+- {static} Gson GSON
++ {static} ApiResult<T> execute(Call<T>)
+~ {static} AiError parseError(Response<?>)
+- {static} Integer parseSeconds(String)
+}
+
+
+class com.cp470.groupproject.data.remote.dto.SearchResponse {
++ int count
++ List<RecipeDto> recipes
+}
+
+class com.cp470.groupproject.data.repository.RecipeRepository {
+- {static} String TAG
++ {static} int MAX_QUERY_LENGTH
+~ {static} int MAX_TITLE_LENGTH
+~ {static} int MAX_INGREDIENT_LENGTH
+~ {static} int MAX_LINES
+~ {static} int MAX_LINE_LENGTH
+- PantryRepository pantry
+- AiApiService api
+- Executor executor
++ void recommend(String,PreferencesDto,boolean,int,Callback<RecommendResponse>)
++ void substitute(String,String,List<String>,PreferencesDto,Callback<SubstituteResponse>)
++ {static} String cleanQuery(String)
+~ {static} String clampText(String,int)
+~ {static} List<String> cleanLines(List<String>)
+}
+
+
+interface com.cp470.groupproject.data.repository.RecipeRepository$Callback {
+~ void onResult(ApiResult<T>)
+}
+
+class com.cp470.groupproject.ui.ai.PlanMealTest {
++ InstantTaskExecutorRule instantTaskExecutorRule
+- {static} long DAY
+- Application app
+- PantryDatabase db
+- PantryRepository pantry
++ void setUp()
++ void tearDown()
++ void detail_planMeal_savesThePlanWithIngredients()
++ void detail_recipeWithoutId_isNotPlanned()
++ void ai_planMeal_savesTheRecipeOnScreen()
++ void ai_noRecipeYet_isNotPlanned()
+}
+
+
+class com.cp470.groupproject.scanner.BarcodeViewModel {
+- {static} String TAG
+- {static} int HTTP_NOT_FOUND
+- MutableLiveData<String> productName
+- MutableLiveData<Integer> errorMessage
+- MutableLiveData<Boolean> isLoading
+- AiApiService apiService
++ LiveData<String> getProductName()
++ LiveData<Integer> getErrorMessage()
++ LiveData<Boolean> getIsLoading()
++ void lookupProduct(String)
+}
+
+
+class com.cp470.groupproject.ui.wastesummary.WasteSummaryViewModel {
+- MutableLiveData<Long> since
+- LiveData<WasteStats> stats
+- int currentDays
++ LiveData<WasteStats> getStats()
++ void setPeriodDays(int)
+}
+
+
+class com.cp470.groupproject.util.WasteStatsCalculatorTest {
++ void aggregatesCountsAndPercentages()
++ void emptyAndNullGiveZeroWithoutDividingByZero()
++ void unknownDispositionsAreIgnored()
+}
+
+class com.cp470.groupproject.data.remote.ApiClient {
+- {static} long CONNECT_TIMEOUT_SECONDS
+- {static} long READ_TIMEOUT_SECONDS
+- {static} long WRITE_TIMEOUT_SECONDS
++ {static} AiApiService getService()
++ {static} AiApiService create(String)
+}
+
+
+class com.cp470.groupproject.data.remote.ApiClient$Holder {
+~ {static} AiApiService SERVICE
+}
+
+class com.cp470.groupproject.ui.inventory.FoodAdapter {
+- List<FoodItem> allItems
+- List<FoodItem> foodItems
+- String searchQuery
++ FoodViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(FoodViewHolder,int)
++ int getItemCount()
++ void setFoodItems(List<FoodItem>)
++ void filter(String)
+}
+
+
+class com.cp470.groupproject.ui.inventory.FoodAdapter$FoodViewHolder {
+~ TextView foodName
+~ TextView foodQuantity
+~ TextView foodExpiry
+}
+
+class com.cp470.groupproject.data.repository.AiRepositoryTest {
+- Application app
+- ApiResult<String> sendAndWait(AiRepository,String)
++ void chat_withRealPantry_returnsReply()
++ void chat_emptyMessage_returnsValidationError()
++ void chat_serverUnreachable_returnsNetworkError()
+}
+
+
+class com.cp470.groupproject.util.Event {
+- T content
+- boolean handled
++ T getContentIfNotHandled()
+}
+
+
+class com.cp470.groupproject.PantryWiseApp {
+- {static} String TAG
++ void onCreate()
+}
+
+
+class com.cp470.groupproject.ui.mealplanner.MealPlannerViewModel {
+- {static} String TAG
+- PantryRepository repository
+- MutableLiveData<Boolean> generating
+- ZoneId zone
+- MutableLiveData<Long> weekStart
+- LiveData<List<DayPlan>> days
+- LiveData<List<FavoriteRecipe>> favorites
+- LiveData<List<String>> inventoryNames
+- MutableLiveData<Event<Integer>> messages
+- MutableLiveData<Event<ShoppingListGenerator.Result>> generated
++ LiveData<Long> getWeekStart()
++ LiveData<List<DayPlan>> getDays()
++ LiveData<List<FavoriteRecipe>> getFavorites()
++ LiveData<List<String>> getInventoryNames()
++ LiveData<Event<Integer>> getMessages()
++ ZoneId getZone()
++ void previousWeek()
++ void nextWeek()
++ void goToToday()
++ void restoreWeek(long)
+- void shiftWeek(int)
++ boolean saveMeal(long,String,String,String,List<String>)
++ LiveData<Event<ShoppingListGenerator.Result>> getGenerated()
++ void generateForDisplayedWeek()
++ LiveData<Boolean> getGenerating()
++ void clearMeal(MealPlan)
++ void toggleCooked(MealPlan)
+- MealPlan findMeal(long,String)
+}
+
+
+class com.cp470.groupproject.data.remote.ApiCallsTest {
+- {static} Response<Object> errorResponse(int,String,String)
++ void parseError_readsCodeStatusAndRetryAfter()
++ void parseError_emptyBody_isUnexpectedResponse()
+}
+
+class com.cp470.groupproject.data.remote.ApiResult {
+- T data
+- AiError error
++ {static} ApiResult<T> success(T)
++ {static} ApiResult<T> failure(AiError)
++ boolean isSuccess()
++ T getData()
++ AiError getError()
+}
+
+
+class com.cp470.groupproject.ui.shoppinglist.StoreLabels {
+~ {static} int nameRes(StoreType)
+~ {static} int queryRes(StoreType)
+}
+
+class com.cp470.groupproject.util.StoreAdvisorTest {
++ void suggest_chicken_isButcher()
++ void suggest_chickenBreast_isButcher()
++ void suggest_chickenBroth_isGeneral()
++ void suggest_tomatoSauce_isGeneral()
++ void suggest_redPeppersPlural_isProduce()
++ void suggest_tomatoes_isProduce()
++ void suggest_salmon_isFish()
++ void suggest_cannedTuna_isGeneral()
++ void suggest_bread_isBakery()
++ void suggest_spanishPollo_isButcher()
++ void suggest_spanishPimientos_isProduce()
++ void suggest_rice_isGeneral()
++ void suggest_upperCase_matchesIgnoringCase()
++ void suggest_nullOrBlank_isGeneral()
++ void suggest_withQuantityText_ignoresNumbers()
++ void suggest_fishAndMeat_fishWins()
++ void mapsUri_spaces_areEncodedAsPercent20()
++ void mapsUri_accents_areUtf8Encoded()
++ void mapsUri_null_hasEmptyQuery()
+}
+
+class com.cp470.groupproject.data.entity.ConsumptionHistory {
++ long id
++ long foodItemId
++ String foodName
++ String normalizedName
++ double quantity
++ String unit
++ long categoryId
++ String disposition
++ long timestamp
++ {static} ConsumptionHistory fromFoodItem(FoodItem,String,long)
+}
+
+
+class com.cp470.groupproject.ui.shoppinglist.ShoppingListViewModel {
+- {static} String TAG
+- PantryRepository repository
+- MutableLiveData<Boolean> generating
+- LiveData<List<ShoppingItem>> items
+- LiveData<int[]> summary
+- MutableLiveData<Event<UiMessage>> messages
+- StorePreferences stores
+- MutableLiveData<Map<StoreType,String>> storeNames
+- MutableLiveData<Boolean> groupByStore
+- MediatorLiveData<List<ShoppingRow>> rows
+- ShoppingItem lastDeleted
++ LiveData<List<ShoppingRow>> getRows()
++ Map<StoreType,String> getStoreNames()
++ void saveStoreNames(Map<StoreType,String>)
++ boolean isGroupByStore()
++ void setGroupByStore(boolean)
+- void updateRows()
++ LiveData<List<ShoppingItem>> getItems()
++ LiveData<int[]> getSummary()
++ LiveData<Event<UiMessage>> getMessages()
+- {static} int[] summarize(List<ShoppingItem>)
++ boolean addItem(String,String,String,String)
++ void setChecked(ShoppingItem,boolean)
++ boolean editItem(ShoppingItem,String,String,String,String)
++ ShoppingInputValidator.Error validate(String,String)
++ void deleteItem(ShoppingItem)
++ void undoDelete()
++ void clearCompleted()
++ void generateFromPlan(long,long)
+- {static} UiMessage generationMessage(ShoppingListGenerator.Result)
++ LiveData<Boolean> getGenerating()
++ void generateForNextDays()
++ int completedCount()
++ String buildShareText(String)
+- void postValidationError(ShoppingInputValidator.Result)
+- {static} String clean(String)
+- {static} String emptyToNull(String)
+- {static} ShoppingItem copyOf(ShoppingItem)
+}
+
+
+class com.cp470.groupproject.data.remote.dto.ChatRequest {
++ String message
++ List<ChatMessageDto> history
++ List<InventoryItemDto> inventory
++ String locale
++ PreferencesDto preferences
+}
+
+class com.cp470.groupproject.data.remote.dto.AiRecipeResponse {
++ AiRecipeDto recipe
++ boolean usedExpiring
++ List<String> expiringItems
+}
+
+class com.cp470.groupproject.data.repository.AiRepository {
+- {static} String TAG
+~ {static} int MAX_HISTORY
+- PantryRepository pantry
+- AiApiService api
+- Executor executor
++ void sendChatMessage(String,List<ChatMessageDto>,Callback<String>)
++ void sendChatMessage(String,List<ChatMessageDto>,PreferencesDto,Callback<String>)
++ void generateRecipe(PreferencesDto,int,Callback<AiRecipeResponse>)
+~ {static} String appLanguageTag()
+~ {static} List<T> lastN(List<T>,int)
+}
+
+
+interface com.cp470.groupproject.data.repository.AiRepository$Callback {
+~ void onResult(ApiResult<T>)
+}
+
+class com.cp470.groupproject.data.remote.dto.AiRecipeDto {
++ String recipeId
++ String title
++ Integer servings
++ Integer totalTimeMinutes
++ List<AiRecipeIngredientDto> ingredients
++ List<String> ingredientLines
++ List<String> steps
++ String tip
+}
+
+class com.cp470.groupproject.data.dao.ConsumptionHistoryDao_Impl {
+- RoomDatabase __db
+- EntityInsertionAdapter<ConsumptionHistory> __insertionAdapterOfConsumptionHistory
+- SharedSQLiteStatement __preparedStmtOfDeleteAll
++ long insert(ConsumptionHistory)
++ int deleteAll()
++ LiveData<List<ConsumptionHistory>> observeAll()
++ List<ConsumptionHistory> getBetweenSync(long,long)
++ LiveData<List<DispositionCount>> observeCountsSince(long)
++ List<DispositionCount> getCountsSinceSync(long)
++ {static} List<Class<?>> getRequiredConverters()
+}
+
+
+class com.cp470.groupproject.util.ExpiryUtilsTest {
+- {static} long NOW
+- {static} long DAY
++ void zeroMeansNoDate()
++ void pastDateIsExpired()
++ void insideWindowIsUseSoonIncludingBothLimits()
++ void afterWindowIsFresh()
++ void daysUntilRoundsDown()
+}
+
+
+
+
+com.cp470.groupproject.util.UnitUtils +.. com.cp470.groupproject.util.UnitUtils$Quantity
+com.cp470.groupproject.util.UnitUtils +.. com.cp470.groupproject.util.UnitUtils$Alias
+com.cp470.groupproject.util.IngredientParser +.. com.cp470.groupproject.util.IngredientParser$Parsed
+com.cp470.groupproject.data.entity.IngredientLine <|-- com.cp470.groupproject.data.entity.FavoriteRecipeIngredient
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.ai.SavedRecipeActivity
+com.cp470.groupproject.data.dao.ShoppingItemDao <|.. com.cp470.groupproject.data.dao.ShoppingItemDao_Impl
+com.cp470.groupproject.data.dao.FavoriteRecipeDao <|.. com.cp470.groupproject.data.dao.FavoriteRecipeDao_Impl
+androidx.work.Worker <|-- com.cp470.groupproject.work.ExpirationWorker
+com.cp470.groupproject.data.dao.CategoryDao <|.. com.cp470.groupproject.data.dao.CategoryDao_Impl
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.settings.SettingsActivity
+com.cp470.groupproject.data.remote.dto.ApiErrorResponse +.. com.cp470.groupproject.data.remote.dto.ApiErrorResponse$ErrorBody
+androidx.room.RoomDatabase <|-- com.cp470.groupproject.data.db.PantryDatabase
+androidx.recyclerview.widget.ListAdapter <|-- com.cp470.groupproject.ui.ai.ChatMessageAdapter
+com.cp470.groupproject.ui.ai.ChatMessageAdapter +.. com.cp470.groupproject.ui.ai.ChatMessageAdapter$MessageViewHolder
+com.cp470.groupproject.ui.ai.ViewHolder <|-- com.cp470.groupproject.ui.ai.ChatMessageAdapter$MessageViewHolder
+com.cp470.groupproject.data.db.PantryDatabase <|-- com.cp470.groupproject.data.db.PantryDatabase_Impl
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.ai.AiAssistantActivity
+com.cp470.groupproject.data.dao.StorageLocationDao <|.. com.cp470.groupproject.data.dao.StorageLocationDao_Impl
+com.cp470.groupproject.data.dao.FoodItemDao <|.. com.cp470.groupproject.data.dao.FoodItemDao_Impl
+com.cp470.groupproject.data.dao.StorageLocationDao <|.. com.cp470.groupproject.data.dao.StorageLocationDao_Impl
+androidx.recyclerview.widget.ListAdapter <|-- com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter
+com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter +.. com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter$Listener
+com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter +.. com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter$Holder
+com.cp470.groupproject.ui.mealplanner.ViewHolder <|-- com.cp470.groupproject.ui.mealplanner.MealPlannerAdapter$Holder
+androidx.recyclerview.widget.ListAdapter <|-- com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter
+com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter +.. com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter$Listener
+com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter +.. com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter$HeaderHolder
+com.cp470.groupproject.ui.shoppinglist.ViewHolder <|-- com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter$HeaderHolder
+com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter +.. com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter$ItemHolder
+com.cp470.groupproject.ui.shoppinglist.ViewHolder <|-- com.cp470.groupproject.ui.shoppinglist.ShoppingListAdapter$ItemHolder
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.dev.DevToolsActivity
+androidx.recyclerview.widget.ListAdapter <|-- com.cp470.groupproject.ui.ai.FavoriteAdapter
+com.cp470.groupproject.ui.ai.FavoriteAdapter +.. com.cp470.groupproject.ui.ai.FavoriteAdapter$Listener
+com.cp470.groupproject.ui.ai.FavoriteAdapter +.. com.cp470.groupproject.ui.ai.FavoriteAdapter$FavoriteViewHolder
+com.cp470.groupproject.ui.ai.ViewHolder <|-- com.cp470.groupproject.ui.ai.FavoriteAdapter$FavoriteViewHolder
+com.cp470.groupproject.data.dao.FoodItemDao <|.. com.cp470.groupproject.data.dao.FoodItemDao_Impl
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.scanner.ScannerActivity
+com.cp470.groupproject.data.db.PantryDatabase <|-- com.cp470.groupproject.data.db.PantryDatabase_Impl
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.ai.RecipeDetailViewModel
+com.cp470.groupproject.ui.ai.RecipeDetailViewModel +.. com.cp470.groupproject.ui.ai.RecipeDetailViewModel$IngredientRow
+com.cp470.groupproject.ui.ai.RecipeDetailViewModel +.. com.cp470.groupproject.ui.ai.RecipeDetailViewModel$SubstituteState
+com.cp470.groupproject.data.dao.ConsumptionHistoryDao <|.. com.cp470.groupproject.data.dao.ConsumptionHistoryDao_Impl
+com.cp470.groupproject.ui.ai.IngredientMatcher +.. com.cp470.groupproject.ui.ai.IngredientMatcher$Match
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.mealplanner.MealPlannerActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.ai.FavoritesActivity
+com.cp470.groupproject.util.ShoppingCalculator +.. com.cp470.groupproject.util.ShoppingCalculator$Need
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.activities.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.ai.RecipeDetailActivity
+com.cp470.groupproject.util.StoreGrouper +.. com.cp470.groupproject.util.StoreGrouper$StoreGroup
+com.cp470.groupproject.util.StoreGrouper +.. com.cp470.groupproject.util.StoreGrouper$ShoppingRow
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.shoppinglist.ShoppingListActivity
+com.cp470.groupproject.data.dao.CategoryDao <|.. com.cp470.groupproject.data.dao.CategoryDao_Impl
+com.cp470.groupproject.util.IngredientLine +.. com.cp470.groupproject.util.IngredientLine$Result
+com.cp470.groupproject.util.IngredientLine +.. com.cp470.groupproject.util.IngredientLine$Parts
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.inventory.InventoryViewModel
+com.cp470.groupproject.data.dao.FavoriteRecipeDao <|.. com.cp470.groupproject.data.dao.FavoriteRecipeDao_Impl
+com.cp470.groupproject.data.dao.MealPlanDao <|.. com.cp470.groupproject.data.dao.MealPlanDao_Impl
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.ai.RecipeViewModel
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.ai.AiRecipeActivity
+com.cp470.groupproject.util.ShoppingInputValidator +.. com.cp470.groupproject.util.ShoppingInputValidator$Result
+android.os.Parcelable <|.. com.cp470.groupproject.data.entity.FoodItem
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.ai.FavoritesViewModel
+com.cp470.groupproject.data.entity.IngredientLine <|-- com.cp470.groupproject.data.entity.MealPlanIngredient
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.ai.SavedRecipeViewModel
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.ai.AiChatViewModel
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.ai.RecipesActivity
+com.cp470.groupproject.data.dao.ShoppingItemDao <|.. com.cp470.groupproject.data.dao.ShoppingItemDao_Impl
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.itemdetail.ItemDetailActivity
+com.cp470.groupproject.data.repository.PantryRepository +.. com.cp470.groupproject.data.repository.PantryRepository$ResultCallback
+com.cp470.groupproject.shopping.ShoppingListGenerator +.. com.cp470.groupproject.shopping.ShoppingListGenerator$Result
+com.cp470.groupproject.data.dao.MealPlanDao <|.. com.cp470.groupproject.data.dao.MealPlanDao_Impl
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.wastesummary.WasteSummaryActivity
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.ai.AiRecipeViewModel
+com.cp470.groupproject.ui.ai.AiRecipeViewModel +.. com.cp470.groupproject.ui.ai.AiRecipeViewModel$UiState
+com.cp470.groupproject.ui.ai.AiRecipeViewModel +.. com.cp470.groupproject.ui.ai.AiRecipeViewModel$FavoriteState
+androidx.recyclerview.widget.ListAdapter <|-- com.cp470.groupproject.ui.ai.RecipeAdapter
+com.cp470.groupproject.ui.ai.RecipeAdapter +.. com.cp470.groupproject.ui.ai.RecipeAdapter$OnRecipeClickListener
+com.cp470.groupproject.ui.ai.RecipeAdapter +.. com.cp470.groupproject.ui.ai.RecipeAdapter$RecipeViewHolder
+com.cp470.groupproject.ui.ai.ViewHolder <|-- com.cp470.groupproject.ui.ai.RecipeAdapter$RecipeViewHolder
+com.cp470.groupproject.ui.ai.MealPlanPicker +.. com.cp470.groupproject.ui.ai.MealPlanPicker$Listener
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.itemdetail.ItemDetailViewModel
+com.cp470.groupproject.ui.itemdetail.ItemDetailViewModel +.. com.cp470.groupproject.ui.itemdetail.ItemDetailViewModel$UiResult
+androidx.appcompat.app.AppCompatActivity <|-- com.cp470.groupproject.ui.addfood.AddFoodActivity
+com.cp470.groupproject.data.repository.RecipeRepository +.. com.cp470.groupproject.data.repository.RecipeRepository$Callback
+androidx.lifecycle.ViewModel <|-- com.cp470.groupproject.scanner.BarcodeViewModel
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.wastesummary.WasteSummaryViewModel
+com.cp470.groupproject.data.remote.ApiClient +.. com.cp470.groupproject.data.remote.ApiClient$Holder
+com.cp470.groupproject.ui.inventory.Adapter <|-- com.cp470.groupproject.ui.inventory.FoodAdapter
+com.cp470.groupproject.ui.inventory.FoodAdapter +.. com.cp470.groupproject.ui.inventory.FoodAdapter$FoodViewHolder
+com.cp470.groupproject.ui.inventory.ViewHolder <|-- com.cp470.groupproject.ui.inventory.FoodAdapter$FoodViewHolder
+android.app.Application <|-- com.cp470.groupproject.PantryWiseApp
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.mealplanner.MealPlannerViewModel
+androidx.lifecycle.AndroidViewModel <|-- com.cp470.groupproject.ui.shoppinglist.ShoppingListViewModel
+com.cp470.groupproject.data.repository.AiRepository +.. com.cp470.groupproject.data.repository.AiRepository$Callback
+com.cp470.groupproject.data.dao.ConsumptionHistoryDao <|.. com.cp470.groupproject.data.dao.ConsumptionHistoryDao_Impl
+@enduml

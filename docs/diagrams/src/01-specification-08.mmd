@@ -1,0 +1,21 @@
+flowchart TD
+    start(["User taps Generate"]) --> r1["Read the meals of the period"]
+    r1 --> r2{"Any pending meal?"}
+    r2 -->|"no"| m1(["Message: no upcoming meals"])
+    r2 -->|"yes"| r3["Read the active stock and the current list"]
+    r3 --> r4["Add up the needs by normalized ingredient and unit"]
+    r4 --> r5{"For each ingredient"}
+    r5 --> r6{"Has an amount?"}
+    r6 -->|"no"| r7{"In stock or on the manual list?"}
+    r7 -->|"yes"| r5
+    r7 -->|"no"| r8["Add once, quantity 1"]
+    r6 -->|"yes"| r9["Convert to the base unit and subtract the stock"]
+    r9 --> r10{"Shortfall, comparable unit, not on the manual list?"}
+    r10 -->|"no"| r5
+    r10 -->|"yes"| r11["Add the missing quantity"]
+    r8 --> r5
+    r11 --> r5
+    r5 -->|"all done"| r12["Replace the automatic items of the list"]
+    r12 --> r13{"Anything added?"}
+    r13 -->|"no"| m2(["Message: everything is in stock"])
+    r13 -->|"yes"| m3(["Snackbar: N items added, action View"])

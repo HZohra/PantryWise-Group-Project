@@ -1,0 +1,38 @@
+classDiagram
+    class AddFoodActivity {
+        +newIntent(context, startScan)$ Intent
+        -saveFood()
+    }
+    class ScannerActivity {
+        +EXTRA_PRODUCT_NAME$
+        -processImage(imageProxy)
+        -showManualBarcodeDialog()
+    }
+    class BarcodeViewModel {
+        +lookupProduct(barcode)
+        +getProductName() LiveData
+        +getErrorMessage() LiveData
+        +getIsLoading() LiveData
+    }
+    class AiApiService {
+        <<interface>>
+        +lookupProduct(code)
+    }
+    class ApiClient {
+        +getService()$ AiApiService
+    }
+    class ProductResponse {
+        +String barcode
+        +String name
+    }
+    class PantryRepository
+    class FoodItem
+
+    AddFoodActivity ..> ScannerActivity : starts for a result
+    ScannerActivity --> BarcodeViewModel
+    BarcodeViewModel --> AiApiService
+    ApiClient ..> AiApiService : creates
+    AiApiService ..> ProductResponse
+    ScannerActivity ..> AddFoodActivity : returns the product name
+    AddFoodActivity --> PantryRepository : insertFoodItem
+    AddFoodActivity ..> FoodItem : creates

@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph view["View layer: Activities, XML layouts, adapters"]
+        A["XxxActivity<br/>renders state, forwards clicks"]
+    end
+    subgraph vm["ViewModel layer"]
+        V["XxxViewModel<br/>(AndroidViewModel)<br/>LiveData, Event of T"]
+    end
+    subgraph repo["Repository layer"]
+        P["PantryRepository<br/>local data"]
+        AI["AiRepository and RecipeRepository<br/>backend data"]
+    end
+    subgraph src["Data sources"]
+        D["Room: PantryDatabase and DAOs"]
+        R["Retrofit: AiApiService"]
+    end
+    U["util and shopping<br/>pure Java helpers"]
+
+    A -->|"observes LiveData"| V
+    A -.->|"user actions"| V
+    V --> P
+    V --> AI
+    AI --> P
+    P --> D
+    AI --> R
+    V --> U
+    P --> U

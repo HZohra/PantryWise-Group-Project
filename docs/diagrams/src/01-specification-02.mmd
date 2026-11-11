@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> ACTIVE : add food (manual or scanner)
+    ACTIVE --> ACTIVE : edit
+    state ACTIVE {
+        [*] --> NoDate : no date
+        [*] --> Fresh : more than 3 days left
+        Fresh --> UseSoon : 3 days or fewer
+        UseSoon --> Expired : date passed
+        NoDate --> NoDate
+    }
+    ACTIVE --> CONSUMED : record consumed
+    ACTIVE --> WASTED : record wasted
+    ACTIVE --> EXPIRED : record expired
+    ACTIVE --> DONATED : record donated
+    ACTIVE --> [*] : delete
+    CONSUMED --> [*]
+    WASTED --> [*]
+    EXPIRED --> [*]
+    DONATED --> [*]

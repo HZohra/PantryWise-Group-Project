@@ -16,8 +16,6 @@
     <string name="scanner_error_invalid_barcode_scan">Invalid barcode. Please scan a valid UPC or EAN barcode.</string>
     <string name="scanner_error_invalid_barcode_manual">Please enter a valid barcode (8, 12, 13, or 14 digits)</string>
     <string name="scanner_error_lookup_failed">Unable to retrieve product information. Please try again.</string>
-    <string name="scanner_error_not_found">Product not found. Please enter the food manually.</string>
     <string name="scanner_error_not_in_database">Product not found in USDA database. Please enter it manually.</string>
-    <string name="scanner_error_incomplete">Product information is incomplete. Please enter it manually.</string>
     <string name="scanner_error_network">Network error. Please try again.</string>
 </resources>

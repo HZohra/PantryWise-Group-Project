@@ -11,6 +11,7 @@ const PLACEHOLDERS = {
   ANTHROPIC_API_KEY: 'test-anthropic-key',
   EDAMAM_APP_ID: 'test-app-id',
   EDAMAM_APP_KEY: 'test-app-key',
+  USDA_API_KEY: 'test-usda-key',
 };
 for (const [name, value] of Object.entries(PLACEHOLDERS)) {
   if (!process.env[name]) process.env[name] = value;
