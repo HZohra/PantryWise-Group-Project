@@ -5,4 +5,5 @@
     <string name="ai_fav_empty">Aún no tienes favoritos. Toca ♥ en una receta para guardarla.</string>
     <string name="ai_fav_ai_label">Receta con IA</string>
     <string name="ai_fav_undo">Deshacer</string>
+    <string name="ai_fav_not_found">Esta receta ya no está en tus favoritos.</string>
 </resources>

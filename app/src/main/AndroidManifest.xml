@@ -96,6 +96,13 @@
             android:exported="false"
             android:label="@string/ai_fav_title"
             android:parentActivityName=".ui.ai.RecipesActivity" />
+
+        <activity
+            android:name=".ui.ai.SavedRecipeActivity"
+            android:exported="false"
+            android:label="@string/ai_gen_title"
+            android:parentActivityName=".ui.ai.FavoritesActivity" />
+
     </application>
 
 </manifest>

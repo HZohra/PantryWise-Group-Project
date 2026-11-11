@@ -60,7 +60,14 @@ public class FavoritesActivity extends AppCompatActivity {
         adapter = new FavoriteAdapter(new FavoriteAdapter.Listener() {
             @Override
             public void onOpen(@NonNull FavoriteRecipe recipe) {
-                // 6.1g-2: opens the saved recipe
+                if (recipe.isAi()) {
+                    // AI recipes have their steps saved: read-only view, no AI call
+                    startActivity(SavedRecipeActivity.newIntent(FavoritesActivity.this, recipe.recipeId));
+                } else {
+                    // Edamam recipes reuse Recipe details, rebuilt from the saved data (offline)
+                    startActivity(RecipeDetailActivity.newIntent(FavoritesActivity.this,
+                            FavoriteRecipeMapper.toRecipeDto(recipe)));
+                }
             }
 
             @Override

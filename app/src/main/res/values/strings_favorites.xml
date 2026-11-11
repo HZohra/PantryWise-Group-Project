@@ -5,4 +5,5 @@
     <string name="ai_fav_empty">No favourites yet. Tap ♥ on a recipe to save it.</string>
     <string name="ai_fav_ai_label">AI recipe</string>
     <string name="ai_fav_undo">Undo</string>
+    <string name="ai_fav_not_found">This recipe is no longer in your favourites.</string>
 </resources>

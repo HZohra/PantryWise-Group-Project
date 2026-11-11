@@ -16,7 +16,8 @@ import java.util.List;
 
 /**
  * Builds the {@link FavoriteRecipe} that is saved when the user taps the heart, from an Edamam
- * recipe or from an AI recipe. Plain Java (no Android), so every rule here is unit-tested.
+ * recipe or from an AI recipe, and turns a saved Edamam favourite back into a {@link RecipeDto}
+ * for Recipe details. Plain Java (no Android), so every rule here is unit-tested.
  *
  * Rules: blank text becomes null, 0 or negative servings and times mean "unknown" (null), and
  * nutrition is kept only when it is per serving (the favourites columns are per serving).
@@ -78,6 +79,36 @@ final class FavoriteRecipeMapper {
     }
 
     /**
+     * A saved Edamam favourite as Recipe details expects it (offline, no backend call). There is
+     * no pantry match, because it was not saved.
+     */
+    @NonNull
+    static RecipeDto toRecipeDto(@NonNull FavoriteRecipe favorite) {
+        RecipeDto recipe = new RecipeDto();
+        recipe.recipeId = favorite.recipeId;
+        recipe.title = favorite.title;
+        recipe.image = favorite.imageUrl;
+        recipe.sourceName = favorite.sourceName;
+        recipe.sourceUrl = favorite.sourceUrl;
+        recipe.servings = favorite.servings == null ? null : favorite.servings.doubleValue();
+        recipe.totalTimeMinutes = favorite.totalTimeMinutes == null ? null
+                : favorite.totalTimeMinutes.doubleValue();
+        recipe.ingredientLines = new ArrayList<>(favorite.ingredientTexts());
+
+        if (favorite.calories != null || favorite.protein != null
+                || favorite.carbs != null || favorite.fat != null) {
+            NutritionDto nutrition = new NutritionDto();
+            nutrition.perServing = true; // only per-serving values are ever saved
+            nutrition.calories = toInteger(favorite.calories);
+            nutrition.protein = toInteger(favorite.protein);
+            nutrition.carbs = toInteger(favorite.carbs);
+            nutrition.fat = toInteger(favorite.fat);
+            recipe.nutrition = nutrition;
+        }
+        return recipe;
+    }
+
+    /**
      * the backend's ready-made lines ("1 cup spinach"); if they are missing, the lines are built
      * from the amount and the name of each ingredient.
      */
@@ -135,5 +166,10 @@ final class FavoriteRecipeMapper {
     @Nullable
     private static Double toDouble(@Nullable Integer value) {
         return value == null ? null : value.doubleValue();
+    }
+
+    @Nullable
+    private static Integer toInteger(@Nullable Double value) {
+        return value == null ? null : (int) Math.round(value);
     }
 }
