@@ -3,11 +3,13 @@ package com.cp470.groupproject.scanner;
 
 import android.util.Log;
 
+import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.cp470.groupproject.BuildConfig;
+import com.cp470.groupproject.R;
 import com.cp470.groupproject.scanner.api.RetrofitClient;
 import com.cp470.groupproject.scanner.api.UsdaApiService;
 
@@ -21,7 +23,7 @@ import retrofit2.Response;
 public class BarcodeViewModel extends ViewModel {
 
     private final MutableLiveData<String> productName = new MutableLiveData<>();
-    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Integer> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     private final UsdaApiService usdaApiService =
@@ -31,7 +33,9 @@ public class BarcodeViewModel extends ViewModel {
         return productName;
     }
 
-    public LiveData<String> getErrorMessage() {
+    /** string resource id of the last lookup error, so this class needs no context */
+    @StringRes
+    public LiveData<Integer> getErrorMessage() {
         return errorMessage;
     }
 
@@ -47,7 +51,7 @@ public class BarcodeViewModel extends ViewModel {
         // Validate the barcode
         if (barcode == null || !barcode.matches("\\d{8}|\\d{12}|\\d{13}|\\d{14}")) {
             errorMessage.setValue(
-                    "Invalid barcode. Please scan a valid UPC or EAN barcode."
+                    R.string.scanner_error_invalid_barcode_scan
             );
             isLoading.setValue(false);
             return;
@@ -83,7 +87,7 @@ public class BarcodeViewModel extends ViewModel {
                             "USDA request unsuccessful. HTTP code: " + response.code());
 
                     errorMessage.setValue(
-                            "Unable to retrieve product information. Please try again."
+                            R.string.scanner_error_lookup_failed
                     );
                     return;
                 }
@@ -98,7 +102,7 @@ public class BarcodeViewModel extends ViewModel {
                 // Check if any products were found
                 if (foods == null || foods.size() == 0) {
                     errorMessage.setValue(
-                            "Product not found. Please enter the food manually."
+                            R.string.scanner_error_not_found
                     );
                     return;
                 }
@@ -129,7 +133,7 @@ public class BarcodeViewModel extends ViewModel {
                 // No product matched the scanned barcode
                 if (matchedProduct == null) {
                     errorMessage.setValue(
-                            "Product not found in USDA database. Please enter it manually."
+                            R.string.scanner_error_not_in_database
                     );
                     return;
                 }
@@ -144,7 +148,7 @@ public class BarcodeViewModel extends ViewModel {
 
                 } else {
                     errorMessage.setValue(
-                            "Product information is incomplete. Please enter it manually."
+                            R.string.scanner_error_incomplete
                     );
                 }
             }
@@ -156,7 +160,7 @@ public class BarcodeViewModel extends ViewModel {
                 Log.e("BarcodeViewModel",
                         "USDA API request failed", t);
 
-                errorMessage.setValue("Network error. Please try again.");
+                errorMessage.setValue(R.string.scanner_error_network);
             }
         });
     }

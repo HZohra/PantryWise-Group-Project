@@ -121,7 +121,6 @@
     <string name="planner_next_week">Next week</string>
 
     <!-- temporary shortcut on the waste summary screen, only shown in debug builds -->
-    <string name="test_panel_open">Test alerts, shopping list &amp; planner</string>
 
     <!-- suggested store: groups of the shopping list and "my stores" -->
     <string name="store_type_butcher">Butcher</string>

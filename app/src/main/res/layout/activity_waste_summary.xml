@@ -73,12 +73,4 @@
         android:layout_marginTop="8dp"
         android:max="100" />
 
-    <Button
-        android:id="@+id/btnDevTools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/test_panel_open"
-        android:visibility="gone" />
-
 </LinearLayout>

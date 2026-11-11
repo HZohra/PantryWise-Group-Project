@@ -5,12 +5,17 @@
 
     <!-- networkSecurityConfig (Member 5): allows http to the local backend at 10.0.2.2, debug builds only -->
     <application android:networkSecurityConfig="@xml/network_security_config">
-        <!-- no LAUNCHER filter on purpose: open it with a run configuration or
-             adb shell am start -n com.cp470.groupproject/.ui.dev.DevToolsActivity -->
+        <!-- second launcher icon, only in debug builds, so the demo data tools are one tap away
+             without any shortcut inside the real screens -->
         <activity
             android:name=".ui.dev.DevToolsActivity"
             android:exported="true"
-            android:label="Member 4 tests" />
+            android:label="Member 4 tests">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <!-- Member 5, debug only: lets adb open the AI screen until navigation exists.
              The release build keeps exported="false" from the main manifest. -->

@@ -47,6 +47,9 @@ import com.cp470.groupproject.R;
 @androidx.camera.core.ExperimentalGetImage
 public class ScannerActivity extends AppCompatActivity {
 
+    /** result extra: the product name found for the scanned barcode */
+    public static final String EXTRA_PRODUCT_NAME = "product_name";
+
     private PreviewView cameraPreview;
 
     private BarcodeScanner barcodeScanner;
@@ -81,15 +84,22 @@ public class ScannerActivity extends AppCompatActivity {
 
                 Toast.makeText(
                         this,
-                        "Product found: " + name,
+                        getString(R.string.scanner_product_found, name),
                         Toast.LENGTH_LONG
                 ).show();
+
+                // when opened from the add food form, hand the name back so it can autofill
+                if (getCallingActivity() != null) {
+                    setResult(RESULT_OK,
+                            new android.content.Intent().putExtra(EXTRA_PRODUCT_NAME, name));
+                    finish();
+                }
             }
         });
 
         barcodeViewModel.getErrorMessage().observe(this, error -> {
-            if (error != null && !error.isEmpty()) {
-                Log.e("ScannerActivity", "Product lookup error: " + error);
+            if (error != null) {
+                Log.e("ScannerActivity", "Product lookup error: " + getString(error));
 
                 Toast.makeText(
                         this,
@@ -138,7 +148,7 @@ public class ScannerActivity extends AppCompatActivity {
                 // Permission denied - show a message
                 Toast.makeText(
                         this,
-                        "Camera permission is required to scan barcodes",
+                        R.string.scanner_camera_permission_denied,
                         Toast.LENGTH_LONG
                 ).show();
 
@@ -148,16 +158,16 @@ public class ScannerActivity extends AppCompatActivity {
 
     private void showCameraPermissionDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Camera Permission Required")
-                .setMessage("PantryWise needs camera access to scan food barcodes and automatically identify products.")
-                .setPositiveButton("Continue", (dialog, which) -> {
+                .setTitle(R.string.scanner_camera_permission_title)
+                .setMessage(R.string.scanner_camera_permission_message)
+                .setPositiveButton(R.string.scanner_action_continue, (dialog, which) -> {
                     ActivityCompat.requestPermissions(
                             this,
                             new String[]{Manifest.permission.CAMERA},
                             CAMERA_PERMISSION_REQUEST_CODE
                     );
                 })
-                .setNegativeButton("Cancel", (dialog, which) -> {
+                .setNegativeButton(R.string.scanner_action_cancel, (dialog, which) -> {
                     dialog.dismiss();
                 })
                 .show();
@@ -251,14 +261,14 @@ public class ScannerActivity extends AppCompatActivity {
 
     private void showManualBarcodeDialog() {
         EditText barcodeInput = new EditText(this);
-        barcodeInput.setHint("Enter barcode (8, 12, 13, or 14 digits)");
+        barcodeInput.setHint(R.string.scanner_manual_hint);
         barcodeInput.setInputType(InputType.TYPE_CLASS_NUMBER);
         barcodeInput.setPadding(40, 30, 40, 30);
 
         new AlertDialog.Builder(this)
-                .setTitle("Enter Barcode Manually")
+                .setTitle(R.string.scanner_manual_dialog_title)
                 .setView(barcodeInput)
-                .setPositiveButton("Search", (dialog, which) -> {
+                .setPositiveButton(R.string.scanner_action_search, (dialog, which) -> {
                     String barcode = barcodeInput.getText().toString().trim();
 
                     if (barcode.matches("\\d{8}|\\d{12}|\\d{13}|\\d{14}")) {
@@ -267,12 +277,12 @@ public class ScannerActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(
                                 this,
-                                "Please enter a valid barcode (8, 12, 13, or 14 digits)",
+                                R.string.scanner_error_invalid_barcode_manual,
                                 Toast.LENGTH_LONG
                         ).show();
                     }
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.scanner_action_cancel, null)
                 .show();
     }
 
