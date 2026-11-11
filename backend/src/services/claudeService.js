@@ -46,6 +46,37 @@ function mapClaudeError(err) {
   return new AppError(503, 'AI_UNAVAILABLE', 'The assistant is unavailable right now. Please try again later.');
 }
 
+const emptyReply = () => new AppError(502, 'AI_EMPTY_REPLY', 'The assistant returned an empty reply. Please try again.');
+
+/** One call to Claude; SDK errors become AppErrors. */
+async function createMessage(params) {
+  try {
+    return await getClient().messages.create(params);
+  } catch (err) {
+    throw mapClaudeError(err);
+  }
+}
+
+/** Diagnostics: tell us when a reply was cut off, and why. */
+function warnIfCutOff(response, maxTokens) {
+  if (response.stop_reason === 'max_tokens') {
+    console.warn(
+      '[claude] reply cut off by max_tokens =', maxTokens,
+      '| output tokens =', response.usage?.output_tokens,
+      '| blocks =', response.content.map((b) => b.type).join(','),
+    );
+  }
+}
+
+/** A reply is a list of content blocks; this joins the text ones. */
+function textOf(response) {
+  return response.content
+    .filter((block) => block.type === 'text')
+    .map((block) => block.text)
+    .join('')
+    .trim();
+}
+
 /**
  * Sends a conversation to Claude and returns its text reply.
  * @param {object} params
@@ -56,38 +87,31 @@ function mapClaudeError(err) {
  * @throws {AppError} always an AppError, never a raw SDK error
  */
 async function generateReply({ system, messages, maxTokens = 600 }) {
-  let response;
-  try {
-    response = await getClient().messages.create({
-      model: config.anthropic.model,
-      max_tokens: maxTokens,
-      system,
-      messages,
-    });
-  } catch (err) {
-    throw mapClaudeError(err);
-  }
-
-  // Diagnostics: tell us when a reply was cut off, and why
-  if (response.stop_reason === 'max_tokens') {
-    console.warn(
-      '[claude] reply cut off by max_tokens =', maxTokens,
-      '| output tokens =', response.usage?.output_tokens,
-      '| blocks =', response.content.map((b) => b.type).join(','),
-    );
-  }
-
-  // A reply is a list of content blocks; we only want the text ones
-  const text = response.content
-    .filter((block) => block.type === 'text')
-    .map((block) => block.text)
-    .join('')
-    .trim();
-
-  if (!text) {
-    throw new AppError(502, 'AI_EMPTY_REPLY', 'The assistant returned an empty reply. Please try again.');
-  }
+  const response = await createMessage({ model: config.anthropic.model, max_tokens: maxTokens, system, messages });
+  warnIfCutOff(response, maxTokens);
+  const text = textOf(response);
+  if (!text) throw emptyReply();
   return text;
 }
 
-module.exports = { generateReply, mapClaudeError };
+/**
+ * Like generateReply, but Claude may also call the given tools. The calls are returned to the
+ * caller (they are NOT executed here: the app shows them and the user confirms).
+ * @param {{system: string, messages: object[], maxTokens?: number, tools: object[]}} params
+ * @returns {Promise<{text: string, toolCalls: {name: string, input: object}[]}>}
+ * @throws {AppError} AI_EMPTY_REPLY when there is neither text nor a tool call
+ */
+async function generateReplyWithTools({ system, messages, maxTokens = 600, tools = [] }) {
+  const response = await createMessage({
+    model: config.anthropic.model, max_tokens: maxTokens, system, messages, tools,
+  });
+  warnIfCutOff(response, maxTokens);
+  const text = textOf(response);
+  const toolCalls = response.content
+    .filter((block) => block.type === 'tool_use')
+    .map((block) => ({ name: block.name, input: block.input || {} }));
+  if (!text && toolCalls.length === 0) throw emptyReply();
+  return { text, toolCalls };
+}
+
+module.exports = { generateReply, generateReplyWithTools, mapClaudeError };

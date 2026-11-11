@@ -339,6 +339,7 @@ function checkRecommendRequest(body) {
     preferences: { health: [], allergies: [] },
     limit: 5,
     mode: 'standard',
+    hideAllergens: false,
   };
 
   if (!isPlainObject(body)) {
@@ -370,6 +371,16 @@ function checkRecommendRequest(body) {
       errors.push(`mode must be one of: ${RECOMMEND_MODES.join(', ')}`);
     } else {
       clean.mode = body.mode;
+    }
+  }
+
+
+  // true = recipes with the user's allergens are removed; false (default) = kept, flagged and listed last
+  if (body.hideAllergens !== undefined) {
+    if (typeof body.hideAllergens !== 'boolean') {
+      errors.push('hideAllergens must be true or false');
+    } else {
+      clean.hideAllergens = body.hideAllergens;
     }
   }
 

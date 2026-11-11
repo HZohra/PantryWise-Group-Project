@@ -100,7 +100,7 @@ const request = (overrides) => ({
   inventory: [], query: undefined, preferences: noPreferences(), limit: 5, mode: 'standard', ...overrides,
 });
 
-test('recommendRecipes: searches urgent items, drops allergens and duplicates, ranks the rest', async () => {
+test('recommendRecipes: searches urgent items, drops duplicates, flags allergens and lists them last', async () => {
   const queries = installFakeFetch((q) => okResponse({
     spinach: [
       rawRecipe({ id: 'a', label: 'Spinach Omelette', source: 'BBC', ingredients: ['spinach', 'egg', 'salt'] }),
@@ -118,7 +118,9 @@ test('recommendRecipes: searches urgent items, drops allergens and duplicates, r
   }));
 
   assert.deepEqual(queries.sort(), ['egg', 'spinach']);
-  assert.deepEqual(result.recipes.map((x) => x.recipeId), ['edamam:a', 'edamam:d']);
+  assert.deepEqual(result.recipes.map((x) => x.recipeId), ['edamam:a', 'edamam:d', 'edamam:b']);
+  assert.deepEqual(result.recipes[2].match.allergens, ['peanut butter']);
+  assert.deepEqual(result.recipes[0].match.allergens, []);
   assert.equal(result.personalized, true);
   assert.equal(result.broadened, false);
 });
@@ -164,4 +166,35 @@ test('recommendRecipes: when every search fails, the Edamam error reaches the ca
 
   await assert.rejects(recipes.recommendRecipes(request({ query: 'pasta' })),
     (err) => err.statusCode === 503 && err.code === 'RECIPES_UNAVAILABLE');
+});
+
+
+test('recommendRecipes: a recipe with an allergen goes after safe ones, even with a better score', async () => {
+  installFakeFetch(() => okResponse([
+    rawRecipe({ id: 'pb', ingredients: ['spinach', 'peanut butter'] }),        // 50% coverage + urgency
+    rawRecipe({ id: 'safe', ingredients: ['spinach', 'feta', 'olive', 'garlic'] }), // 25% coverage + urgency
+  ]));
+
+  const result = await recipes.recommendRecipes(request({
+    inventory: [item('spinach', 1)],
+    preferences: { ...noPreferences(), allergies: ['peanut'] },
+  }));
+
+  assert.deepEqual(result.recipes.map((x) => x.recipeId), ['edamam:safe', 'edamam:pb']);
+  assert.deepEqual(result.recipes[1].match.allergens, ['peanut butter']);
+});
+
+test('recommendRecipes: hideAllergens removes recipes with an allergen', async () => {
+  installFakeFetch(() => okResponse([
+    rawRecipe({ id: 'pb', ingredients: ['spinach', 'peanut butter'] }),
+    rawRecipe({ id: 'safe', ingredients: ['spinach', 'feta'] }),
+  ]));
+
+  const result = await recipes.recommendRecipes(request({
+    inventory: [item('spinach', 1)],
+    preferences: { ...noPreferences(), allergies: ['peanut'] },
+    hideAllergens: true,
+  }));
+
+  assert.deepEqual(result.recipes.map((x) => x.recipeId), ['edamam:safe']);
 });

@@ -27,7 +27,7 @@ final class MissingIngredients {
         List<ShoppingItem> items = new ArrayList<>();
         if (rows == null) return items;
         for (RecipeDetailViewModel.IngredientRow row : rows) {
-            if (row.status == IngredientMatcher.Status.MISSING) {
+            if (row.status == IngredientMatcher.Status.MISSING && row.allergen == null) {
                 items.add(toItem(row.line, row.name));
             }
         }

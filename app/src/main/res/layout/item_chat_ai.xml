@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:paddingEnd="@dimen/ai_bubble_side_inset"
     android:paddingVertical="@dimen/ai_item_gap">
 
@@ -26,6 +27,78 @@
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer"
             android:textIsSelectable="true"
-            tools:text="Try a quick spinach omelette: whisk 2 eggs, wilt a handful of spinach in a pan, pour the eggs over and cook for 3 minutes." />
+            tools:text="Here are the items for your shopping list. Confirm below to add them." />
     </com.google.android.material.card.MaterialCardView>
-</FrameLayout>
+
+    <!-- Shopping-list items the assistant proposed: nothing is saved until the user taps Add -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/ai_items_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ai_item_gap"
+        android:visibility="gone"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:cardCornerRadius="@dimen/ai_bubble_corner"
+        app:cardElevation="0dp"
+        app:strokeColor="?attr/colorOutlineVariant"
+        app:strokeWidth="1dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/ai_bubble_padding">
+
+            <TextView
+                android:id="@+id/ai_items_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                tools:text="Add 2 items to your shopping list?" />
+
+            <TextView
+                android:id="@+id/ai_items_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ai_recipe_text_gap"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="garlic (2 cloves), olive oil" />
+
+            <LinearLayout
+                android:id="@+id/ai_items_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ai_item_gap"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ai_items_no"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ai_chat_items_no" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ai_items_add"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ai_item_gap"
+                    android:text="@string/ai_chat_items_add" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/ai_items_done"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ai_recipe_text_gap"
+                android:text="@string/ai_chat_items_done"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="?attr/colorPrimary"
+                android:visibility="gone" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

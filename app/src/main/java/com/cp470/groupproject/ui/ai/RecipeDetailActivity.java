@@ -41,10 +41,10 @@ import com.google.gson.JsonParseException;
 import java.util.List;
 
 /**
- * Recipe details (View in MVVM): photo, ingredients marked In pantry / Missing, nutrition,
- * "View original recipe" (implicit Intent), "Find substitute" (bottom sheet),
- * "Ask assistant how to make this" (opens the chat with a draft), the favourites heart and
- * "Add missing to shopping list".
+ * Recipe details (View in MVVM): photo, ingredients marked In pantry / Missing / Allergen,
+ * an allergen warning banner, nutrition, "View original recipe" (implicit Intent),
+ * "Find substitute" (bottom sheet), "Ask assistant how to make this" (opens the chat with a draft),
+ * the favourites heart, "Add missing to shopping list" (never adds an allergen) and "Plan this meal".
  */
 public class RecipeDetailActivity extends AppCompatActivity {
 
@@ -156,6 +156,11 @@ public class RecipeDetailActivity extends AppCompatActivity {
         showOrHide(R.id.ai_detail_expiring,
                 expiring == null ? null : getString(R.string.ai_recipes_uses_expiring, expiring));
 
+        // "⚠ This recipe contains peanut butter, which is on your allergy list…"
+        String allergens = Allergens.names(recipe.match);
+        showOrHide(R.id.ai_detail_allergen_banner,
+                allergens == null ? null : getString(R.string.ai_allergen_banner, allergens));
+
         MaterialButton viewOriginal = findViewById(R.id.ai_detail_view_original);
         if (isWebLink(recipe.sourceUrl)) {
             viewOriginal.setOnClickListener(v -> openOriginal(recipe.sourceUrl));
@@ -215,7 +220,14 @@ public class RecipeDetailActivity extends AppCompatActivity {
             TextView status = item.findViewById(R.id.ai_ingredient_status);
             MaterialButton substitute = item.findViewById(R.id.ai_ingredient_substitute);
 
-            if (row.status == IngredientMatcher.Status.IN_PANTRY) {
+            if (row.allergen != null) {
+                // the allergen comes first, even when the user owns it
+                status.setText(R.string.ai_detail_allergen); // colorError comes from the layout
+                status.setVisibility(View.VISIBLE);
+                substitute.setVisibility(View.VISIBLE);
+                String food = row.allergen;
+                substitute.setOnClickListener(v -> viewModel.findSubstitute(food));
+            } else if (row.status == IngredientMatcher.Status.IN_PANTRY) {
                 status.setText(R.string.ai_detail_in_pantry);
                 status.setTextColor(MaterialColors.getColor(status, androidx.appcompat.R.attr.colorPrimary));
                 status.setVisibility(View.VISIBLE);
@@ -229,7 +241,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
         }
     }
 
-    /** Hidden without a pantry match; "You have everything" when nothing is missing. */
+    /**
+     * Hidden without a pantry match, and when only allergens are missing (never suggest buying
+     * them); "You have everything" when nothing is missing.
+     */
     private void bindShoppingButton(@NonNull RecipeDto recipe) {
         MaterialButton button = findViewById(R.id.ai_detail_add_missing);
         if (!RecipeCardFormatter.hasMatch(recipe.match)) {
@@ -237,6 +252,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
             return;
         }
         List<ShoppingItem> missing = MissingIngredients.fromDetailRows(viewModel.getRows());
+        if (missing.isEmpty() && Allergens.has(recipe.match)) {
+            button.setVisibility(View.GONE); // only allergens are missing: never suggest buying them
+            return;
+        }
         if (missing.isEmpty()) {
             button.setEnabled(false);
             button.setText(R.string.ai_shop_have_all);
@@ -252,7 +271,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 : getString(R.string.ai_shop_already);
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
-
 
     /** Hidden when the recipe has no id (it couldn't be found again from the plan). */
     private void bindPlanButton() {

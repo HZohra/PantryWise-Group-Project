@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Avisos de alérgenos en recetas (Team Member 5, 6.5). -->
+<resources>
+    <string name="ai_allergen_card">⚠ Contiene tu alérgeno: %1$s</string>
+    <string name="ai_allergen_banner">⚠ Esta receta contiene %1$s, que está en tu lista de alergias. Toca \"Buscar sustituto\" a su lado o elige otro plato.</string>
+    <string name="ai_detail_allergen">Alérgeno</string>
+    <string name="profile_hide_allergens">Ocultar recetas con mis alergias</string>
+    <string name="profile_hide_allergens_hint">Si está desactivado, aparecen al final con un aviso para que cambies el ingrediente.</string>
+</resources>

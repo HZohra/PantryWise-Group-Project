@@ -17,4 +17,6 @@ public class MatchDto {
     public List<String> missing;
     /** Expiring pantry items this recipe uses, most urgent first ("Uses expiring" badge). */
     public List<ExpiringItemDto> expiringUsed;
+    /** The recipe's ingredients that are on the user's allergy list (empty when it is safe). */
+    public List<String> allergens;
 }

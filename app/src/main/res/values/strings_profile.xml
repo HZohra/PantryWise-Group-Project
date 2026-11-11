@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Food profile (Team Member 5, 6.5). Spanish: values-es/strings_profile.xml -->
+<resources>
+    <string name="profile_title">Your food profile</string>
+    <string name="profile_menu">Food profile</string>
+    <string name="profile_settings_entry">Food profile: allergies, diet, fitness goal</string>
+    <string name="profile_intro">Tell us a little about you so the assistant and recipes fit your needs. You can change this any time in Settings.</string>
+
+    <string name="profile_name">Your name</string>
+    <string name="profile_name_missing">Please enter your name.</string>
+    <string name="profile_name_invalid">Use letters only.</string>
+
+    <string name="profile_allergies">Food allergies</string>
+    <string name="profile_allergies_note">The assistant never suggests these, and recipes with them are hidden. Always check labels.</string>
+    <string name="profile_allergies_hint">Add an allergy (e.g. peanut)</string>
+    <string name="profile_allergy_add">Add</string>
+    <string name="profile_allergy_invalid">Use letters only (for example: peanut, tree nuts).</string>
+    <string name="profile_allergy_limit">You can add up to %1$d allergies.</string>
+    <string name="profile_allergy_remove">Remove %1$s</string>
+    <string name="profile_no_allergies">I have no food allergies</string>
+    <string name="profile_allergies_unanswered">Add your allergies, or tick \"I have no food allergies\".</string>
+
+    <string name="profile_must_be">Must be</string>
+    <string name="profile_diet">Diet</string>
+    <string name="profile_diet_none">No preference</string>
+    <string name="profile_goal">Fitness goal</string>
+    <string name="profile_goal_none">No goal</string>
+
+    <string name="profile_save">Save</string>
+    <string name="profile_saved">Food profile saved</string>
+
+    <!-- Same order as AiPreferences.HEALTH_OPTIONS -->
+    <string-array name="profile_health_labels">
+        <item>Vegetarian</item>
+        <item>Vegan</item>
+        <item>Pescatarian</item>
+        <item>Gluten-free</item>
+        <item>Dairy-free</item>
+        <item>Egg-free</item>
+        <item>Peanut-free</item>
+        <item>Tree-nut-free</item>
+        <item>Soy-free</item>
+        <item>Fish-free</item>
+        <item>Shellfish-free</item>
+        <item>Pork-free</item>
+        <item>Red-meat-free</item>
+        <item>Alcohol-free</item>
+        <item>Kosher</item>
+    </string-array>
+
+    <!-- Same order as AiPreferences.DIET_OPTIONS -->
+    <string-array name="profile_diet_labels">
+        <item>Balanced</item>
+        <item>High fibre</item>
+        <item>High protein</item>
+        <item>Low carb</item>
+        <item>Low fat</item>
+        <item>Low sodium</item>
+    </string-array>
+
+    <!-- Same order as AiPreferences.GOAL_OPTIONS -->
+    <string-array name="profile_goal_labels">
+        <item>Lose weight</item>
+        <item>Build muscle</item>
+        <item>Maintain weight</item>
+        <item>Eat healthier</item>
+    </string-array>
+</resources>

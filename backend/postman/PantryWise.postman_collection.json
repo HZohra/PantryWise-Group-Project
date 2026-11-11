@@ -239,7 +239,7 @@
             "pm.test('mode is standard', () => pm.expect(body.mode).to.eql('standard'));",
             "pm.test('searched the two most urgent items', () => pm.expect(body.searchedFor).to.eql(['chicken breast', 'spinach']));",
             "pm.test('sorted best first', () => pm.expect(scores).to.eql([...scores].sort((a, b) => b - a)));",
-            "pm.test('every recipe has a match explanation', () => body.recipes.forEach(r => pm.expect(r.match).to.have.keys('score', 'haveCount', 'totalCount', 'have', 'missing', 'expiringUsed')));"
+            "pm.test('every recipe has a match explanation', () => body.recipes.forEach(r => pm.expect(r.match).to.have.keys('score', 'haveCount', 'totalCount', 'have', 'missing', 'expiringUsed', 'allergens')));"
           ] } }],
           "request": {
             "method": "POST",

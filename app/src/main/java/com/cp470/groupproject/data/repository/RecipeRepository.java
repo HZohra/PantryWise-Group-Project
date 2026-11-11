@@ -28,7 +28,8 @@ import java.util.concurrent.Executors;
  * Recipe data for the Recipes and Recipe details screens (Team Member 5).
  * Both "recommend from my pantry" and keyword search go through /recipes/recommend,
  * so every result is ranked by the same pantry match ("You have X of Y", expiring badge),
- * allergens are filtered out and an empty search is broadened once (all done by the backend).
+ * recipes with the user's allergens are flagged and listed last (or removed when the user
+ * chose to hide them), and an empty search is broadened once (all done by the backend).
  * Substitutions go through /recipes/substitute (local swap list first, Claude only if needed).
  * Callbacks are delivered ON A BACKGROUND THREAD: callers must use LiveData.postValue().
  */
@@ -62,14 +63,27 @@ public class RecipeRepository {
     }
 
     /**
-     * Pantry-ranked recipes, best match first.
+     * Pantry-ranked recipes, best match first; recipes with an allergen are flagged and listed last.
      * @param query       null or blank = recommend from the pantry; otherwise search this keyword
-     * @param preferences null until the preferences screen exists (G16)
+     * @param preferences the saved food profile, or null when nothing is saved
      * @param zeroWaste   true = only recipes that use expiring food, ranked by urgency
      * @param limit       clamped to 1..{@link RecommendRequest#MAX_LIMIT}
      */
     public void recommend(@Nullable String query,
                           @Nullable PreferencesDto preferences,
+                          boolean zeroWaste,
+                          int limit,
+                          @NonNull Callback<RecommendResponse> callback) {
+        recommend(query, preferences, false, zeroWaste, limit, callback);
+    }
+
+    /**
+     * Same, plus the user's "Hide recipes that contain my allergies" switch.
+     * @param hideAllergens true = recipes with an allergen are removed; false = flagged and listed last
+     */
+    public void recommend(@Nullable String query,
+                          @Nullable PreferencesDto preferences,
+                          boolean hideAllergens,
                           boolean zeroWaste,
                           int limit,
                           @NonNull Callback<RecommendResponse> callback) {
@@ -83,6 +97,7 @@ public class RecipeRepository {
                 List<InventoryItemDto> inventory = InventoryMapper.toDtos(
                         pantry.getActiveItemsSync(), System.currentTimeMillis());
                 RecommendRequest request = new RecommendRequest(inventory, cleanQuery, preferences, cleanLimit, mode);
+                request.hideAllergens = hideAllergens;
                 result = ApiCalls.execute(api.recommendRecipes(request));
             } catch (RuntimeException e) {
                 Log.e(TAG, "recommend failed unexpectedly", e);
@@ -97,7 +112,7 @@ public class RecipeRepository {
      * @param recipeTitle     shown to the AI as context
      * @param ingredient      the food name, e.g. "egg" (IngredientMatcher gives it), not the whole line
      * @param ingredientLines the recipe's lines, as context
-     * @param preferences     null until the preferences screen exists (G16)
+     * @param preferences     the saved food profile, or null when nothing is saved
      */
     public void substitute(@NonNull String recipeTitle,
                            @NonNull String ingredient,

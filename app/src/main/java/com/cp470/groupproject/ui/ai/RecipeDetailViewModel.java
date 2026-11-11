@@ -17,6 +17,7 @@ import com.cp470.groupproject.data.remote.dto.SubstituteResponse;
 import com.cp470.groupproject.data.repository.PantryRepository;
 import com.cp470.groupproject.data.repository.RecipeRepository;
 import com.cp470.groupproject.data.entity.MealPlan;
+import com.cp470.groupproject.data.preferences.AiPreferencesStore;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,17 +33,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class RecipeDetailViewModel extends AndroidViewModel {
 
-    /** One ingredient line with its pantry status. */
+    /** One ingredient line with its pantry status, and the allergen it contains (if any). */
     public static final class IngredientRow {
         @NonNull public final String line;
         @NonNull public final IngredientMatcher.Status status;
         /** The matched food, e.g. "egg" (sent to "Find substitute"); null when UNKNOWN. */
         @Nullable public final String name;
+        /** The user's allergen in this line, e.g. "peanut butter"; null when the line is safe. */
+        @Nullable public final String allergen;
 
         IngredientRow(@NonNull String line, @NonNull IngredientMatcher.Status status, @Nullable String name) {
+            this(line, status, name, null);
+        }
+
+        IngredientRow(@NonNull String line, @NonNull IngredientMatcher.Status status, @Nullable String name,
+                      @Nullable String allergen) {
             this.line = line;
             this.status = status;
             this.name = name;
+            this.allergen = allergen;
         }
     }
 
@@ -200,8 +209,8 @@ public class RecipeDetailViewModel extends AndroidViewModel {
         if (current == null) return;
         final int request = latestRequest.incrementAndGet();
         substitute.setValue(SubstituteState.loading(ingredient));
-
-        repository.substitute(current.title, ingredient, current.ingredientLines, null, result -> {
+        repository.substitute(current.title, ingredient, current.ingredientLines,
+                AiPreferencesStore.currentDto(getApplication()), result -> {
             // background thread from here on
             if (request != latestRequest.get()) return; // closed, or another ingredient was tapped
             SubstituteResponse data = result.getData();
@@ -233,7 +242,8 @@ public class RecipeDetailViewModel extends AndroidViewModel {
         for (String line : recipe.ingredientLines) {
             if (line == null || line.trim().isEmpty()) continue;
             IngredientMatcher.Match m = IngredientMatcher.matchLine(line, have, missing);
-            result.add(new IngredientRow(line.trim(), m.status, m.name));
+            String allergen = Allergens.inLine(line, match == null ? null : match.allergens);
+            result.add(new IngredientRow(line.trim(), m.status, m.name, allergen));
         }
         return result;
     }

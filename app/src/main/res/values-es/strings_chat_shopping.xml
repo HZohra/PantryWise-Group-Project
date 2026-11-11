@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chat: productos que el asistente propone para la lista de compras (Team Member 5, 6.8). -->
+<resources>
+    <plurals name="ai_chat_items_title">
+        <item quantity="one">¿Añadir %1$d producto a tu lista de compras?</item>
+        <item quantity="other">¿Añadir %1$d productos a tu lista de compras?</item>
+    </plurals>
+    <string name="ai_chat_items_add">Añadir</string>
+    <string name="ai_chat_items_no">No, gracias</string>
+    <string name="ai_chat_items_done">Añadido a tu lista de compras ✓</string>
+</resources>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Perfil alimentario (Team Member 5, 6.5). -->
+<resources>
+    <string name="profile_title">Tu perfil alimentario</string>
+    <string name="profile_menu">Perfil alimentario</string>
+    <string name="profile_settings_entry">Perfil alimentario: alergias, dieta, objetivo</string>
+    <string name="profile_intro">Cuéntanos un poco sobre ti para que el asistente y las recetas se adapten a ti. Puedes cambiarlo cuando quieras en Ajustes.</string>
+
+    <string name="profile_name">Tu nombre</string>
+    <string name="profile_name_missing">Escribe tu nombre.</string>
+    <string name="profile_name_invalid">Usa solo letras.</string>
+
+    <string name="profile_allergies">Alergias alimentarias</string>
+    <string name="profile_allergies_note">El asistente nunca las sugiere y las recetas que las contienen se ocultan. Revisa siempre las etiquetas.</string>
+    <string name="profile_allergies_hint">Añade una alergia (p. ej. cacahuete)</string>
+    <string name="profile_allergy_add">Añadir</string>
+    <string name="profile_allergy_invalid">Usa solo letras (por ejemplo: cacahuete, frutos secos).</string>
+    <string name="profile_allergy_limit">Puedes añadir hasta %1$d alergias.</string>
+    <string name="profile_allergy_remove">Quitar %1$s</string>
+    <string name="profile_no_allergies">No tengo alergias alimentarias</string>
+    <string name="profile_allergies_unanswered">Añade tus alergias o marca \"No tengo alergias alimentarias\".</string>
+
+    <string name="profile_must_be">Debe ser</string>
+    <string name="profile_diet">Dieta</string>
+    <string name="profile_diet_none">Sin preferencia</string>
+    <string name="profile_goal">Objetivo físico</string>
+    <string name="profile_goal_none">Sin objetivo</string>
+
+    <string name="profile_save">Guardar</string>
+    <string name="profile_saved">Perfil alimentario guardado</string>
+
+    <string-array name="profile_health_labels">
+        <item>Vegetariano</item>
+        <item>Vegano</item>
+        <item>Pescetariano</item>
+        <item>Sin gluten</item>
+        <item>Sin lácteos</item>
+        <item>Sin huevo</item>
+        <item>Sin cacahuete</item>
+        <item>Sin frutos secos</item>
+        <item>Sin soja</item>
+        <item>Sin pescado</item>
+        <item>Sin marisco</item>
+        <item>Sin cerdo</item>
+        <item>Sin carne roja</item>
+        <item>Sin alcohol</item>
+        <item>Kosher</item>
+    </string-array>
+
+    <string-array name="profile_diet_labels">
+        <item>Equilibrada</item>
+        <item>Alta en fibra</item>
+        <item>Alta en proteínas</item>
+        <item>Baja en carbohidratos</item>
+        <item>Baja en grasas</item>
+        <item>Baja en sodio</item>
+    </string-array>
+
+    <string-array name="profile_goal_labels">
+        <item>Perder peso</item>
+        <item>Ganar músculo</item>
+        <item>Mantener el peso</item>
+        <item>Comer más sano</item>
+    </string-array>
+</resources>

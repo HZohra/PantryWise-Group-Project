@@ -36,7 +36,8 @@ import com.cp470.groupproject.notification.NotificationPermissionHelper;
 import com.cp470.groupproject.ui.mealplanner.MealPlannerActivity;
 import com.cp470.groupproject.ui.shoppinglist.ShoppingListActivity;
 import com.cp470.groupproject.ui.wastesummary.WasteSummaryActivity;
-
+import com.cp470.groupproject.data.preferences.AiPreferencesStore;
+import com.cp470.groupproject.ui.profile.FoodProfileActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -186,6 +187,12 @@ public class MainActivity extends AppCompatActivity {
             locationGroup.check(selectedButton);
         } else {
             locationGroup.check(R.id.fridgeButton);
+        }
+
+        // the food profile is asked once, the first time the app is opened
+        // (later it opens after the first sign-in, if the team adds accounts)
+        if (savedInstanceState == null && !AiPreferencesStore.from(this).isSetupDone()) {
+            startActivity(FoodProfileActivity.newIntent(this, true));
         }
     }
 

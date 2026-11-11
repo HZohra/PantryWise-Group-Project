@@ -130,6 +130,14 @@
             android:exported="false"
             android:label="@string/ai_gen_title"
             android:parentActivityName=".ui.ai.FavoritesActivity" />
+
+
+        <!-- Food profile: first-time setup and editing -->
+        <activity
+            android:name=".ui.profile.FoodProfileActivity"
+            android:exported="false"
+            android:label="@string/profile_title"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

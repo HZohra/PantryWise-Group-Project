@@ -131,3 +131,10 @@ test('validateBody: replaces req.body when valid, passes a 400 AppError when not
   assert.equal(error.code, 'VALIDATION_ERROR');
   assert.ok(error.details.length > 0);
 });
+
+
+test('recommend: hideAllergens defaults to false and must be true or false', () => {
+  assert.equal(v.checkRecommendRequest({}).clean.hideAllergens, false);
+  assert.equal(v.checkRecommendRequest({ hideAllergens: true }).clean.hideAllergens, true);
+  assert.ok(has(v.checkRecommendRequest({ hideAllergens: 'yes' }).errors, 'hideAllergens'));
+});

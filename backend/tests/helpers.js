@@ -103,12 +103,24 @@ function installFakeClaude() {
     if (next instanceof Error) throw next;
     return next;
   }
-  require.cache[file] = {
-    id: file,
-    filename: file,
-    loaded: true,
-    exports: { generateReply, mapClaudeError: () => new AppError(503, 'AI_UNAVAILABLE', 'fake') },
-  };
+    /** Tool version: a queued string is a text-only reply; a queued object is { text, toolCalls }. */
+    async function generateReplyWithTools(params) {
+      fake.calls.push(params);
+      if (fake.replies.length === 0) throw new Error('fake Claude: no reply queued for this call');
+      const next = fake.replies.shift();
+      if (next instanceof Error) throw next;
+      return typeof next === 'string' ? { text: next, toolCalls: [] } : next;
+    }
+    require.cache[file] = {
+      id: file,
+      filename: file,
+      loaded: true,
+      exports: {
+        generateReply,
+        generateReplyWithTools,
+        mapClaudeError: () => new AppError(503, 'AI_UNAVAILABLE', 'fake'),
+      },
+    };
   return fake;
 }
 
