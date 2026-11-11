@@ -1,7 +1,9 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.CP470GroupProject" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-    </style>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="main_background">#121A15</color>
+    <color name="main_surface">#1E2A22</color>
+    <color name="main_text">#F1F5F1</color>
+    <color name="main_secondary_text">#B8C5BA</color>
+    <color name="main_green">#8DB99A</color>
+    <color name="main_button_text">#FFFFFF</color>
 </resources>

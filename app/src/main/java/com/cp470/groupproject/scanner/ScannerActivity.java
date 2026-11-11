@@ -43,6 +43,7 @@ import android.text.InputType;
 import android.widget.EditText;
 
 import com.cp470.groupproject.R;
+import com.cp470.groupproject.util.WindowInsetsHelper;
 
 @androidx.camera.core.ExperimentalGetImage
 public class ScannerActivity extends AppCompatActivity {
@@ -65,6 +66,13 @@ public class ScannerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_scanner);
+        WindowInsetsHelper.applySystemBarPadding(findViewById(R.id.root));
+
+        // visible way out: the screen has no toolbar and edge-to-edge hides the system bars' back hint
+        findViewById(R.id.backButton).setOnClickListener(v -> {
+            setResult(RESULT_CANCELED);
+            finish();
+        });
 
         // Set up the manual barcode entry button
         Button manualEntryButton = findViewById(R.id.manualEntryButton);
@@ -100,6 +108,8 @@ public class ScannerActivity extends AppCompatActivity {
         barcodeViewModel.getErrorMessage().observe(this, error -> {
             if (error != null) {
                 Log.e("ScannerActivity", "Product lookup error: " + getString(error));
+                // let the camera read another barcode after a failed lookup
+                barcodeProcessed = false;
 
                 Toast.makeText(
                         this,

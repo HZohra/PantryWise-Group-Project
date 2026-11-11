@@ -1,6 +1,7 @@
 package com.cp470.groupproject.ui.addfood;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.ExperimentalGetImage;
 
 import com.cp470.groupproject.R;
+import com.cp470.groupproject.util.WindowInsetsHelper;
 import com.cp470.groupproject.data.entity.FoodItem;
 import com.cp470.groupproject.data.entity.StorageLocation;
 import com.cp470.groupproject.data.repository.PantryRepository;
@@ -29,6 +31,9 @@ import java.util.Locale;
 
 public class AddFoodActivity extends AppCompatActivity {
 
+    /** boolean extra: open the barcode scanner as soon as the form appears */
+    private static final String EXTRA_START_SCAN = "start_scan";
+
     private PantryRepository repository;
 
     private EditText foodName;
@@ -39,12 +44,24 @@ public class AddFoodActivity extends AppCompatActivity {
 
     private long expirationDate = 0;
 
+    /**
+     * builds the intent that opens the add food form.
+     *
+     * @param context   any context
+     * @param startScan true to open the barcode scanner right away
+     * @return the intent to start
+     */
+    public static Intent newIntent(Context context, boolean startScan) {
+        return new Intent(context, AddFoodActivity.class).putExtra(EXTRA_START_SCAN, startScan);
+    }
+
     /** the scanner screen is marked experimental by camerax, so this opts in to launch it */
     @OptIn(markerClass = ExperimentalGetImage.class)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_food);
+        WindowInsetsHelper.applySystemBarPadding(findViewById(R.id.root));
         DisplayPreferences.applyTextSize(this);
 
         repository = new PantryRepository(getApplication());
@@ -89,8 +106,15 @@ public class AddFoodActivity extends AppCompatActivity {
                     }
                 });
 
+        Intent scanIntent = new Intent(this, ScannerActivity.class);
         findViewById(R.id.scanBarcodeButton).setOnClickListener(v ->
-                scanLauncher.launch(new Intent(this, ScannerActivity.class)));
+                scanLauncher.launch(scanIntent));
+
+        // opened from the main screen's scan button: start scanning right away, but not again
+        // after a rotation
+        if (savedInstanceState == null && getIntent().getBooleanExtra(EXTRA_START_SCAN, false)) {
+            scanLauncher.launch(scanIntent);
+        }
     }
 
     private void showDatePicker() {

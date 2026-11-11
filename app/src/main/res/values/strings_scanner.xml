@@ -5,6 +5,7 @@
     <string name="scanner_manual_hint">Enter barcode (8, 12, 13, or 14 digits)</string>
     <string name="scanner_action_search">Search</string>
     <string name="scanner_action_cancel">Cancel</string>
+    <string name="scanner_back_button">Back</string>
     <string name="scanner_action_continue">Continue</string>
     <string name="scanner_product_found">Product found: %1$s</string>
     <string name="scanner_camera_permission_title">Camera Permission Required</string>

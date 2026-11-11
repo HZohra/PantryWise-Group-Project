@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- add food, item detail, settings and the inventory row: texts that used to be hardcoded -->
+    <string name="form_food_name_label">Food name</string>
+    <string name="form_food_name_hint">Enter food name</string>
+    <string name="form_unit_label">Unit</string>
+    <string name="form_unit_hint_add">Unit (e.g. kg, pieces)</string>
+    <string name="form_unit_hint_detail">e.g. kg, pieces, litres</string>
+    <string name="form_storage_location_label">Storage location</string>
+    <string name="form_no_expiration_selected">No expiration date selected</string>
+    <string name="form_select_expiration">Select Expiration Date</string>
+    <string name="form_change_expiration">Change expiration date</string>
+    <string name="form_save_food">Save Food</string>
+    <string name="form_save_changes">Save Changes</string>
+    <string name="form_error_name">Enter a food name</string>
+    <string name="form_error_unit">Enter a unit</string>
+    <string name="food_quantity_line">Quantity: %1$s %2$s</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_app_theme">App Theme</string>
+    <string name="settings_theme_system">System Default</string>
+    <string name="settings_theme_light">Light Mode</string>
+    <string name="settings_theme_dark">Dark Mode</string>
+    <string name="settings_text_size">Display Text Size</string>
+    <string name="settings_text_size_value" translatable="false">%1$d sp</string>
+    <string name="settings_save">Save Settings</string>
+    <string name="settings_saved">Settings saved</string>
+</resources>

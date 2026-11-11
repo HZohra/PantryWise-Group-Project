@@ -1,13 +1,22 @@
 <resources>
     <!-- Main screen navigation hub -->
-    <string name="nav_shopping_list">Shopping list</string>
-    <string name="nav_meal_planner">Meal planner</string>
-    <string name="nav_waste_summary">Waste stats</string>
-    <string name="nav_ai_assistant">AI assistant</string>
+    <string name="nav_shopping_list">Shopping List</string>
+    <string name="nav_meal_planner">Meal Planner</string>
+    <string name="nav_waste_summary">Waste Summary</string>
+    <string name="nav_ai_assistant">AI Assistant</string>
     <string name="nav_recipes">Recipes</string>
     <string name="nav_favorites">Favorites</string>
     <string name="content_description_help">Help</string>
     <string name="content_description_settings">Settings</string>
+    <string name="content_description_dev_tools">Developer tools</string>
+    <string name="dev_tools_label">DEV</string>
+
+    <string name="main_title">PantryWise</string>
+    <string name="main_subtitle">Your kitchen, organized.</string>
+    <string name="main_search_hint">Search your food...</string>
+    <string name="main_section_quick_access">QUICK ACCESS</string>
+    <string name="main_section_discover">DISCOVER</string>
+    <string name="main_section_storage">MY STORAGE</string>
 
     <!-- Help guide dialog -->
     <string name="help_title">PantryWise Help Guide</string>
@@ -20,4 +29,5 @@
     <string name="add_food_invalid_quantity">Enter a valid quantity</string>
     <string name="add_food_quantity_positive">Quantity must be greater than zero</string>
     <string name="add_food_saved">Food item saved</string>
+    <string name="content_description_back">Back</string>
 </resources>

@@ -1,0 +1,4 @@
+<resources>
+    <!-- Fill colour of the main action buttons on the main screen; the night variant is in values-night -->
+    <color name="main_button">#315D43</color>
+</resources>

@@ -5,6 +5,7 @@
     <string name="scanner_manual_hint">Introduce el código (8, 12, 13 o 14 dígitos)</string>
     <string name="scanner_action_search">Buscar</string>
     <string name="scanner_action_cancel">Cancelar</string>
+    <string name="scanner_back_button">Volver</string>
     <string name="scanner_action_continue">Continuar</string>
     <string name="scanner_product_found">Producto encontrado: %1$s</string>
     <string name="scanner_camera_permission_title">Se necesita permiso de cámara</string>

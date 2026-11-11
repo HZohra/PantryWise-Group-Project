@@ -1,5 +1,6 @@
 package com.cp470.groupproject.ui.dev;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.WorkManager;
 
+import com.cp470.groupproject.activities.MainActivity;
 import com.cp470.groupproject.data.db.PantryDatabase;
 import com.cp470.groupproject.data.entity.FoodItem;
 import com.cp470.groupproject.data.entity.FavoriteRecipe;
@@ -44,6 +46,9 @@ public class DevToolsActivity extends AppCompatActivity {
     /** stored in {@link FoodItem#barcode} to recognise (and later delete) the sample items */
     private static final String SAMPLE_MARKER = "DEV-SEED";
 
+    /** same idea for the demo stock, so buttons 2 and 11 can be used together without erasing each other */
+    private static final String DEMO_MARKER = "DEV-DEMO";
+
     private NotificationPermissionHelper permissionHelper;
 
     @Override
@@ -73,6 +78,12 @@ public class DevToolsActivity extends AppCompatActivity {
                         ? "Daily check: NOT SCHEDULED"
                         : "Daily check: " + infos.get(0).getState()));
 
+        // works even when this screen was the first one opened (adb), where "back" would leave the app
+        addButton(list, "<- Back to main screen", () -> {
+            startActivity(new Intent(this, MainActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+            finish();
+        });
         addButton(list, "1. Request notification permission", permissionHelper::ensurePermission);
         addButton(list, "2. Fill database with sample food (replaces previous sample)", this::fillDatabaseWithSampleFood);
         addButton(list, "3. Run expiration check NOW",
@@ -108,7 +119,7 @@ public class DevToolsActivity extends AppCompatActivity {
         PantryRepository repo = new PantryRepository(getApplication());
         ZoneId zone = ZoneId.systemDefault();
         PantryDatabase.WRITE_EXECUTOR.execute(() -> {
-            removeSample(repo);
+            removeSample(repo, DEMO_MARKER);
             long now = System.currentTimeMillis();
             long weekStart = WeekUtils.startOfWeek(now, zone, WeekUtils.defaultFirstDayOfWeek());
             for (MealPlan plan : repo.getMealPlansSync(weekStart,
@@ -119,10 +130,10 @@ public class DevToolsActivity extends AppCompatActivity {
 
             long expires = now + 30 * ExpiryUtils.DAY_MS;
             // category ids: 1 dairy, 4 pantry
-            insert(repo, "Whole Milk 1L", 1, "L", 1, StorageLocation.FRIDGE_ID, expires);
-            insert(repo, "Flour", 300, "g", 4, StorageLocation.PANTRY_ID, expires);
-            insert(repo, "Eggs", 1, "pcs", 1, StorageLocation.FRIDGE_ID, expires);
-            insert(repo, "Rice", 1, "kg", 4, StorageLocation.PANTRY_ID, expires);
+            insert(repo, DEMO_MARKER, "Whole Milk 1L", 1, "L", 1, StorageLocation.FRIDGE_ID, expires);
+            insert(repo, DEMO_MARKER, "Flour", 300, "g", 4, StorageLocation.PANTRY_ID, expires);
+            insert(repo, DEMO_MARKER, "Eggs", 1, "pcs", 1, StorageLocation.FRIDGE_ID, expires);
+            insert(repo, DEMO_MARKER, "Rice", 1, "kg", 4, StorageLocation.PANTRY_ID, expires);
 
             long today = WeekUtils.startOfDay(now, zone);
             repo.addMealPlan(new MealPlan(today, MealType.DINNER, "dev-pancakes", "Pancakes",
@@ -171,37 +182,37 @@ public class DevToolsActivity extends AppCompatActivity {
         PantryRepository repo = new PantryRepository(getApplication());
         // reads of the repository ending in Sync must not run on the main thread
         PantryDatabase.WRITE_EXECUTOR.execute(() -> {
-            removeSample(repo);
+            removeSample(repo, SAMPLE_MARKER);
             long now = System.currentTimeMillis();
             long day = ExpiryUtils.DAY_MS;
             // category ids follow Category.DEFAULT_KEYS: 1 dairy, 3 meat, 4 pantry
-            insert(repo, "Milk 1L", 1, "L", 1, StorageLocation.FRIDGE_ID, now - 2 * day);
-            insert(repo, "Yogurt", 4, "pcs", 1, StorageLocation.FRIDGE_ID, now + day);
-            insert(repo, "Chicken", 500, "g", 3, StorageLocation.FRIDGE_ID, now + 2 * day);
-            insert(repo, "Rice", 1, "kg", 4, StorageLocation.PANTRY_ID, now + 90 * day);
-            insert(repo, "Tea", 1, "pcs", 4, StorageLocation.PANTRY_ID, 0);
+            insert(repo, SAMPLE_MARKER, "Milk 1L", 1, "L", 1, StorageLocation.FRIDGE_ID, now - 2 * day);
+            insert(repo, SAMPLE_MARKER, "Yogurt", 4, "pcs", 1, StorageLocation.FRIDGE_ID, now + day);
+            insert(repo, SAMPLE_MARKER, "Chicken", 500, "g", 3, StorageLocation.FRIDGE_ID, now + 2 * day);
+            insert(repo, SAMPLE_MARKER, "Rice", 1, "kg", 4, StorageLocation.PANTRY_ID, now + 90 * day);
+            insert(repo, SAMPLE_MARKER, "Tea", 1, "pcs", 4, StorageLocation.PANTRY_ID, 0);
         });
         Toast.makeText(this, "Database filled with sample food", Toast.LENGTH_SHORT).show();
     }
 
     private void clearSampleFood() {
         PantryRepository repo = new PantryRepository(getApplication());
-        PantryDatabase.WRITE_EXECUTOR.execute(() -> removeSample(repo));
+        PantryDatabase.WRITE_EXECUTOR.execute(() -> removeSample(repo, SAMPLE_MARKER));
         Toast.makeText(this, "Sample food cleared", Toast.LENGTH_SHORT).show();
     }
 
-    private void insert(PantryRepository repo, String name, double quantity, String unit,
+    private void insert(PantryRepository repo, String marker, String name, double quantity, String unit,
                         long categoryId, long locationId, long expirationDate) {
         FoodItem item = new FoodItem(name, quantity, unit, categoryId, locationId,
                 System.currentTimeMillis(), expirationDate);
-        item.barcode = SAMPLE_MARKER;
+        item.barcode = marker;
         repo.insertFoodItem(item, null);
     }
 
-    /** deletes the items created by this screen. background thread only */
-    private void removeSample(PantryRepository repo) {
+    /** deletes the active items created with the given marker. background thread only */
+    private void removeSample(PantryRepository repo, String marker) {
         for (FoodItem item : repo.getActiveItemsSync()) {
-            if (SAMPLE_MARKER.equals(item.barcode)) {
+            if (marker.equals(item.barcode)) {
                 repo.deleteFoodItem(item, null);
             }
         }

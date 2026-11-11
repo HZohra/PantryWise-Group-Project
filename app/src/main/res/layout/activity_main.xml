@@ -7,17 +7,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:background="@color/main_background"
     tools:context=".activities.MainActivity">
 
+    <!-- Header -->
     <TextView
         android:id="@+id/inventoryTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_inventory"
-        android:textSize="26sp"
+        android:text="@string/main_title"
+        android:textSize="28sp"
         android:textStyle="bold"
+        android:textColor="@color/main_text"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/welcomeSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_subtitle"
+        android:textSize="13sp"
+        android:textColor="@color/main_secondary_text"
+        app:layout_constraintTop_toBottomOf="@id/inventoryTitle"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- debug builds only: MainActivity shows it when the developer screen is part of the build -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/devToolsButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="0dp"
+        android:text="@string/dev_tools_label"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:textColor="@color/main_green"
+        android:contentDescription="@string/content_description_dev_tools"
+        android:visibility="gone"
+        app:backgroundTint="@color/main_surface"
+        app:cornerRadius="22dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/helpButton"
+        android:layout_marginEnd="8dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/helpButton"
@@ -27,11 +60,14 @@
         android:minHeight="0dp"
         android:padding="0dp"
         android:text="?"
-        android:textSize="23sp"
+        android:textSize="20sp"
+        android:textColor="@color/main_green"
         android:contentDescription="@string/content_description_help"
-        app:cornerRadius="24dp"
+        app:backgroundTint="@color/main_surface"
+        app:cornerRadius="22dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/settingsButton" />
+        app:layout_constraintEnd_toStartOf="@id/settingsButton"
+        android:layout_marginEnd="8dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/settingsButton"
@@ -41,33 +77,56 @@
         android:minHeight="0dp"
         android:padding="0dp"
         android:text="⚙"
-        android:textSize="23sp"
+        android:textSize="20sp"
+        android:textColor="@color/main_green"
         android:contentDescription="@string/content_description_settings"
-        app:cornerRadius="24dp"
+        app:backgroundTint="@color/main_surface"
+        app:cornerRadius="22dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Search -->
     <EditText
         android:id="@+id/searchFood"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_search_food"
+        android:layout_height="50dp"
+        android:hint="@string/main_search_hint"
         android:inputType="text"
         android:singleLine="true"
         android:drawableStart="@android:drawable/ic_menu_search"
-        android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/inventoryTitle"
+        android:drawablePadding="10dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:textColor="@color/main_text"
+        android:textColorHint="@color/main_secondary_text"
+        android:backgroundTint="@color/main_surface"
+        app:layout_constraintTop_toBottomOf="@id/welcomeSubtitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
+    <!-- Main features heading -->
+    <TextView
+        android:id="@+id/quickAccessTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_section_quick_access"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:textColor="@color/main_secondary_text"
+        app:layout_constraintTop_toBottomOf="@id/searchFood"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <!-- Main feature buttons -->
     <LinearLayout
-        android:id="@+id/navigationButtons"
+        android:id="@+id/projectNavigationButtons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/searchFood"
+        android:layout_marginTop="6dp"
+        app:layout_constraintTop_toBottomOf="@id/quickAccessTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -75,124 +134,209 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="3">
+            android:weightSum="2">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/shoppingListButton"
-                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
                 android:layout_weight="1"
-                android:minWidth="0dp"
+                android:layout_marginEnd="5dp"
                 android:text="@string/nav_shopping_list"
                 android:textAllCaps="false"
-                android:textSize="11sp" />
+                android:textSize="13sp"
+                android:textColor="@color/main_button_text"
+                app:backgroundTint="@color/main_button"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/mealPlannerButton"
-                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
                 android:layout_weight="1"
-                android:minWidth="0dp"
+                android:layout_marginStart="5dp"
                 android:text="@string/nav_meal_planner"
                 android:textAllCaps="false"
-                android:textSize="11sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/wasteSummaryButton"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:minWidth="0dp"
-                android:text="@string/nav_waste_summary"
-                android:textAllCaps="false"
-                android:textSize="11sp" />
-
+                android:textSize="13sp"
+                android:textColor="@color/main_button_text"
+                app:backgroundTint="@color/main_button"
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="3">
+            android:weightSum="2">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/aiAssistantButton"
+                android:id="@+id/wasteSummaryButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
                 android:layout_weight="1"
-                android:minWidth="0dp"
-                android:text="@string/nav_ai_assistant"
+                android:layout_marginEnd="5dp"
+                android:text="@string/nav_waste_summary"
                 android:textAllCaps="false"
-                android:textSize="11sp" />
+                android:textSize="13sp"
+                android:textColor="@color/main_text"
+                app:backgroundTint="@color/main_surface"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/recipesButton"
+                android:id="@+id/scannerButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
                 android:layout_weight="1"
-                android:minWidth="0dp"
-                android:text="@string/nav_recipes"
+                android:layout_marginStart="5dp"
+                android:text="@string/action_scan_barcode"
                 android:textAllCaps="false"
-                android:textSize="11sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/favoritesButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:minWidth="0dp"
-                android:text="@string/nav_favorites"
-                android:textAllCaps="false"
-                android:textSize="11sp" />
-
+                android:textSize="13sp"
+                android:textColor="@color/main_green"
+                app:backgroundTint="@color/main_surface"
+                app:cornerRadius="12dp" />
         </LinearLayout>
-
     </LinearLayout>
+
+    <!-- AI features -->
+    <TextView
+        android:id="@+id/aiFeaturesTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_section_discover"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:textColor="@color/main_secondary_text"
+        app:layout_constraintTop_toBottomOf="@id/projectNavigationButtons"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:id="@+id/navigationButtons"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="3"
+        android:layout_marginTop="2dp"
+        app:layout_constraintTop_toBottomOf="@id/aiFeaturesTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/aiAssistantButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:minWidth="0dp"
+            android:minHeight="48dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/nav_ai_assistant"
+            android:textSize="11sp"
+            android:textAllCaps="false"
+            android:textColor="@color/main_green"
+            app:backgroundTint="@color/main_surface"
+            app:cornerRadius="10dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/recipesButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="3dp"
+            android:minWidth="0dp"
+            android:minHeight="48dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/nav_recipes"
+            android:textSize="11sp"
+            android:textAllCaps="false"
+            android:textColor="@color/main_green"
+            app:backgroundTint="@color/main_surface"
+            app:cornerRadius="10dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/favoritesButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="3dp"
+            android:minWidth="0dp"
+            android:minHeight="48dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/nav_favorites"
+            android:textSize="11sp"
+            android:textAllCaps="false"
+            android:textColor="@color/main_green"
+            app:backgroundTint="@color/main_surface"
+            app:cornerRadius="10dp" />
+    </LinearLayout>
+
+    <!-- Storage locations -->
+    <TextView
+        android:id="@+id/storageTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_section_storage"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:textColor="@color/main_secondary_text"
+        app:layout_constraintTop_toBottomOf="@id/navigationButtons"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="12dp" />
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/locationToggleGroup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         app:singleSelection="true"
         app:selectionRequired="true"
         app:checkedButton="@id/fridgeButton"
-        app:layout_constraintTop_toBottomOf="@id/navigationButtons"
+        app:layout_constraintTop_toBottomOf="@id/storageTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/fridgeButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:text="@string/location_fridge" />
+            android:text="@string/location_fridge"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/freezerButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:text="@string/location_freezer" />
+            android:text="@string/location_freezer"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pantryButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:text="@string/location_pantry" />
-
+            android:text="@string/location_pantry"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
+    <!-- Empty inventory message -->
     <TextView
         android:id="@+id/emptyInventory"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/inventory_empty"
         android:textSize="16sp"
+        android:textColor="@color/main_secondary_text"
         android:gravity="center"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/locationToggleGroup"
@@ -200,6 +344,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Inventory list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/foodRecyclerView"
         android:layout_width="0dp"
@@ -213,12 +358,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_food" />
 
+    <!-- Add food -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/addFoodButton"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="54dp"
         android:text="@string/action_add_food"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/main_button_text"
         app:icon="@android:drawable/ic_input_add"
+        app:iconTint="@color/main_button_text"
+        app:backgroundTint="@color/main_button"
+        app:cornerRadius="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

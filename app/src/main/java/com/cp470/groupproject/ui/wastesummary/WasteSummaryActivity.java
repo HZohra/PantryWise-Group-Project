@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cp470.groupproject.R;
+import com.cp470.groupproject.util.WindowInsetsHelper;
 import com.cp470.groupproject.data.model.WasteStats;
 
 /**
@@ -41,11 +42,12 @@ public class WasteSummaryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waste_summary);
+        WindowInsetsHelper.applySystemBarPadding(findViewById(R.id.root));
 
-        // shows the up arrow, it returns to the parent declared in the manifest
+        // the app theme has no action bar, so the layout brings its own toolbar
+        setSupportActionBar(findViewById(R.id.toolbar));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(R.string.title_waste_summary);
         }
 
         initializeViews();
@@ -110,5 +112,12 @@ public class WasteSummaryActivity extends AppCompatActivity {
         txtWastePercent.setText(getString(R.string.waste_percent, stats.getWastePercent()));
 
         progressWaste.setProgress((int) Math.round(stats.getWastePercent()));
+    }
+
+    /** the up arrow just closes the screen: the main screen is already below it in the back stack */
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

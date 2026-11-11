@@ -8,6 +8,15 @@
     <string name="nav_favorites">Favoritos</string>
     <string name="content_description_help">Ayuda</string>
     <string name="content_description_settings">Ajustes</string>
+    <string name="content_description_dev_tools">Herramientas de desarrollo</string>
+    <string name="dev_tools_label">DEV</string>
+
+    <string name="main_title">PantryWise</string>
+    <string name="main_subtitle">Tu cocina, organizada.</string>
+    <string name="main_search_hint">Busca tus alimentos...</string>
+    <string name="main_section_quick_access">ACCESO RÁPIDO</string>
+    <string name="main_section_discover">DESCUBRE</string>
+    <string name="main_section_storage">MI ALMACENAMIENTO</string>
 
     <!-- Help guide dialog -->
     <string name="help_title">Guía de ayuda de PantryWise</string>
@@ -20,4 +29,5 @@
     <string name="add_food_invalid_quantity">Introduce una cantidad válida</string>
     <string name="add_food_quantity_positive">La cantidad debe ser mayor que cero</string>
     <string name="add_food_saved">Alimento guardado</string>
+    <string name="content_description_back">Volver</string>
 </resources>

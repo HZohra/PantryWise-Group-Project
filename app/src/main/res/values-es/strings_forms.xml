@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_food_name_label">Nombre del alimento</string>
+    <string name="form_food_name_hint">Introduce el nombre del alimento</string>
+    <string name="form_unit_label">Unidad</string>
+    <string name="form_unit_hint_add">Unidad (p. ej. kg, piezas)</string>
+    <string name="form_unit_hint_detail">p. ej. kg, piezas, litros</string>
+    <string name="form_storage_location_label">Lugar de almacenamiento</string>
+    <string name="form_no_expiration_selected">Sin fecha de caducidad seleccionada</string>
+    <string name="form_select_expiration">Elegir fecha de caducidad</string>
+    <string name="form_change_expiration">Cambiar fecha de caducidad</string>
+    <string name="form_save_food">Guardar alimento</string>
+    <string name="form_save_changes">Guardar cambios</string>
+    <string name="form_error_name">Introduce el nombre del alimento</string>
+    <string name="form_error_unit">Introduce una unidad</string>
+    <string name="food_quantity_line">Cantidad: %1$s %2$s</string>
+
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_app_theme">Tema de la aplicación</string>
+    <string name="settings_theme_system">Predeterminado del sistema</string>
+    <string name="settings_theme_light">Modo claro</string>
+    <string name="settings_theme_dark">Modo oscuro</string>
+    <string name="settings_text_size">Tamaño del texto</string>
+    <string name="settings_save">Guardar ajustes</string>
+    <string name="settings_saved">Ajustes guardados</string>
+</resources>

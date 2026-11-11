@@ -37,7 +37,11 @@ import com.cp470.groupproject.ui.mealplanner.MealPlannerActivity;
 import com.cp470.groupproject.ui.shoppinglist.ShoppingListActivity;
 import com.cp470.groupproject.ui.wastesummary.WasteSummaryActivity;
 
+
 public class MainActivity extends AppCompatActivity {
+
+    /** debug-only screen, referenced by name because it is not compiled into release builds */
+    private static final String DEV_TOOLS_CLASS = "com.cp470.groupproject.ui.dev.DevToolsActivity";
 
     private InventoryViewModel viewModel;
     private FoodAdapter adapter;
@@ -97,6 +101,12 @@ public class MainActivity extends AppCompatActivity {
         // the launcher must be registered while the activity is being created, so the helper is
         // built here; the expiration reminders need the permission on android 13 and later
         new NotificationPermissionHelper(this).ensurePermission();
+
+        // opens the add food form already in scan mode, so a scanned product ends up in the pantry
+        findViewById(R.id.scannerButton).setOnClickListener(v ->
+                startActivity(AddFoodActivity.newIntent(this, true)));
+
+        configureDevToolsButton();
 
         TextView inventoryTitle = findViewById(R.id.inventoryTitle);
         inventoryTitle.setTextSize(DisplayPreferences.getTextSize(this));
@@ -177,6 +187,21 @@ public class MainActivity extends AppCompatActivity {
         } else {
             locationGroup.check(R.id.fridgeButton);
         }
+    }
+
+    /**
+     * shows the shortcut to the developer screen, which only exists in debug builds. the class is
+     * referenced by name because main code cannot import it, and the button stays hidden in release
+     * because the screen cannot be resolved there.
+     */
+    private void configureDevToolsButton() {
+        Intent intent = new Intent().setClassName(this, DEV_TOOLS_CLASS);
+        if (intent.resolveActivity(getPackageManager()) == null) {
+            return;
+        }
+        View button = findViewById(R.id.devToolsButton);
+        button.setVisibility(View.VISIBLE);
+        button.setOnClickListener(v -> startActivity(intent));
     }
 
     private void showHelpGuide() {
