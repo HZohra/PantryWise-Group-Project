@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chat: items the assistant proposes for the shopping list (Team Member 5, 6.8). Spanish: values-es -->
+<resources>
+    <plurals name="ai_chat_items_title">
+        <item quantity="one">Add %1$d item to your shopping list?</item>
+        <item quantity="other">Add %1$d items to your shopping list?</item>
+    </plurals>
+    <string name="ai_chat_items_add">Add</string>
+    <string name="ai_chat_items_no">No thanks</string>
+    <string name="ai_chat_items_done">Added to your shopping list ✓</string>
+</resources>

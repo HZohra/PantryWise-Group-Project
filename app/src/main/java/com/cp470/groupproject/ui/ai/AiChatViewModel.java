@@ -4,14 +4,19 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.cp470.groupproject.data.entity.ShoppingItem;
+import com.cp470.groupproject.data.preferences.AiPreferencesStore;
 import com.cp470.groupproject.data.remote.AiError;
 import com.cp470.groupproject.data.remote.dto.ChatMessageDto;
+import com.cp470.groupproject.data.remote.dto.ChatResponse;
+import com.cp470.groupproject.data.remote.dto.ChatShoppingItemDto;
 import com.cp470.groupproject.data.repository.AiRepository;
-import com.cp470.groupproject.data.preferences.AiPreferencesStore;
+import com.cp470.groupproject.data.repository.PantryRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +26,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * State and logic for the AI chat screen (MVVM: no Views here).
  * Survives rotation; AiRepository calls back on a background thread, so those updates use postValue().
+ * Items the assistant proposes for the shopping list are only saved when the user taps Add.
  */
 public class AiChatViewModel extends AndroidViewModel {
 
     private final AiRepository repository;
+    /** Shopping list storage; created on first use so tests without a database still work. */
+    @Nullable private PantryRepository pantryRepository;
 
     /** Source of truth, guarded by itself. LiveData only ever receives copies. */
     private final List<ChatMessage> conversation = new ArrayList<>();
@@ -40,12 +48,19 @@ public class AiChatViewModel extends AndroidViewModel {
     @Nullable private volatile String failedMessage;
 
     public AiChatViewModel(@NonNull Application application) {
-        this(application, new AiRepository(application));
+        this(application, new AiRepository(application), null);
     }
 
     AiChatViewModel(@NonNull Application application, @NonNull AiRepository repository) {
+        this(application, repository, null);
+    }
+
+    /** @param pantryRepository the shopping list storage, or null to create the real one when needed */
+    AiChatViewModel(@NonNull Application application, @NonNull AiRepository repository,
+                    @Nullable PantryRepository pantryRepository) {
         super(application);
         this.repository = repository;
+        this.pantryRepository = pantryRepository;
     }
 
     public LiveData<List<ChatMessage>> getMessages() { return messages; }
@@ -77,14 +92,15 @@ public class AiChatViewModel extends AndroidViewModel {
         failedMessage = null;
 
         final int requestConversation = conversationId.get();
-        repository.sendChatMessage(text, history, AiPreferencesStore.currentDto(getApplication()), result -> {
+        repository.sendChat(text, history, AiPreferencesStore.currentDto(getApplication()), result -> {
             // background thread from here on
             if (requestConversation != conversationId.get()) {
                 return; // "New chat" was pressed while waiting
             }
-            String reply = result.getData();
-            if (result.isSuccess() && reply != null && !reply.trim().isEmpty()) {
-                publish(ChatMessage.fromAi(reply.trim()));
+            ChatResponse data = result.getData();
+            String reply = data == null || data.reply == null ? null : data.reply.trim();
+            if (result.isSuccess() && reply != null && !reply.isEmpty()) {
+                publish(ChatMessage.fromAi(reply, data.shoppingItems));
             } else {
                 failedMessage = text;
                 AiError failure = result.getError() != null
@@ -127,6 +143,68 @@ public class AiChatViewModel extends AndroidViewModel {
         loading.setValue(false);
         error.setValue(null);
         failedMessage = null;
+    }
+
+    // ---------------------------------------------------------------- proposed shopping items
+
+    /**
+     * Main thread. "Add" on the card: saves the proposed items (no duplicates) and marks them added.
+     * Does nothing if they were already added or dismissed (a double tap can't add twice).
+     * @param onDone receives how many new items were added, on a background thread
+     */
+    public void addSuggestedItems(long messageId, @NonNull PantryRepository.ResultCallback<Integer> onDone) {
+        ChatMessage message = changeItemsState(messageId, ChatMessage.ItemsState.ADDED);
+        if (message == null) return;
+        List<ShoppingItem> items = new ArrayList<>();
+        for (ChatShoppingItemDto item : message.items) {
+            items.add(MissingIngredients.toItem((item.amount + " " + item.name).trim(), item.name));
+        }
+        pantry().addShoppingItemsIfMissing(items, onDone);
+    }
+
+    /** Main thread. "No thanks" on the card. */
+    public void dismissSuggestedItems(long messageId) {
+        changeItemsState(messageId, ChatMessage.ItemsState.DISMISSED);
+    }
+
+    /** Replaces the message's items state if it is still PENDING; returns the message, or null. */
+    @Nullable
+    private ChatMessage changeItemsState(long messageId, @NonNull ChatMessage.ItemsState state) {
+        ChatMessage found = null;
+        List<ChatMessage> snapshot;
+        synchronized (conversation) {
+            for (int i = 0; i < conversation.size(); i++) {
+                ChatMessage message = conversation.get(i);
+                if (message.id == messageId && message.itemsState == ChatMessage.ItemsState.PENDING) {
+                    found = message;
+                    conversation.set(i, message.withItemsState(state));
+                    break;
+                }
+            }
+            if (found == null) return null;
+            snapshot = new ArrayList<>(conversation);
+        }
+        messages.setValue(snapshot);
+        return found;
+    }
+
+    @NonNull
+    private PantryRepository pantry() {
+        if (pantryRepository == null) {
+            pantryRepository = new PantryRepository(getApplication());
+        }
+        return pantryRepository;
+    }
+
+    /** Tests only: adds a message as if it had arrived (no network). Main thread. */
+    @VisibleForTesting
+    void addMessageForTest(@NonNull ChatMessage message) {
+        List<ChatMessage> snapshot;
+        synchronized (conversation) {
+            conversation.add(message);
+            snapshot = new ArrayList<>(conversation);
+        }
+        messages.setValue(snapshot);
     }
 
     /** Background thread. */

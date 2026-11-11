@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -81,7 +82,22 @@ public class AiAssistantActivity extends AppCompatActivity {
 
         applyWindowInsets();
 
-        adapter = new ChatMessageAdapter();
+        adapter = new ChatMessageAdapter(new ChatMessageAdapter.ItemsListener() {
+            @Override
+            public void onAddItems(@NonNull ChatMessage message) {
+                viewModel.addSuggestedItems(message.id, added -> runOnUiThread(() -> {
+                    String text = added > 0
+                            ? getResources().getQuantityString(R.plurals.ai_shop_added, added, added)
+                            : getString(R.string.ai_shop_already);
+                    Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                }));
+            }
+
+            @Override
+            public void onDismissItems(@NonNull ChatMessage message) {
+                viewModel.dismissSuggestedItems(message.id);
+            }
+        });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true); // newest messages sit above the input, like a chat app
         messageList.setLayoutManager(layoutManager);

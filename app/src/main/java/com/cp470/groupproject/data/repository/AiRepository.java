@@ -55,33 +55,42 @@ public class AiRepository {
         this.executor = executor;
     }
 
-    /** Sends a chat message without saved preferences. */
+    /** Sends a chat message without saved preferences; returns the reply text only. */
     public void sendChatMessage(@NonNull String message,
                                 @NonNull List<ChatMessageDto> history,
                                 @NonNull Callback<String> callback) {
         sendChatMessage(message, history, null, callback);
     }
 
-    /**
-     * Sends a chat message with the current pantry, the app language and (optionally) saved preferences.
-     * @param preferences null until the preferences screen exists (G16)
-     */
+    /** Sends a chat message with (optionally) saved preferences; returns the reply text only. */
     public void sendChatMessage(@NonNull String message,
                                 @NonNull List<ChatMessageDto> history,
                                 @Nullable PreferencesDto preferences,
                                 @NonNull Callback<String> callback) {
+        sendChat(message, history, preferences, result -> {
+            ChatResponse data = result.getData();
+            callback.onResult(result.isSuccess() && data != null
+                    ? ApiResult.success(data.reply)
+                    : ApiResult.failure(result.getError()));
+        });
+    }
+
+    /**
+     * Sends a chat message with the current pantry, the app language and the saved preferences,
+     * and returns the whole answer: the reply text and any items proposed for the shopping list.
+     */
+    public void sendChat(@NonNull String message,
+                         @NonNull List<ChatMessageDto> history,
+                         @Nullable PreferencesDto preferences,
+                         @NonNull Callback<ChatResponse> callback) {
         executor.execute(() -> {
-            ApiResult<String> result;
+            ApiResult<ChatResponse> result;
             try {
                 List<InventoryItemDto> inventory = InventoryMapper.toDtos(
                         pantry.getActiveItemsSync(), System.currentTimeMillis());
                 ChatRequest request = new ChatRequest(message, lastN(history, MAX_HISTORY), inventory,
                         appLanguageTag(), preferences);
-
-                ApiResult<ChatResponse> response = ApiCalls.execute(api.chat(request));
-                result = response.isSuccess()
-                        ? ApiResult.success(response.getData().reply)
-                        : ApiResult.failure(response.getError());
+                result = ApiCalls.execute(api.chat(request));
             } catch (RuntimeException e) {
                 Log.e(TAG, "chat failed unexpectedly", e);
                 result = ApiResult.failure(new AiError(AiError.UNKNOWN, e.getMessage(), 0, null));
@@ -93,7 +102,7 @@ public class AiRepository {
     /**
      * One AI recipe built around the pantry's expiring food (US-2, UC-2), in the app language.
      * The backend checks the structure and allergens and retries once if needed.
-     * @param preferences null until the preferences screen exists (G16)
+     * @param preferences the saved food profile, or null
      * @param servings    clamped to 1..{@link AiRecipeRequest#MAX_SERVINGS}
      */
     public void generateRecipe(@Nullable PreferencesDto preferences,
