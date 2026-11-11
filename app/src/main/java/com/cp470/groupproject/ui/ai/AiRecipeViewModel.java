@@ -190,6 +190,17 @@ public class AiRecipeViewModel extends AndroidViewModel {
         return id.isEmpty() ? null : id;
     }
 
+
+    /**
+     * Main thread. Adds the missing ingredients of the recipe on screen to the shopping list.
+     * @param callback receives how many were added (background thread); not called when there is no recipe
+     */
+    public void addMissingToShoppingList(@NonNull PantryRepository.ResultCallback<Integer> callback) {
+        UiState current = state.getValue();
+        if (current == null || current.response == null) return;
+        pantry().addShoppingItemsIfMissing(MissingIngredients.fromAi(current.response.recipe), callback);
+    }
+
     @NonNull
     private PantryRepository pantry() {
         if (pantryRepository == null) {

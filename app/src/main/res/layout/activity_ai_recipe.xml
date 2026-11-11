@@ -145,6 +145,14 @@
                     android:visibility="gone"
                     tools:text="Tip: Use the leftover feta in a salad tomorrow."
                     tools:visibility="visible" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ai_gen_add_missing"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/ai_item_gap"
+                    android:text="@string/ai_shop_add" />
             </LinearLayout>
 
             <!-- "Try another" when a recipe is shown, "Try again" after an error -->

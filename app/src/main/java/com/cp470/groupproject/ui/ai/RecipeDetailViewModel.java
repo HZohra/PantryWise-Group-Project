@@ -24,8 +24,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * State and logic for Recipe details (MVVM: no Views here).
- * Holds the recipe across rotation, marks each ingredient line, runs substitute requests and
- * saves or removes the recipe from the favourites.
+ * Holds the recipe across rotation, marks each ingredient line, runs substitute requests,
+ * saves or removes the recipe from the favourites and adds missing ingredients to the
+ * shopping list.
  * RecipeRepository calls back on a background thread, so those updates use postValue().
  */
 public class RecipeDetailViewModel extends AndroidViewModel {
@@ -77,7 +78,7 @@ public class RecipeDetailViewModel extends AndroidViewModel {
     /** Only the newest substitute request may update the sheet. */
     private final AtomicInteger latestRequest = new AtomicInteger();
 
-    /** Local database for the favourites; created on first use so tests without a database still work. */
+    /** Local database for the favourites and the shopping list; created on first use so tests without a database still work. */
     @Nullable private PantryRepository pantryRepository;
     /** True while the recipe is saved; created on first use. */
     @Nullable private LiveData<Boolean> favorite;
@@ -154,6 +155,16 @@ public class RecipeDetailViewModel extends AndroidViewModel {
         }
         pantry().saveFavoriteRecipe(toSave);
         return true;
+    }
+
+    // ---------------------------------------------------------------- shopping list
+
+    /**
+     * Main thread. Adds the ingredients marked Missing to the shopping list (no duplicates).
+     * @param callback receives how many were added, on a background thread
+     */
+    public void addMissingToShoppingList(@NonNull PantryRepository.ResultCallback<Integer> callback) {
+        pantry().addShoppingItemsIfMissing(MissingIngredients.fromDetailRows(rows), callback);
     }
 
     @NonNull

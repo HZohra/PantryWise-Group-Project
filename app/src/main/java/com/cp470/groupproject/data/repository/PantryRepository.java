@@ -272,6 +272,30 @@ public class PantryRepository {
         });
     }
 
+    /**
+     * adds the items that are not already waiting on the list (same normalized name, not ticked),
+     * in one transaction. blank names and repeats inside {@code items} are skipped too.
+     *
+     * @param callback receives how many items were added (background thread), may be null
+     */
+    public void addShoppingItemsIfMissing(@NonNull List<ShoppingItem> items,
+                                          @Nullable ResultCallback<Integer> callback) {
+        executor.execute(() -> {
+            final int[] added = new int[1];
+            database.runInTransaction(() -> {
+                LinkedHashSet<String> seen = new LinkedHashSet<>();
+                for (ShoppingItem item : items) {
+                    item.normalizedName = IngredientNormalizer.normalize(item.name);
+                    if (item.normalizedName.isEmpty() || !seen.add(item.normalizedName)) continue;
+                    if (shoppingDao.findPendingByNormalizedName(item.normalizedName) != null) continue;
+                    shoppingDao.insert(item);
+                    added[0]++;
+                }
+            });
+            if (callback != null) callback.onResult(added[0]);
+        });
+    }
+
     /** ticks or unticks a shopping item */
     public void setShoppingItemChecked(long id, boolean checked) {
         executor.execute(() -> shoppingDao.setChecked(id, checked));

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Add missing to shopping list" on the recipe screens (Team Member 5, 6.2). Spanish: values-es -->
+<resources>
+    <string name="ai_shop_add">Add missing to shopping list</string>
+    <string name="ai_shop_have_all">You have everything</string>
+    <plurals name="ai_shop_added">
+        <item quantity="one">%1$d item added to your shopping list</item>
+        <item quantity="other">%1$d items added to your shopping list</item>
+    </plurals>
+    <string name="ai_shop_already">Already on your shopping list</string>
+</resources>

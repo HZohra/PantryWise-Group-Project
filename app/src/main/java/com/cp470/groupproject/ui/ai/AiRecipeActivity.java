@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -33,7 +34,8 @@ import com.google.android.material.snackbar.Snackbar;
 /**
  * AI recipe from expiring food (View in MVVM, US-2 / UC-2).
  * Asks for consent first; Cancel closes the screen and sends nothing (US-6).
- * The heart in the toolbar saves the recipe on screen (with its steps) to the favourites.
+ * The heart in the toolbar saves the recipe on screen (with its steps) to the favourites, and
+ * "Add missing to shopping list" sends what the pantry doesn't have to the shopping list.
  */
 public class AiRecipeActivity extends AppCompatActivity {
 
@@ -162,6 +164,7 @@ public class AiRecipeActivity extends AppCompatActivity {
 
         bindIngredients(recipe);
         bindSteps(recipe);
+        bindShoppingButton(recipe);
 
         TextView tip = findViewById(R.id.ai_gen_tip);
         if (recipe.tip != null && !recipe.tip.trim().isEmpty()) {
@@ -199,6 +202,23 @@ public class AiRecipeActivity extends AppCompatActivity {
             }
             container.addView(row);
         }
+    }
+
+    /** "You have everything" (disabled) when nothing is missing; runs again for every new recipe. */
+    private void bindShoppingButton(@NonNull AiRecipeDto recipe) {
+        MaterialButton button = findViewById(R.id.ai_gen_add_missing);
+        boolean nothingMissing = MissingIngredients.fromAi(recipe).isEmpty();
+        button.setEnabled(!nothingMissing);
+        button.setText(nothingMissing ? R.string.ai_shop_have_all : R.string.ai_shop_add);
+        button.setOnClickListener(nothingMissing ? null : v -> viewModel.addMissingToShoppingList(
+                added -> runOnUiThread(() -> showAdded(added))));
+    }
+
+    private void showAdded(int added) {
+        String text = added > 0
+                ? getResources().getQuantityString(R.plurals.ai_shop_added, added, added)
+                : getString(R.string.ai_shop_already);
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     private void bindSteps(@NonNull AiRecipeDto recipe) {

@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.cp470.groupproject.R;
+import com.cp470.groupproject.data.entity.ShoppingItem;
 import com.cp470.groupproject.data.remote.dto.NutritionDto;
 import com.cp470.groupproject.data.remote.dto.RecipeDto;
 import com.cp470.groupproject.data.remote.dto.SubstituteDto;
@@ -36,10 +38,13 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
+import java.util.List;
+
 /**
  * Recipe details (View in MVVM): photo, ingredients marked In pantry / Missing, nutrition,
  * "View original recipe" (implicit Intent), "Find substitute" (bottom sheet),
- * "Ask assistant how to make this" (opens the chat with a draft) and the favourites heart.
+ * "Ask assistant how to make this" (opens the chat with a draft), the favourites heart and
+ * "Add missing to shopping list".
  */
 public class RecipeDetailActivity extends AppCompatActivity {
 
@@ -82,6 +87,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         RecipeDto recipe = viewModel.getRecipe();
         bindRecipe(recipe);
         bindIngredients();
+        bindShoppingButton(recipe);
         bindNutrition(recipe.nutrition);
 
         viewModel.getSubstitute().observe(this, this::renderSubstitutes);
@@ -194,7 +200,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         startActivity(ChatLauncher.openWithDraft(this, question));
     }
 
-    // ---------------------------------------------------------------- ingredients and nutrition
+    // ---------------------------------------------------------------- ingredients, shopping and nutrition
 
     private void bindIngredients() {
         LinearLayout container = findViewById(R.id.ai_detail_ingredients);
@@ -219,6 +225,30 @@ public class RecipeDetailActivity extends AppCompatActivity {
             }
             container.addView(item);
         }
+    }
+
+    /** Hidden without a pantry match; "You have everything" when nothing is missing. */
+    private void bindShoppingButton(@NonNull RecipeDto recipe) {
+        MaterialButton button = findViewById(R.id.ai_detail_add_missing);
+        if (!RecipeCardFormatter.hasMatch(recipe.match)) {
+            button.setVisibility(View.GONE); // we don't know what is missing
+            return;
+        }
+        List<ShoppingItem> missing = MissingIngredients.fromDetailRows(viewModel.getRows());
+        if (missing.isEmpty()) {
+            button.setEnabled(false);
+            button.setText(R.string.ai_shop_have_all);
+            return;
+        }
+        button.setOnClickListener(v -> viewModel.addMissingToShoppingList(
+                added -> runOnUiThread(() -> showAdded(added))));
+    }
+
+    private void showAdded(int added) {
+        String text = added > 0
+                ? getResources().getQuantityString(R.plurals.ai_shop_added, added, added)
+                : getString(R.string.ai_shop_already);
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     private void bindNutrition(@Nullable NutritionDto nutrition) {
