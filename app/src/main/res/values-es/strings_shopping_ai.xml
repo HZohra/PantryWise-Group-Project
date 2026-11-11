@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Añadir lo que falta a la lista de compras" (Team Member 5, 6.2). -->
+<resources>
+    <string name="ai_shop_add">Añadir lo que falta a la lista de compras</string>
+    <string name="ai_shop_have_all">Tienes todo</string>
+    <plurals name="ai_shop_added">
+        <item quantity="one">%1$d producto añadido a tu lista de compras</item>
+        <item quantity="other">%1$d productos añadidos a tu lista de compras</item>
+    </plurals>
+    <string name="ai_shop_already">Ya está en tu lista de compras</string>
+</resources>

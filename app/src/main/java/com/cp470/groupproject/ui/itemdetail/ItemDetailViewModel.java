@@ -66,20 +66,37 @@ public class ItemDetailViewModel extends AndroidViewModel {
     }
 
     /** updates the quantity of the current item */
-    public void updateQuantity(double quantity) {
+    public void updateFoodItem(String name, double quantity, String unit,
+                               long locationId, long expirationDate) {
         FoodItem currentItem = item.getValue();
 
         if (currentItem == null) {
-            operationResult.setValue(new Event<>(new UiResult(R.string.msg_item_not_found, false)));
+            operationResult.setValue(new Event<>(
+                    new UiResult(R.string.msg_item_not_found, false)));
             return;
         }
 
-        currentItem.quantity = quantity;
+        if (name == null || name.trim().isEmpty()
+                || unit == null || unit.trim().isEmpty()) {
+            operationResult.setValue(new Event<>(
+                    new UiResult(R.string.msg_update_failed, false)));
+            return;
+        }
 
-        repository.updateFoodItem(currentItem, rows -> operationResult.postValue(
-                new Event<>(new UiResult(
-                        rows > 0 ? R.string.msg_item_updated : R.string.msg_update_failed,
-                        false))));
+        currentItem.name = name.trim();
+        currentItem.quantity = quantity;
+        currentItem.unit = unit.trim();
+        currentItem.storageLocationId = locationId;
+        currentItem.expirationDate = expirationDate;
+
+        repository.updateFoodItem(currentItem, rows ->
+                operationResult.postValue(new Event<>(
+                        new UiResult(
+                                rows > 0 ? R.string.msg_item_updated
+                                        : R.string.msg_update_failed,
+                                rows > 0
+                        )
+                )));
     }
 
     /** records what happened to the current item and removes it from the active inventory */

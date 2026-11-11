@@ -19,6 +19,7 @@ import com.cp470.groupproject.data.entity.Category;
 import com.cp470.groupproject.data.entity.ConsumptionHistory;
 import com.cp470.groupproject.data.entity.FavoriteRecipe;
 import com.cp470.groupproject.data.entity.FavoriteRecipeIngredient;
+import com.cp470.groupproject.data.entity.FavoriteRecipeStep;
 import com.cp470.groupproject.data.entity.FoodItem;
 import com.cp470.groupproject.data.entity.MealPlan;
 import com.cp470.groupproject.data.entity.MealPlanIngredient;
@@ -271,6 +272,30 @@ public class PantryRepository {
         });
     }
 
+    /**
+     * adds the items that are not already waiting on the list (same normalized name, not ticked),
+     * in one transaction. blank names and repeats inside {@code items} are skipped too.
+     *
+     * @param callback receives how many items were added (background thread), may be null
+     */
+    public void addShoppingItemsIfMissing(@NonNull List<ShoppingItem> items,
+                                          @Nullable ResultCallback<Integer> callback) {
+        executor.execute(() -> {
+            final int[] added = new int[1];
+            database.runInTransaction(() -> {
+                LinkedHashSet<String> seen = new LinkedHashSet<>();
+                for (ShoppingItem item : items) {
+                    item.normalizedName = IngredientNormalizer.normalize(item.name);
+                    if (item.normalizedName.isEmpty() || !seen.add(item.normalizedName)) continue;
+                    if (shoppingDao.findPendingByNormalizedName(item.normalizedName) != null) continue;
+                    shoppingDao.insert(item);
+                    added[0]++;
+                }
+            });
+            if (callback != null) callback.onResult(added[0]);
+        });
+    }
+
     /** ticks or unticks a shopping item */
     public void setShoppingItemChecked(long id, boolean checked) {
         executor.execute(() -> shoppingDao.setChecked(id, checked));
@@ -341,6 +366,16 @@ public class PantryRepository {
         return FavoriteRecipeWithIngredients.toRecipes(favoriteDao.getAllSync());
     }
 
+    /**
+     * one saved recipe with its ingredients and steps, or null if it is not saved.
+     * background thread only
+     */
+    @Nullable
+    public FavoriteRecipe getFavoriteRecipeSync(@NonNull String recipeId) {
+        FavoriteRecipeWithIngredients row = favoriteDao.getByRecipeIdSync(recipeId);
+        return row == null ? null : row.toRecipe();
+    }
+
     /** emits 1 if the recipe is saved, otherwise 0 */
     public LiveData<Integer> isFavorite(@NonNull String recipeId) {
         return favoriteDao.observeIsFavorite(recipeId);
@@ -348,8 +383,9 @@ public class PantryRepository {
 
     /**
      * saves a recipe as favorite. saving the same recipe again replaces it, and the old
-     * ingredient rows are deleted with the old row (cascade). the recipe and its ingredients are
-     * written in one transaction, so a failure never leaves a recipe without its ingredients.
+     * ingredient and step rows are deleted with the old row (cascade). the recipe, its
+     * ingredients and its steps are written in one transaction, so a failure never leaves a
+     * recipe without its ingredients or steps.
      */
     public void saveFavoriteRecipe(@NonNull FavoriteRecipe recipe) {
         executor.execute(() -> database.runInTransaction(() -> {
@@ -360,6 +396,13 @@ public class PantryRepository {
                 row.favoriteId = id;
             }
             favoriteDao.insertIngredients(rows);
+            List<FavoriteRecipeStep> steps = new ArrayList<>(recipe.steps);
+            for (FavoriteRecipeStep step : steps) {
+                // a step that came from the database keeps its old id otherwise
+                step.id = 0;
+                step.favoriteId = id;
+            }
+            favoriteDao.insertSteps(steps);
         }));
     }
 

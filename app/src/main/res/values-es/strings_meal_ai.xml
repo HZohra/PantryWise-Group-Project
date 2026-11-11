@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Planificar esta comida" (Team Member 5, 6.3). -->
+<resources>
+    <string name="ai_plan_button">Planificar esta comida</string>
+    <string name="ai_plan_pick_day">¿Qué día?</string>
+    <string name="ai_plan_pick_meal">¿Para qué comida?</string>
+    <string name="ai_plan_save">Planificar</string>
+    <string name="ai_plan_breakfast">Desayuno</string>
+    <string name="ai_plan_lunch">Almuerzo</string>
+    <string name="ai_plan_dinner">Cena</string>
+    <string name="ai_plan_snack">Merienda</string>
+    <string name="ai_plan_done">Planificada para %1$s el %2$s</string>
+</resources>

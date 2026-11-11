@@ -1,0 +1,13 @@
+{
+  "mode": "zeroWaste",
+  "inventory": [
+    { "name": "milk", "quantity": 1, "unit": "L", "daysUntilExpiry": 2 },
+    { "name": "eggs", "quantity": 6, "unit": "pcs", "daysUntilExpiry": 10 },
+    { "name": "spinach", "quantity": 1, "unit": "bag", "daysUntilExpiry": 1 },
+    { "name": "chicken breast", "quantity": 2, "unit": "pcs", "daysUntilExpiry": 0 },
+    { "name": "rice", "quantity": 1, "unit": "kg" },
+    { "name": "yogurt", "quantity": 1, "unit": "cup", "daysUntilExpiry": -1 },
+    { "name": "garlic", "quantity": 1, "unit": "head", "daysUntilExpiry": 20 }
+  ],
+  "limit": 5
+}

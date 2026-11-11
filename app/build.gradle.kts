@@ -51,7 +51,7 @@ android {
         }
     }
 
-    // Enable generated BuildConfig fields
+    // Generates BuildConfig.java so code can read build-specific values like AI_BASE_URL
     buildFeatures {
         buildConfig = true
     }
@@ -69,10 +69,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Emulator → laptop through "adb reverse tcp:3000 tcp:3000" (run once after each emulator start)
+            buildConfigField("String", "AI_BASE_URL", "\"http://localhost:3000/api/v1/\"")
+        }
         release {
             optimization {
                 enable = false
             }
+            // NEW: no deployed backend yet. Replace with the real HTTPS URL if it is ever hosted.
+            buildConfigField("String", "AI_BASE_URL", "\"https://example.invalid/api/v1/\"")
         }
     }
 
@@ -86,6 +92,7 @@ dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation(libs.material)
 
     testImplementation(libs.junit)
@@ -114,18 +121,23 @@ dependencies {
     // MigrationTestHelper: checks that a migration produces the schema Room expects
     testImplementation("androidx.room:room-testing:2.6.1")
 
-    // CameraX - Camera preview and barcode scanning
+    // Networking: AI assistant & recipes (Team Member 5) and the USDA scanner (Team Member 3) share Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // Loads recipe photos from URLs with caching (Team Member 5)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // CameraX - Camera preview and barcode scanning (Team Member 3)
     implementation("androidx.camera:camera-core:1.4.2")
     implementation("androidx.camera:camera-camera2:1.4.2")
     implementation("androidx.camera:camera-lifecycle:1.4.2")
     implementation("androidx.camera:camera-view:1.4.2")
 
-    // Google ML Kit - Barcode recognition
+    // Google ML Kit - Barcode recognition (Team Member 3)
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
-
-    // Retrofit - API requests
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 }
 
 // Generate Javadoc documentation

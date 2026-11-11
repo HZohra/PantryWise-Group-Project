@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Strings for the AI assistant and recipe screens (Team Member 5). Spanish: values-es/strings_ai.xml -->
+<resources>
+
+    <!-- Chat screen -->
+    <string name="ai_chat_title">Kitchen Assistant</string>
+    <string name="ai_chat_input_hint">Ask about cooking or your pantry…</string>
+    <string name="ai_chat_send">Send</string>
+    <string name="ai_chat_new_chat">New chat</string>
+    <string name="ai_chat_welcome">Hi! Ask me what to cook with your food, how to use items that are expiring, or what to swap for a missing ingredient.</string>
+    <string name="ai_chat_thinking">Assistant is thinking…</string>
+    <string name="ai_chat_you">You</string>
+    <string name="ai_chat_assistant">Assistant</string>
+    <string name="ai_chat_message_a11y">%1$s: %2$s</string>
+    <string name="ai_chat_cleared">Started a new chat</string>
+
+    <!-- Consent dialog (US-6) -->
+    <string name="ai_consent_title">Use the AI assistant?</string>
+    <string name="ai_consent_message">To answer, your message and a list of your pantry items (names, amounts and expiry dates) will be sent to an AI service. Nothing is sent if you cancel.</string>
+    <string name="ai_consent_continue">Continue</string>
+    <string name="ai_consent_cancel">Cancel</string>
+
+    <!-- Errors (chosen by AiError.code) -->
+    <string name="ai_error_network">Can\'t reach the assistant. Check your connection.</string>
+    <string name="ai_error_timeout">The assistant took too long to answer.</string>
+    <string name="ai_error_rate_limited">The assistant is busy. Try again in a minute.</string>
+    <string name="ai_error_rate_limited_seconds">The assistant is busy. Try again in %1$d seconds.</string>
+    <string name="ai_error_unavailable">The assistant is unavailable right now.</string>
+    <string name="ai_error_message_too_long">Your message is too long (max %1$d characters).</string>
+    <string name="ai_error_generic">Something went wrong. Please try again.</string>
+    <string name="ai_retry">Retry</string>
+
+    <!-- Recipes screen (5.6) -->
+    <string name="ai_recipes_title">Recipes</string>
+    <string name="ai_recipes_search_hint">Search recipes or ingredients</string>
+    <string name="ai_recipes_zero_waste">Zero-Waste Mode</string>
+    <string name="ai_recipes_zero_waste_hint">Only recipes that use food expiring soon</string>
+    <plurals name="ai_recipes_have_count">
+        <item quantity="one">You have %1$d of %2$d ingredient</item>
+        <item quantity="other">You have %1$d of %2$d ingredients</item>
+    </plurals>
+    <string name="ai_recipes_uses_expiring">Uses expiring: %1$s</string>
+    <string name="ai_recipes_minutes">%1$d min</string>
+    <string name="ai_recipes_image_description">Photo of %1$s</string>
+
+    <!-- Recipes screen notices and empty states -->
+    <string name="ai_recipes_empty_pantry">Add food to your pantry to get personalized suggestions.</string>
+    <string name="ai_recipes_broadened">No exact matches, so here are similar recipes.</string>
+    <string name="ai_recipes_nothing_expiring">Nothing is expiring soon, so here are your usual suggestions.</string>
+    <string name="ai_recipes_no_results">No recipes found. Try a different word or fewer filters.</string>
+    <string name="ai_recipes_search_empty">Type something to search.</string>
+
+    <!-- Recipes screen errors -->
+    <string name="ai_recipes_error_network">Can\'t load recipes. Check your connection.</string>
+    <string name="ai_recipes_error_busy">Too many searches. Try again shortly.</string>
+    <string name="ai_recipes_error_generic">Couldn\'t load recipes. Please try again.</string>
+
+    <!-- Recipe details (5.7) -->
+    <string name="ai_detail_title">Recipe</string>
+    <plurals name="ai_detail_servings">
+        <item quantity="one">%1$d serving</item>
+        <item quantity="other">%1$d servings</item>
+    </plurals>
+    <string name="ai_detail_source">From %1$s</string>
+    <string name="ai_detail_ask_assistant">Ask assistant how to make this</string>
+    <string name="ai_detail_view_original">View original recipe</string>
+    <string name="ai_detail_no_browser">No app on this phone can open the link.</string>
+    <string name="ai_detail_ingredients">Ingredients</string>
+    <string name="ai_detail_in_pantry">In pantry</string>
+    <string name="ai_detail_missing">Missing</string>
+    <string name="ai_detail_find_substitute">Find substitute</string>
+    <string name="ai_detail_nutrition">Nutrition per serving</string>
+    <string name="ai_detail_nutrition_whole">Nutrition (whole recipe)</string>
+    <string name="ai_detail_calories">Calories</string>
+    <string name="ai_detail_protein">Protein</string>
+    <string name="ai_detail_carbs">Carbs</string>
+    <string name="ai_detail_fat">Fat</string>
+    <string name="ai_detail_kcal">%1$d kcal</string>
+    <string name="ai_detail_grams">%1$d g</string>
+    <string name="ai_detail_unknown" translatable="false">–</string>
+    <!-- Sent to the chat by "Ask assistant how to make this" -->
+    <string name="ai_detail_ask_prompt">How do I make \"%1$s\"? Please give numbered steps. Ingredients:\n%2$s</string>
+
+    <!-- Substitutes sheet (5.7) -->
+    <string name="ai_sub_title">Instead of %1$s</string>
+    <string name="ai_sub_loading">Finding substitutes…</string>
+    <string name="ai_sub_source_local">Quick suggestion</string>
+    <string name="ai_sub_source_ai">Suggested by AI</string>
+    <string name="ai_sub_in_pantry">You have this</string>
+    <string name="ai_sub_none">No safe substitute found.</string>
+
+    <!-- AI recipe from expiring food (5.8) -->
+    <string name="ai_gen_button">Generate a recipe from expiring food</string>
+    <string name="ai_gen_title">AI recipe</string>
+    <string name="ai_gen_loading">Creating a recipe from your food…</string>
+    <string name="ai_gen_made_for">Made to use up: %1$s</string>
+    <string name="ai_gen_nothing_expiring">Nothing is expiring soon, so this idea uses what you have.</string>
+    <string name="ai_gen_note">Created by AI. Check ingredient labels for allergens.</string>
+    <string name="ai_gen_expiring">Expiring soon</string>
+    <string name="ai_gen_steps">Steps</string>
+    <string name="ai_gen_step_number" translatable="false">%1$d.</string>
+    <string name="ai_gen_tip">Tip: %1$s</string>
+    <string name="ai_gen_try_another">Try another</string>
+    <string name="ai_gen_try_again">Try again</string>
+    <string name="ai_gen_error_failed">Couldn\'t create a recipe. Please try again.</string>
+    <string name="ai_gen_error_unsafe">Couldn\'t create a recipe without your allergens. Please try again.</string>
+    <string name="ai_gen_error_empty_pantry">Add some food that isn\'t expired to your pantry first.</string>
+    <string name="ai_consent_recipe_message">To create a recipe, a list of your pantry items (names, amounts and expiry dates) will be sent to an AI service. Nothing is sent if you cancel.</string>
+
+    <!-- Favourites heart (6.1) -->
+    <string name="ai_fav_add">Save to favourites</string>
+    <string name="ai_fav_remove">Remove from favourites</string>
+    <string name="ai_fav_saved">Saved to favourites</string>
+    <string name="ai_fav_removed">Removed from favourites</string>
+
+</resources>

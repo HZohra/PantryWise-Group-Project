@@ -44,4 +44,25 @@
         <item>Last 30 days</item>
         <item>All time</item>
     </string-array>
+
+    <!-- Inventory screen -->
+    <string name="title_inventory">My Pantry</string>
+    <string name="hint_search_food">Search food items</string>
+    <string name="location_fridge">Fridge</string>
+    <string name="location_freezer">Freezer</string>
+    <string name="location_pantry">Pantry</string>
+    <string name="action_add_food">Add Food</string>
+    <string name="status_fresh">Fresh</string>
+    <string name="status_use_soon">Use Soon</string>
+    <string name="status_expired">Expired</string>
+    <string name="inventory_empty">No food items in this location yet.</string>
+    <string name="status_no_date">No expiration date</string>
+
+    <string name="inventory_no_search_results">No matching food items found.</string>
+
+    <string-array name="storage_locations">
+        <item>Fridge</item>
+        <item>Freezer</item>
+        <item>Pantry</item>
+    </string-array>
 </resources>

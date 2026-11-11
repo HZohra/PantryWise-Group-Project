@@ -1,0 +1,14 @@
+{
+  "history": [
+    { "role": "user", "content": "Just so you know, I'm vegetarian and allergic to peanuts." },
+    { "role": "assistant", "content": "Got it! I'll keep all suggestions vegetarian and peanut-free." }
+  ],
+  "message": "Suggest a quick dinner for tonight.",
+  "inventory": [
+    { "name": "chicken breast", "quantity": 2, "unit": "pcs", "daysUntilExpiry": 1 },
+    { "name": "tofu", "quantity": 1, "unit": "block", "daysUntilExpiry": 2 },
+    { "name": "peanut butter", "quantity": 1, "unit": "jar", "daysUntilExpiry": 90 },
+    { "name": "broccoli", "quantity": 1, "unit": "head", "daysUntilExpiry": 3 },
+    { "name": "rice", "quantity": 1, "unit": "kg" }
+  ]
+}

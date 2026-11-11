@@ -1,0 +1,11 @@
+{
+  "recipeTitle": "Banana bread",
+  "ingredient": "butter",
+  "ingredientLines": ["1/2 cup butter", "2 bananas", "1 cup flour"],
+  "locale": "es",
+  "preferences": { "allergies": ["coconut"] },
+  "inventory": [
+    { "name": "coconut oil", "quantity": 1, "unit": "jar", "daysUntilExpiry": null },
+    { "name": "plain yogurt", "quantity": 2, "unit": "cups", "daysUntilExpiry": 3 }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "message": "",
+  "history": [{ "role": "robot", "content": "hi" }],
+  "inventory": [{ "name": "milk", "quantity": -3 }]
+}

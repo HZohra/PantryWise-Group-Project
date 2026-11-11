@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sizes and limits for the AI assistant screens (Team Member 5). -->
+<resources>
+    <dimen name="ai_screen_padding">16dp</dimen>
+    <dimen name="ai_item_gap">8dp</dimen>
+    <dimen name="ai_bubble_padding">12dp</dimen>
+    <dimen name="ai_bubble_corner">16dp</dimen>
+    <dimen name="ai_bubble_max_width">300dp</dimen>
+    <!-- Empty space on the opposite side of a bubble, so user and AI bubbles don't line up -->
+    <dimen name="ai_bubble_side_inset">48dp</dimen>
+
+    <!-- Must match the backend's LIMITS.messageMax -->
+    <integer name="ai_message_max_length">1000</integer>
+
+    <!-- Recipes screen (5.6) -->
+    <dimen name="ai_recipe_image_size">96dp</dimen>
+    <dimen name="ai_recipe_card_corner">12dp</dimen>
+    <dimen name="ai_recipe_text_gap">4dp</dimen>
+
+    <!-- Must match the backend's LIMITS.queryMax -->
+    <integer name="ai_query_max_length">100</integer>
+
+    <!-- Recipe details (5.7) -->
+    <dimen name="ai_detail_image_height">220dp</dimen>
+    <dimen name="ai_section_gap">16dp</dimen>
+</resources>

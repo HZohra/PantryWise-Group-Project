@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingEnd="@dimen/ai_bubble_side_inset"
+    android:paddingVertical="@dimen/ai_item_gap">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        app:cardBackgroundColor="?attr/colorSecondaryContainer"
+        app:cardCornerRadius="@dimen/ai_bubble_corner"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp">
+
+        <!-- Selectable so users can copy a recipe or tip -->
+        <TextView
+            android:id="@+id/ai_message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="@dimen/ai_bubble_max_width"
+            android:padding="@dimen/ai_bubble_padding"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:textIsSelectable="true"
+            tools:text="Try a quick spinach omelette: whisk 2 eggs, wilt a handful of spinach in a pan, pour the eggs over and cook for 3 minutes." />
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

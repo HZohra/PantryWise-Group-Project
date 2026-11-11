@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/ai_item_gap"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="@dimen/ai_recipe_card_corner">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Filled by Glide in 5.6.4; the grey background shows while it loads -->
+        <ImageView
+            android:id="@+id/ai_recipe_image"
+            android:layout_width="@dimen/ai_recipe_image_size"
+            android:layout_height="@dimen/ai_recipe_image_size"
+            android:background="?attr/colorSurfaceVariant"
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/ai_bubble_padding">
+
+            <TextView
+                android:id="@+id/ai_recipe_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                tools:text="Spinach and Feta Omelette" />
+
+            <TextView
+                android:id="@+id/ai_recipe_have"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ai_recipe_text_gap"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                tools:text="You have 3 of 5 ingredients" />
+
+            <TextView
+                android:id="@+id/ai_recipe_expiring"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ai_recipe_text_gap"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="?attr/colorTertiary"
+                android:visibility="gone"
+                tools:text="Uses expiring: spinach, milk"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/ai_recipe_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ai_recipe_text_gap"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="25 min · BBC Good Food" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

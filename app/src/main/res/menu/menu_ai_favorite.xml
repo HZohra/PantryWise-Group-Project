@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Heart in the toolbar of Recipe details and the AI recipe screen (Team Member 5) -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/ai_action_favorite"
+        android:icon="@drawable/ic_favorite_border"
+        android:title="@string/ai_fav_add"
+        android:visible="false"
+        app:showAsAction="always" />
+</menu>

@@ -1,0 +1,10 @@
+{
+  "message": "Give me a quick snack idea using what I have.",
+  "locale": "en",
+  "preferences": { "allergies": ["peanut"], "fitnessGoal": "build-muscle" },
+  "inventory": [
+    { "name": "peanut butter", "quantity": 1, "unit": "jar", "daysUntilExpiry": 1 },
+    { "name": "banana", "quantity": 3, "unit": "pcs", "daysUntilExpiry": 2 },
+    { "name": "greek yogurt", "quantity": 2, "unit": "cups", "daysUntilExpiry": 5 }
+  ]
+}
