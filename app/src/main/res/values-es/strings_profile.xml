@@ -3,6 +3,7 @@
 <resources>
     <string name="profile_title">Tu perfil alimentario</string>
     <string name="profile_menu">Perfil alimentario</string>
+    <string name="profile_settings_entry">Perfil alimentario: alergias, dieta, objetivo</string>
     <string name="profile_intro">Cuéntanos un poco sobre ti para que el asistente y las recetas se adapten a ti. Puedes cambiarlo cuando quieras en Ajustes.</string>
 
     <string name="profile_name">Tu nombre</string>

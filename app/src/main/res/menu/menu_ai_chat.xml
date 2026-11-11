@@ -6,4 +6,10 @@
         android:id="@+id/action_ai_new_chat"
         android:title="@string/ai_chat_new_chat"
         app:showAsAction="ifRoom|withText" />
+
+    <!-- In the ⋮ menu: the assistant uses these allergies and preferences -->
+    <item
+        android:id="@+id/ai_action_food_profile"
+        android:title="@string/profile_menu"
+        app:showAsAction="never" />
 </menu>

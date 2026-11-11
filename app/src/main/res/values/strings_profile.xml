@@ -3,6 +3,7 @@
 <resources>
     <string name="profile_title">Your food profile</string>
     <string name="profile_menu">Food profile</string>
+    <string name="profile_settings_entry">Food profile: allergies, diet, fitness goal</string>
     <string name="profile_intro">Tell us a little about you so the assistant and recipes fit your needs. You can change this any time in Settings.</string>
 
     <string name="profile_name">Your name</string>

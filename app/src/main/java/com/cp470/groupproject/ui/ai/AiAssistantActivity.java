@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cp470.groupproject.R;
 import com.cp470.groupproject.data.remote.AiError;
+import com.cp470.groupproject.ui.profile.FoodProfileActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -33,6 +34,7 @@ import java.util.List;
  * AI kitchen assistant chat screen (View in MVVM).
  * Only draws state from {@link AiChatViewModel} and forwards user actions to it.
  * Can be opened with a ready-made question (see {@link ChatLauncher}).
+ * The ⋮ menu opens the food profile; the next message already uses the edited allergies.
  */
 public class AiAssistantActivity extends AppCompatActivity {
 
@@ -230,6 +232,8 @@ public class AiAssistantActivity extends AppCompatActivity {
         input.setText(null);
     }
 
+    // ---------------------------------------------------------------- toolbar menu
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_ai_chat, menu);
@@ -246,10 +250,15 @@ public class AiAssistantActivity extends AppCompatActivity {
                     .show();
             return true;
         }
+        if (item.getItemId() == R.id.ai_action_food_profile) {
+            // the chat reads the profile at every send, so the next message uses the edits
+            startActivity(FoodProfileActivity.newIntent(this, false));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
-    /** Tahmina's InventoryActivity doesn't exist yet, so Up behaves like Back for now. */
+    /** Back to the screen that opened the chat (main screen, Recipe details…). */
     @Override
     public boolean onSupportNavigateUp() {
         getOnBackPressedDispatcher().onBackPressed();

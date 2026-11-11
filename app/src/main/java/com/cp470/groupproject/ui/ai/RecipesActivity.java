@@ -3,11 +3,14 @@ package com.cp470.groupproject.ui.ai;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -20,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cp470.groupproject.R;
 import com.cp470.groupproject.data.remote.AiError;
+import com.cp470.groupproject.ui.profile.FoodProfileActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -29,7 +33,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 /**
  * Recipes screen (View in MVVM): pantry recommendations, keyword search, Zero-Waste Mode,
- * and the entry point to the AI recipe built from expiring food.
+ * the entry point to the AI recipe built from expiring food, and "Food profile" in the toolbar.
  * Only draws state from {@link RecipeViewModel} and forwards user actions to it.
  */
 public class RecipesActivity extends AppCompatActivity {
@@ -178,12 +182,33 @@ public class RecipesActivity extends AppCompatActivity {
             errorSnackbar = null;
         }
     }
+
+    // ---------------------------------------------------------------- toolbar
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_ai_recipes, menu);
+        return true;
+    }
+
+    /** "Food profile": edit allergies and labels; the list reloads on return if they changed. */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.ai_action_food_profile) {
+            startActivity(FoodProfileActivity.newIntent(this, false));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /** Coming back from the food profile: reload if the allergies or labels changed. */
     @Override
     protected void onResume() {
         super.onResume();
         viewModel.reloadIfPreferencesChanged();
     }
+
+    /** Back to the main screen. */
     @Override
     public boolean onSupportNavigateUp() {
         getOnBackPressedDispatcher().onBackPressed();
