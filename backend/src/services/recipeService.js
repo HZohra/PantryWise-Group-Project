@@ -60,16 +60,22 @@ function broadenSearch({ inventory, query, preferences, terms }) {
 }
 
 /**
- * Drops recipes that use an ingredient the user is allergic to.
- * Same whole-word matching as the pantry, so "peanut" also catches "peanut butter".
+ * The recipe's ingredients that match one of the user's allergies, without duplicates.
+ * Same whole-word matching as the pantry, so "peanut" also finds "peanut butter".
+ * @returns {string[]} ingredient names as the recipe lists them, e.g. ["peanut butter"]
  */
-function removeRecipesWithAllergens(recipes, allergies = []) {
+function recipeAllergens(recipe, allergies = []) {
   const blocked = allergies.map(normalizeName).filter(Boolean);
-  if (blocked.length === 0) return recipes;
-  return recipes.filter((recipe) => !(recipe.ingredientNames || []).some((ingredient) => {
+  if (blocked.length === 0) return [];
+  return [...new Set((recipe.ingredientNames || []).filter((ingredient) => {
     const key = normalizeName(ingredient);
     return key !== '' && blocked.some((allergy) => namesMatch(key, allergy));
-  }));
+  }))];
+}
+
+/** Drops recipes that use an ingredient the user is allergic to (used when hideAllergens is true). */
+function removeRecipesWithAllergens(recipes, allergies = []) {
+  return recipes.filter((recipe) => recipeAllergens(recipe, allergies).length === 0);
 }
 
 /** "Grilled Butterflied Chicken Recipe" + "Serious Eats" → one key, so Edamam's near-copies collapse. */
@@ -108,43 +114,58 @@ async function searchAll(terms, preferences) {
   return merged;
 }
 
-/** Searches, then removes recipes with the user's allergens. */
-async function searchSafe(terms, preferences) {
-  return removeRecipesWithAllergens(await searchAll(terms, preferences), preferences.allergies);
+/** Searches; recipes with the user's allergens are removed only when the user asked to hide them. */
+async function searchCandidates(terms, preferences, hideAllergens) {
+  const found = await searchAll(terms, preferences);
+  return hideAllergens ? removeRecipesWithAllergens(found, preferences.allergies) : found;
+}
+
+/** Safe recipes first (in ranked order), then recipes with an allergen (in ranked order). */
+function withAllergensLast(recipes) {
+  return [
+    ...recipes.filter((r) => r.match.allergens.length === 0),
+    ...recipes.filter((r) => r.match.allergens.length > 0),
+  ];
 }
 
 /**
  * Full recommendation pipeline:
- * choose terms (or defaults) → search → remove allergens → broaden once if empty → rank → top N.
+ * choose terms (or defaults) → search → broaden once if empty → rank → mark allergens → top N.
+ * Recipes with an allergen are kept, flagged in match.allergens and listed after every safe recipe,
+ * unless hideAllergens is true (then they are removed before ranking).
  * In zeroWaste mode, recipes that use no expiring item are dropped (unless that would leave nothing).
- * @param {{inventory, query?, preferences, limit, mode}} input  validated
+ * @param {{inventory, query?, preferences, limit, mode, hideAllergens?}} input  validated
  * @returns {Promise<{mode: string, personalized: boolean, broadened: boolean,
  *                    searchedFor: string[], recipes: object[]}>}
  */
-async function recommendRecipes({ inventory, query, preferences, limit, mode }) {
+async function recommendRecipes({ inventory, query, preferences, limit, mode, hideAllergens = false }) {
   let searchedFor = chooseSearchTerms(inventory, query);
   const personalized = searchedFor.length > 0;
   if (!personalized) searchedFor = [...DEFAULT_SEARCHES]; // UC 2a: empty pantry still gets ideas
 
-  let candidates = await searchSafe(searchedFor, preferences);
+  let candidates = await searchCandidates(searchedFor, preferences, hideAllergens);
 
   let broadened = false;
   if (candidates.length === 0) {
     const wider = broadenSearch({ inventory, query, preferences, terms: searchedFor });
     if (wider) {
-      candidates = await searchSafe(wider.terms, wider.preferences);
+      candidates = await searchCandidates(wider.terms, wider.preferences, hideAllergens);
       searchedFor = wider.terms;
       broadened = true;
     }
   }
 
-  let ranked = rankRecipes(candidates, inventory, WEIGHTS_BY_MODE[mode]);
+  let ranked = rankRecipes(candidates, inventory, WEIGHTS_BY_MODE[mode]).map((recipe) => ({
+    ...recipe,
+    match: { ...recipe.match, allergens: recipeAllergens(recipe, preferences.allergies) },
+  }));
 
   if (mode === 'zeroWaste') {
     const rescuing = ranked.filter((r) => r.match.expiringUsed.length > 0);
     if (rescuing.length > 0) ranked = rescuing; // fallback: never return an empty list just because of the filter
   }
 
+  ranked = withAllergensLast(ranked);
   return { mode, personalized, broadened, searchedFor, recipes: ranked.slice(0, limit) };
 }
 
@@ -152,6 +173,7 @@ module.exports = {
   recommendRecipes,
   chooseSearchTerms,
   broadenSearch,
+  recipeAllergens,
   removeRecipesWithAllergens,
   DEFAULT_SEARCHES,
 };
