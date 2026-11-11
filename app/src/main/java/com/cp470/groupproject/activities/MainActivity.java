@@ -29,6 +29,10 @@ import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.cp470.groupproject.ui.settings.SettingsActivity;
 import com.cp470.groupproject.ui.settings.DisplayPreferences;
 
+import com.cp470.groupproject.ui.ai.AiAssistantActivity;
+import com.cp470.groupproject.ui.ai.RecipesActivity;
+import com.cp470.groupproject.ui.ai.FavoritesActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     private InventoryViewModel viewModel;
@@ -63,6 +67,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
+
+        findViewById(R.id.aiAssistantButton).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AiAssistantActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.recipesButton).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RecipesActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.favoritesButton).setOnClickListener(v ->
+                startActivity(FavoritesActivity.newIntent(this)));
 
         TextView inventoryTitle = findViewById(R.id.inventoryTitle);
         inventoryTitle.setTextSize(DisplayPreferences.getTextSize(this));

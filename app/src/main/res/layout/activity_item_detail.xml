@@ -10,6 +10,26 @@
         android:orientation="vertical"
         android:padding="24dp">
 
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start"
+            android:backgroundTint="#E8EEF5"
+            android:gravity="center"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="0dp"
+            android:text="←"
+            android:textColor="#263B50"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:contentDescription="Back" />
+
         <TextView
             android:id="@+id/txtItemName"
             android:layout_width="match_parent"

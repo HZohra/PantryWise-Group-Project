@@ -26,12 +26,22 @@
         <activity
             android:name=".ui.itemdetail.ItemDetailActivity"
             android:exported="false"
-            android:parentActivityName=".ui.inventory.InventoryActivity" />
+            android:parentActivityName=".activities.MainActivity" />
 
         <activity
             android:name=".ui.wastesummary.WasteSummaryActivity"
             android:exported="false"
-            android:parentActivityName=".ui.inventory.InventoryActivity" />
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
+            android:name=".ui.addfood.AddFoodActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
 
     </application>
 
