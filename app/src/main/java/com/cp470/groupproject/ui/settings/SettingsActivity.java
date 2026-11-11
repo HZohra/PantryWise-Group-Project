@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.cp470.groupproject.R;
 import com.cp470.groupproject.util.WindowInsetsHelper;
 import com.cp470.groupproject.ui.settings.DisplayPreferences;
+import com.cp470.groupproject.ui.profile.FoodProfileActivity;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -59,6 +60,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         Button backButton = findViewById(R.id.settingsBackButton);
         backButton.setOnClickListener(v -> finish());
+
+        findViewById(R.id.foodProfileButton).setOnClickListener(v ->
+                startActivity(FoodProfileActivity.newIntent(this, false)));
     }
 
     private void loadPreferences() {
