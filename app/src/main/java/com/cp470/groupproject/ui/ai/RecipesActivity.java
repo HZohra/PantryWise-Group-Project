@@ -178,8 +178,12 @@ public class RecipesActivity extends AppCompatActivity {
             errorSnackbar = null;
         }
     }
-
-    /** Tahmina's InventoryActivity doesn't exist yet, so Up behaves like Back for now. */
+    /** Coming back from the food profile: reload if the allergies or labels changed. */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewModel.reloadIfPreferencesChanged();
+    }
     @Override
     public boolean onSupportNavigateUp() {
         getOnBackPressedDispatcher().onBackPressed();

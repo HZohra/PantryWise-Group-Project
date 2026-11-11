@@ -17,6 +17,7 @@ import com.cp470.groupproject.data.remote.dto.AiRecipeResponse;
 import com.cp470.groupproject.data.repository.AiRepository;
 import com.cp470.groupproject.data.repository.PantryRepository;
 import com.cp470.groupproject.data.entity.MealPlan;
+import com.cp470.groupproject.data.preferences.AiPreferencesStore;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -111,7 +112,7 @@ public class AiRecipeViewModel extends AndroidViewModel {
 
         final int request = latestRequest.incrementAndGet();
         state.setValue(UiState.loading());
-        repository.generateRecipe(null, DEFAULT_SERVINGS, result -> {
+        repository.generateRecipe(AiPreferencesStore.currentDto(getApplication()), DEFAULT_SERVINGS, result -> {
             // background thread from here on
             if (request != latestRequest.get()) return;
             AiRecipeResponse data = result.getData();

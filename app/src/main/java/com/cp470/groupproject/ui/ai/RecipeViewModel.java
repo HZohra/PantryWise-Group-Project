@@ -16,6 +16,9 @@ import com.cp470.groupproject.data.remote.AiError;
 import com.cp470.groupproject.data.remote.dto.RecipeDto;
 import com.cp470.groupproject.data.remote.dto.RecommendResponse;
 import com.cp470.groupproject.data.repository.RecipeRepository;
+import com.cp470.groupproject.data.preferences.AiPreferencesStore;
+import com.cp470.groupproject.data.remote.dto.PreferencesDto;
+import com.google.gson.Gson;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +54,9 @@ public class RecipeViewModel extends AndroidViewModel {
     @Nullable private String query;
     private boolean loaded;
 
+    /** The profile the current list was loaded with, so a change can reload it. */
+    @Nullable private String loadedWithPreferences;
+    private static final Gson GSON = new Gson();
     public RecipeViewModel(@NonNull Application application) {
         this(application, new RecipeRepository(application));
     }
@@ -110,6 +116,22 @@ public class RecipeViewModel extends AndroidViewModel {
         prefs.edit().putBoolean(KEY_ZERO_WASTE, enabled).apply();
         load();
     }
+    /**
+     * Main thread. After the food profile was edited, the list is loaded again with the new
+     * allergies and labels (does nothing if they didn't change, or before the first load).
+     */
+    public void reloadIfPreferencesChanged() {
+        if (!loaded) return;
+        String current = preferencesKey(AiPreferencesStore.currentDto(getApplication()));
+        if (!current.equals(loadedWithPreferences)) {
+            load();
+        }
+    }
+
+    @NonNull
+    private static String preferencesKey(@Nullable PreferencesDto preferences) {
+        return preferences == null ? "" : GSON.toJson(preferences);
+    }
 
     /** Main thread. Repeats the last request. */
     public void retry() {
@@ -129,7 +151,9 @@ public class RecipeViewModel extends AndroidViewModel {
         loading.setValue(true);
         error.setValue(null);
 
-        repository.recommend(query, null, zeroWasteRequested, RESULT_LIMIT, result -> {
+        PreferencesDto preferences = AiPreferencesStore.currentDto(getApplication());
+        loadedWithPreferences = preferencesKey(preferences);
+        repository.recommend(query, preferences, zeroWasteRequested, RESULT_LIMIT, result -> {
             // background thread from here on
             if (request != latestRequest.get()) {
                 return; // a newer search or toggle replaced this request

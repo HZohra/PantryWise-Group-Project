@@ -17,6 +17,7 @@ import com.cp470.groupproject.data.remote.dto.SubstituteResponse;
 import com.cp470.groupproject.data.repository.PantryRepository;
 import com.cp470.groupproject.data.repository.RecipeRepository;
 import com.cp470.groupproject.data.entity.MealPlan;
+import com.cp470.groupproject.data.preferences.AiPreferencesStore;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -200,8 +201,8 @@ public class RecipeDetailViewModel extends AndroidViewModel {
         if (current == null) return;
         final int request = latestRequest.incrementAndGet();
         substitute.setValue(SubstituteState.loading(ingredient));
-
-        repository.substitute(current.title, ingredient, current.ingredientLines, null, result -> {
+        repository.substitute(current.title, ingredient, current.ingredientLines,
+                AiPreferencesStore.currentDto(getApplication()), result -> {
             // background thread from here on
             if (request != latestRequest.get()) return; // closed, or another ingredient was tapped
             SubstituteResponse data = result.getData();

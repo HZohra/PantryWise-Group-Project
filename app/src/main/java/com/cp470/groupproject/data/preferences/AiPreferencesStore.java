@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.cp470.groupproject.data.remote.dto.PreferencesDto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +49,22 @@ public class AiPreferencesStore {
     public static AiPreferencesStore from(@NonNull Context context) {
         return new AiPreferencesStore(
                 context.getApplicationContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE));
+    }
+
+
+    /**
+     * The saved profile as sent to the backend, read now (so edits apply to the very next request).
+     * @return null when nothing is saved, or when it can't be read (the request then goes out
+     *         without preferences, exactly as before preferences existed, instead of failing)
+     */
+    @Nullable
+    public static PreferencesDto currentDto(@Nullable Context context) {
+        if (context == null) return null;
+        try {
+            return from(context).load().toDto();
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 
     /** The saved AI preferences, cleaned again on load (an old or edited value can't break requests). */

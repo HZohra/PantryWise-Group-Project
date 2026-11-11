@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.cp470.groupproject.data.remote.AiError;
 import com.cp470.groupproject.data.remote.dto.ChatMessageDto;
 import com.cp470.groupproject.data.repository.AiRepository;
+import com.cp470.groupproject.data.preferences.AiPreferencesStore;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +77,7 @@ public class AiChatViewModel extends AndroidViewModel {
         failedMessage = null;
 
         final int requestConversation = conversationId.get();
-        repository.sendChatMessage(text, history, result -> {
+        repository.sendChatMessage(text, history, AiPreferencesStore.currentDto(getApplication()), result -> {
             // background thread from here on
             if (requestConversation != conversationId.get()) {
                 return; // "New chat" was pressed while waiting
