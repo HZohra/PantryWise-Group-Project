@@ -92,6 +92,7 @@ dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation(libs.material)
 
     testImplementation(libs.junit)

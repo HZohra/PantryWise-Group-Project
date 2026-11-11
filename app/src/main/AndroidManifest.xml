@@ -51,40 +51,60 @@
             </intent-filter>
         </activity>
 
+        <!-- Inventory (Team Member 1) -->
         <activity
             android:name=".ui.itemdetail.ItemDetailActivity"
             android:exported="false"
-            android:parentActivityName=".ui.inventory.InventoryActivity" />
+            android:parentActivityName=".activities.MainActivity" />
 
+        <activity
+            android:name=".ui.addfood.AddFoodActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <!-- Waste summary (Team Member 2) -->
         <activity
             android:name=".ui.wastesummary.WasteSummaryActivity"
             android:exported="false"
-            android:parentActivityName=".ui.inventory.InventoryActivity" />
+            android:parentActivityName=".activities.MainActivity" />
 
+        <!-- Shopping list and meal planner (Team Member 4) -->
         <activity
             android:name=".ui.shoppinglist.ShoppingListActivity"
             android:exported="false"
             android:theme="@style/Theme.CP470GroupProject.Shopping"
-            android:parentActivityName=".ui.inventory.InventoryActivity" />
+            android:parentActivityName=".activities.MainActivity" />
 
         <activity
             android:name=".ui.mealplanner.MealPlannerActivity"
             android:exported="false"
-            android:parentActivityName=".ui.inventory.InventoryActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:theme="@style/Theme.CP470GroupProject.Shopping" />
 
+        <!-- Barcode scanning screen (Team Member 3) -->
+        <activity
+            android:name=".scanner.ScannerActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <!-- AI assistant, recipes and favourites (Team Member 5) -->
         <activity
             android:name=".ui.ai.AiAssistantActivity"
             android:exported="false"
             android:label="@string/ai_chat_title"
-            android:parentActivityName=".ui.inventory.InventoryActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".ui.ai.RecipesActivity"
             android:exported="false"
             android:label="@string/ai_recipes_title"
-            android:parentActivityName=".ui.inventory.InventoryActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
@@ -103,20 +123,13 @@
             android:name=".ui.ai.FavoritesActivity"
             android:exported="false"
             android:label="@string/ai_fav_title"
-            android:parentActivityName=".ui.ai.RecipesActivity" />
+            android:parentActivityName=".activities.MainActivity" />
 
         <activity
             android:name=".ui.ai.SavedRecipeActivity"
             android:exported="false"
             android:label="@string/ai_gen_title"
             android:parentActivityName=".ui.ai.FavoritesActivity" />
-
-        <!-- Barcode scanning screen (Team Member 3) -->
-        <activity
-            android:name=".scanner.ScannerActivity"
-            android:exported="false"
-            android:parentActivityName=".activities.MainActivity" />
-
     </application>
 
 </manifest>
