@@ -6,10 +6,15 @@ classDiagram
         +newChat()
         +needsConsent() boolean
         +giveConsent()
+        +addSuggestedItems(messageId, callback)
+        +dismissSuggestedItems(messageId)
         +getMessages() LiveData
     }
     class ChatMessageAdapter
-    class ChatMessage
+    class ChatMessage {
+        +items List
+        +itemsState ItemsState
+    }
     class RecipesActivity
     class RecipeViewModel {
         +loadIfNeeded()
@@ -55,6 +60,24 @@ classDiagram
     class AiErrorText
     class RecipeErrorText
     class AiRecipeErrorText
+    class FoodProfileActivity
+    class FoodProfileViewModel {
+        +addAllergy(raw) AddResult
+        +save(name) Problem
+    }
+    class FoodProfileRules
+    class AiPreferences
+    class AiPreferencesStore {
+        +load() AiPreferences
+        +saveProfile(name, preferences, noAllergies)
+        +isSetupDone() boolean
+        +currentDto(context)$ PreferencesDto
+        +currentHideAllergens(context)$ boolean
+    }
+    class Allergens {
+        +names(match)$ String
+        +inLine(line, allergens)$ String
+    }
     class AiRepository
     class RecipeRepository
     class PantryRepository
@@ -80,6 +103,18 @@ classDiagram
     FavoritesActivity ..> SavedRecipeActivity : opens
     SavedRecipeActivity --> SavedRecipeViewModel
     ChatLauncher ..> AiAssistantActivity
+    AiAssistantActivity ..> FoodProfileActivity : menu opens
+    RecipesActivity ..> FoodProfileActivity : toolbar opens
+    FoodProfileActivity --> FoodProfileViewModel
+    FoodProfileViewModel ..> FoodProfileRules
+    FoodProfileViewModel --> AiPreferencesStore
+    AiPreferencesStore ..> AiPreferences
+    AiChatViewModel ..> AiPreferencesStore
+    AiRecipeViewModel ..> AiPreferencesStore
+    RecipeViewModel ..> AiPreferencesStore
+    RecipeDetailViewModel ..> AiPreferencesStore
+    RecipeAdapter ..> Allergens
+    RecipeDetailActivity ..> Allergens
     AiChatViewModel --> AiRepository
     AiRecipeViewModel --> AiRepository
     AiRecipeViewModel ..> MissingIngredients

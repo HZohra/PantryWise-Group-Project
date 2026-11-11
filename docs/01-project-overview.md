@@ -31,7 +31,8 @@ does not cover.
 | Barcode scanning | Scan a product barcode with the camera (or type it) and let the app fill in the food name from the USDA database |
 | Shopping list | Add, edit, tick, delete (with undo) and share items. The list can be grouped by the kind of shop that sells each product |
 | Weekly meal planner | Plan up to four meals a day for seven days, using favourite or custom recipes, and generate the shopping list from the plan |
-| AI kitchen assistant | Chat with an assistant that knows the pantry, generate a recipe from expiring food, ask for substitutes, and get step-by-step instructions |
+| AI kitchen assistant | Chat with an assistant that knows the pantry and the food profile, generate a recipe from expiring food, ask for substitutes, and let the assistant propose items for the shopping list, which the user confirms |
+| Food profile | Tell the app about allergies, diet and goals once. Recipes with an allergen are flagged and the assistant never suggests them |
 | Recipes | Get recipe recommendations ranked by how much of the pantry they use, search recipes, use Zero-Waste Mode, save favourites |
 | Settings and help | Light, dark or system theme, text size, and an in-app guide |
 | Languages | The whole interface is available in English and Spanish |
@@ -102,7 +103,7 @@ The app was designed so that each CP470 topic appears in a real feature.
 | Toast, Snackbar, AlertDialog | Feedback, undo and retry actions, confirmations (for example before the inventory is sent to the AI) |
 | RecyclerView and adapters | Inventory, shopping list, planner, recipes, favourites, chat |
 | Layouts, styles and themes | `GridLayout` form with custom styles in the shopping list, `ConstraintLayout` elsewhere |
-| SharedPreferences | Theme, text size, Zero-Waste Mode, shop names |
+| SharedPreferences | Theme, text size, Zero-Waste Mode, shop names, food profile |
 | Localization | English default and Spanish for every string |
 | Room | Local persistence with migrations |
 | Logging | `Log.d/i/w/e` with a `TAG` per class |

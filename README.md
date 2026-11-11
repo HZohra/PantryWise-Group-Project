@@ -17,7 +17,8 @@ the **follow-up (intermediate) delivery**, not the final one.
 | Barcode scanning | Scan a barcode with the camera, or type it, and fill in the food name from the USDA database |
 | Shopping list | Add, edit, tick, delete (with undo) and share items, grouped by the kind of shop |
 | Weekly meal planner | Plan up to four meals a day for a week and generate the shopping list from the plan |
-| AI kitchen assistant | Chat with an assistant that knows the pantry, generate a recipe from expiring food, ask for substitutes |
+| AI kitchen assistant | Chat with an assistant that knows the pantry, generate a recipe from expiring food, ask for substitutes, add items to the shopping list after confirming |
+| Food profile | Allergies, diet and goals, asked once and sent with every AI request. Recipes with an allergen are flagged |
 | Recipes | Recommendations ranked by how much of the pantry they use, search, Zero-Waste Mode, favourites |
 | Settings and help | Light, dark or system theme, text size, in-app guide |
 | Languages | English and Spanish |
@@ -73,9 +74,9 @@ secrets live. If port 3000 is not available on your machine, change `PORT` in `.
 
 | Task | Command |
 |---|---|
-| Android unit tests (341) | `.\gradlew.bat testDebugUnitTest` |
+| Android unit tests (382) | `.\gradlew.bat testDebugUnitTest` |
 | Lint | `.\gradlew.bat lintDebug` |
-| Backend tests (71) | `cd backend; npm test` |
+| Backend tests (80) | `cd backend; npm test` |
 | Javadoc | `.\gradlew.bat generateJavadoc` (output in `app/doc/javadoc/`) |
 
 Unit tests use JUnit 4, Robolectric and Mockito. See [docs/engineering/05-testing.md](docs/engineering/05-testing.md)

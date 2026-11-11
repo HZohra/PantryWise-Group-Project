@@ -4,6 +4,7 @@ sequenceDiagram
     participant VM as AiChatViewModel
     participant R as AiRepository
     participant P as PantryRepository
+    participant S as AiPreferencesStore
     participant BE as Backend
     participant C as Claude
 
@@ -20,11 +21,12 @@ sequenceDiagram
     R->>P: getActiveItemsSync() (background thread)
     P-->>R: items
     R->>R: InventoryMapper: sort by urgency, at most 200, clamp lengths
-    R->>BE: POST /ai/chat (message, history, inventory, locale)
+    R->>S: food profile (allergies, labels, diet, goal)
+    R->>BE: POST /ai/chat (message, history, inventory, preferences, locale)
     BE->>BE: validate and rate limit
     BE->>C: system prompt (rules and pantry) and messages
-    C-->>BE: reply
-    BE-->>R: reply
+    C-->>BE: reply, and optionally a call of the add_to_shopping_list tool
+    BE-->>R: reply and shoppingItems (allergens removed)
     R-->>VM: result (postValue)
     VM-->>A: messages and loading = false
-    A-->>U: new bubble
+    A-->>U: new bubble, with a confirm card when items are proposed

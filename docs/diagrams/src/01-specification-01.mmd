@@ -15,7 +15,8 @@ flowchart LR
         uc10(["UC-10 Plan a meal"])
         uc11(["UC-11 Generate the shopping list from the plan"])
         uc12(["UC-12 Change appearance and read the help"])
-        ai(["AI-UC 1 to 10 Assistant and recipes"])
+        uc13(["UC-13 Set up the food profile"])
+        ai(["AI-UC 1 to 11 Assistant and recipes"])
     end
     user --- uc1
     user --- uc2
@@ -28,6 +29,7 @@ flowchart LR
     user --- uc10
     user --- uc11
     user --- uc12
+    user --- uc13
     user --- ai
     uc7 --- sys
     uc7 --- user

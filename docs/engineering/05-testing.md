@@ -3,8 +3,8 @@
 How PantryWise is tested: the strategy, the numbers, how to run everything, which tests prove which requirement, the
 ten-minute demonstration script, and what is **not** covered.
 
-The numbers in this document were measured on the branch `feature/integration-followup`: **341 Android unit tests**,
-**71 backend tests** and **14 instrumented tests**. Re-run the commands in section 3 to refresh them.
+The numbers in this document were measured on the branch `feature/integration-followup`: **382 Android unit tests**,
+**80 backend tests** and **14 instrumented tests**. Re-run the commands in section 3 to refresh them.
 
 ## 1. Strategy
 
@@ -34,13 +34,15 @@ notifications, layout, translations) is checked by hand with a written script.
 
 ## 2. Numbers
 
-### 2.1 Android unit tests (341, 0 failures, 0 skipped)
+### 2.1 Android unit tests (382, 0 failures, 0 skipped)
 
 | Package under test | Classes | Tests | What they test |
 |---|---|---|---|
 | `util` | 13 | 141 | `ExpiryUtils`, `ExpirationTiming`, `IngredientNormalizer`, `IngredientParser`, `IngredientLine`, `UnitUtils`, `ShoppingCalculator`, `ShoppingInputValidator`, `ShoppingListFormatter`, `StoreAdvisor`, `StoreGrouper`, `WasteStatsCalculator`, `WeekUtils` |
-| `ui.ai` | 15 | 72 | Chat, recipes, favourites, matching, missing ingredients, planning a recipe |
+| `ui.ai` | 18 | 82 | Chat, proposed shopping items, allergen warnings, recipes, favourites, matching, missing ingredients, planning a recipe |
 | `data` | 8 | 50 | `FoodItemDao`, `PantryRepository`, favourites, shopping repository, generation, `Parcelable` |
+| `data.preferences` | 5 | 24 | `AiPreferences`, `AiPreferencesStore`, `CurrentPreferences`, `FoodProfileRules`, `HideAllergens` |
+| `ui.profile` | 1 | 7 | `FoodProfileViewModel` |
 | `data.remote` | 6 | 20 | JSON of requests and replies, `ApiCalls`, `InventoryMapper` |
 | `data.db` | 2 | 16 | Migrations 1 to 2 to 3 to 4 (`MigrationsTest`, `Migration3To4Test`) |
 | `shopping` | 2 | 16 | `ShoppingListGenerator` (Mockito), `StorePreferences` |
@@ -48,24 +50,25 @@ notifications, layout, translations) is checked by hand with a written script.
 | `scanner` | 1 | 9 | `BarcodeViewModel` with a mocked backend |
 | `ui.mealplanner` | 1 | 5 | `MealPlanGrouper` |
 | `data.repository` | 1 | 2 | Limits of `RecipeRepository` |
-| **Total** | **51** | **341** | |
+| **Total** | **60** | **382** | |
 
-Of the 51 classes, 16 use Robolectric and 5 use Mockito. The report is generated in
+Of the 60 classes, most use Robolectric and 5 use Mockito. The report is generated in
 `app/build/reports/tests/testDebugUnitTest/index.html`.
 
-### 2.2 Backend tests (71 real tests)
+### 2.2 Backend tests (80 real tests)
 
-`npm test` prints **74** because three files are empty and the runner counts each empty file as one passing test (see
+`npm test` prints **83** because three files are empty and the runner counts each empty file as one passing test (see
 section 6). The real tests are:
 
 | File | Tests | What it tests |
 |---|---|---|
-| `validate.test.js` | 18 | Every request checker: chat, AI recipe, search, recommend, substitute, `validateBody` |
-| `recommend.test.js` | 15 | Name matching, scoring, ranking, Zero-Waste, broadening, allergens, defaults, errors |
+| `validate.test.js` | 19 | Every request checker: chat, AI recipe, search, recommend, substitute, `validateBody` |
+| `recommend.test.js` | 17 | Name matching, scoring, ranking, Zero-Waste, broadening, allergens (flagged, listed last, hidden), defaults, errors |
 | `product.test.js` | 10 | Barcode lookup: exact match, no match, no key, error codes, validation of the code, controller |
 | `aiRecipe.test.js` | 8 | AI recipe: format check, one retry, allergen rejection |
 | `substitute.test.js` | 8 | Local table first, then Claude, pantry items first |
 | `edamam.test.js` | 7 | Normalizing recipes, nutrition per serving, cache, calories filter, error mapping |
+| `chat-tool.test.js` | 6 | The `add_to_shopping_list` tool: cleaning, duplicates, allergens dropped, reply when only the tool is called |
 | `claude-chat-prompts.test.js` | 5 | System prompt rules and limits |
 | `chat.test.js`, `health.test.js`, `recommendation.test.js` | 0 | Empty files |
 
@@ -126,6 +129,7 @@ manual script, or both. "Manual" numbers refer to the steps of the walkthrough i
 | UC-10 Plan a meal (S-25 to S-27, S-29) | `MealPlanGrouperTest`, `WeekUtilsTest`, `IngredientLineTest`, `PlanMealTest` | 6 |
 | UC-11 Generate the list from the plan (S-28) | `ShoppingCalculatorTest`, `ShoppingListGeneratorTest`, `ShoppingGenerationRepositoryTest`, `IngredientParserTest`, `UnitUtilsTest` | 6 |
 | UC-12 Settings and help (S-07, S-08) | none | 1, 8 |
+| UC-13 Food profile (S-33, S-34) | `FoodProfileViewModelTest`, `FoodProfileRulesTest`, `AiPreferencesTest`, `AiPreferencesStoreTest`, `CurrentPreferencesTest` | 1, 5 |
 | Localization (S-09) | script that compares the string files; lint | 8 |
 | Back navigation and insets (S-30, S-31) | none | 3 and every step |
 | Robustness without permission or network (S-32) | `ApiCallsTest` for the network | 8 |
@@ -154,11 +158,11 @@ team.
 
 | Step | Do | Expected |
 |---|---|---|
-| 1 First start (1 min) | Open PantryWise. Allow notifications. Tap **?** | Main screen with Quick access, Discover and My storage. The permission dialog appears. The help guide opens |
+| 1 First start (1 min 15 s) | Open PantryWise. Fill the **food profile** (name, answer about allergies) and save. Allow notifications. Tap **?** | The food profile opens first and, when it closes, the permission dialog appears (never both at once). Main screen with Quick access, Discover and My storage. The help guide opens |
 | 2 Seed data (1 min) | Tap **DEV**, then button **11** (demo scenario) and button **2** (sample food). Tap button **3** (run check now) | Sample food and a meal plan are created. A notification "3 items need attention" appears |
 | 3 Notification (45 s) | Tap the notification | The shopping list opens. The back arrow goes to the main screen, not out of the app |
 | 4 Inventory and scanner (1 min 45 s) | Browse Fridge, Freezer and Pantry. Search `chi`. Tap **Scan Barcode**, explain the camera permission, then **Enter Barcode Manually** `049000028911` and save with quantity, unit, place and date | Items show their freshness. The search narrows. The scanner closes by itself and fills the name. "Food item saved". Rotating the screen does not reopen the scanner |
-| 5 AI and recipes (2 min) | **AI Assistant**: "What can I cook with expiring milk?". **Recipes**: search `pasta`, open a recipe, add the missing ingredients twice, plan it, tap the heart, open **Favorites** | A reply from Claude. A list of recipes. The second add does not duplicate. The recipe appears in favourites |
+| 5 AI and recipes (2 min) | **AI Assistant**: "What can I cook with expiring milk?", then "add garlic to my shopping list" and confirm the card. **Recipes**: search `pasta`, open a recipe, add the missing ingredients twice, plan it, tap the heart, open **Favorites** | A reply from Claude. The card adds the item once. A list of recipes, with allergen recipes flagged and last. The second add does not duplicate. The recipe appears in favourites |
 | 6 Planner and list (1 min 45 s) | **Meal Planner**: see the demo meals. **Generate shopping list**, then **View**. Generate again. Tick, edit and delete an item with Undo. **Share** | The list has **Eggs 3, Sugar 1 tbsp, Soy sauce 1** and no flour, milk or rice. No duplicates. Grouped by shop. The share sheet opens |
 | 7 Waste (30 s) | Open a food item, tap **Consumed** or **Wasted**, then **Waste Summary** | The statistics change and the period selector works |
 | 8 Robustness (1 min 15 s) | Rotate while searching. Switch the emulator to **Spanish** and visit every screen. Switch to **dark mode**. Deny notifications and open the shopping list | The text and the tab survive. Everything is in Spanish. Text is readable in dark mode. A banner with **Settings** appears and the app does not crash |
@@ -170,7 +174,7 @@ Record every failed step in an incident table with its severity (blocks the demo
 | Gap | Impact | Suggested action |
 |---|---|---|
 | **No Espresso (UI) tests.** The dependency is configured, but the only instrumented UI test is the template | Navigation, forms and dialogs are checked only by hand. The course asks for UI tests | [Roadmap](../04-roadmap.md) item 1 |
-| **Three empty backend test files** (`chat.test.js`, `health.test.js`, `recommendation.test.js`). The runner counts each as one passing test, so `npm test` reports 74 when there are 71 | The reported total overstates the coverage. The chat and health areas are covered elsewhere (prompts test, Postman collection) | Write the tests or delete the files |
+| **Three empty backend test files** (`chat.test.js`, `health.test.js`, `recommendation.test.js`). The runner counts each as one passing test, so `npm test` reports 83 when there are 80 | The reported total overstates the coverage. The chat and health areas are covered elsewhere (prompts test, Postman collection) | Write the tests or delete the files |
 | **ViewModels without tests:** `ShoppingListViewModel`, `MealPlannerViewModel`, `InventoryViewModel`, `ItemDetailViewModel`, `WasteSummaryViewModel` | Their logic is mostly delegated to tested helpers and the repository, but add, undo, generate and week navigation are only checked by hand | Add Mockito tests with a mocked repository |
 | **Activities and adapters** | Layout, binding and navigation are manual | Espresso |
 | **Real camera and ML Kit** | A barcode is only read by hand on a device or emulator camera. The lookup after the read is tested | Keep the manual step. A virtual scene or a photo can be used |

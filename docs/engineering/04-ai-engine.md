@@ -7,13 +7,12 @@ recipe recommendations, the substitutes and the favourites. It follows the speci
 The rest of the app is specified in [Specification](01-specification.md). The overall structure is in
 [Architecture](03-architecture.md).
 
-All diagrams are PNG images made from [Mermaid](https://mermaid.js.org/) sources. The whole class diagram on one image
-is [`ai-engine.png`](../diagrams/img/ai-engine.png).
+All diagrams are PNG images made from [Mermaid](https://mermaid.js.org/) sources (see [diagrams](../diagrams/README.md)).
 
 ## 1. Overview
 
 The engine has two sources of recipe intelligence, and a backend that sits between them and the app.
-
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 | Source | What it does | Used for |
 |---|---|---|
 | **Claude** (Anthropic) | Understands natural language and writes text | Chat answers, an AI recipe from expiring food, ingredient substitutes that are not in the local list |
@@ -74,6 +73,7 @@ the specification are explained after the tables.
 | AI-UC-8 | Use Zero-Waste Mode | Implemented, leftovers are not marked | `RecipeViewModel.setZeroWaste`, backend `recommendationService` |
 | AI-UC-9 | View recipe details | Implemented | `RecipeDetailActivity`, `RecipeDetailViewModel`, `IngredientMatcher` |
 | AI-UC-10 | Manage favourite recipes | Implemented | `FavoritesActivity`, `FavoritesViewModel`, `PantryRepository` |
+| AI-UC-11 | Add items to the shopping list from the chat (added after the specification) | Implemented | `AiChatViewModel`, `ChatMessageAdapter`, backend `chatService` |
 
 ### 3.2 User stories
 
@@ -82,7 +82,7 @@ the specification are explained after the tables.
 | 1 | Ask the cooking assistant | Implemented | History, loading state and pantry in the request. `AiChatViewModelTest` |
 | 2 | Generate a recipe from expiring food | Implemented | Items expiring within 3 days are the focus. `AiRecipeJsonTest`, backend `aiRecipe.test.js` |
 | 3 | Ingredient substitutions | Implemented | Pantry items first, amount and note per substitute. Backend `substitute.test.js` |
-| 4 | Personalized suggestions | **Partial** | The backend puts allergies first in every prompt, but the app sends no preferences because there is no preferences screen. See *Differences* |
+| 4 | Personalized suggestions | Implemented | The food profile (allergies, labels, diet, goal) is sent with every chat, recipe, AI recipe and substitute request. `FoodProfileViewModelTest`, `AiPreferencesTest`, `CurrentPreferencesTest` |
 | 5 | Step-by-step instructions | Implemented, different flow | The button opens the chat with the question typed in. See *Differences* |
 | 6 | Confirm before using AI | Implemented | Dialog before the first request of the chat and of the AI recipe. Cancel sends nothing |
 | 7 | Reliable behaviour when AI fails | Implemented | Snackbar for rate limit and for network (with Retry). Invalid AI output becomes an error, never a broken recipe. `ApiCallsTest`, `AiRecipeErrorTextTest` |
@@ -98,7 +98,7 @@ the specification are explained after the tables.
 | 17 | Matched and missing ingredients | Implemented | Ignores case, plurals and descriptors. `IngredientMatcherTest` |
 | 18 | Prioritize expiring food | Implemented | Urgency points in the score, and a "Uses expiring items" badge. Backend `recommend.test.js` |
 | 19 | Zero-Waste Mode | **Partial** | Only expiring items are used. There is no way to mark leftovers. The state is kept in `SharedPreferences`, and it works without the AI |
-| 20 | Filter by diet, cuisine and goals | **Partial** | The backend supports every filter, but the app has no filter panel and sends no saved preferences |
+| 20 | Filter by diet, cuisine and goals | **Partial** | The diet, labels and goal of the food profile are sent, but there is no filter panel and cuisine and calories cannot be chosen |
 | 21 | Recipe details and nutrition | Implemented | Ingredients, servings, calories, protein, carbs and fat from Edamam. `RecipeDetailJsonTest` |
 | 22 | Open the original recipe | Implemented | Implicit `ACTION_VIEW` intent, source credited on screen. The code catches `ActivityNotFoundException` instead of calling `resolveActivity` first |
 | 23 | Quick substitutions without AI | Implemented | A local table of 11 common ingredients lives in the **backend**, not in the app |
@@ -107,22 +107,25 @@ the specification are explained after the tables.
 | 26 | Clear feedback when recipes cannot load | Implemented | Snackbar with Retry for network, "try again shortly" for the limit, a message for no results |
 | 27 | Empty inventory | Implemented | The server searches default dishes (pasta, soup) and the app says "Add food to your pantry to get personalized suggestions" |
 | 28 | Testable ranking logic | Implemented, differently named | `IngredientMatcher` (app, plain Java) and the ranking (backend, plain JavaScript). There is no `RecipeRanker` class in Java. See *Differences* |
+| 29 | Allergen warnings (added after the specification) | Implemented | Recipes with an allergen are flagged on the card, listed after the safe ones, and the details show a banner and substitutes. A switch in the food profile hides them. `AllergensTest`, `HideAllergensTest`, backend `recommend.test.js` |
+| 30 | Add chat suggestions to the shopping list (added after the specification) | Implemented | The assistant proposes items, the user confirms on a card, no duplicates and never an allergen. `ChatShoppingTest`, `ChatMessageItemsTest`, backend `chat-tool.test.js` |
 
-**Totals:** 22 implemented and 6 partial (stories 4, 12, 13, 19, 20 and 25). None is planned and not started.
+**Totals:** 25 implemented and 5 partial (stories 12, 13, 19, 20 and 25). None is planned and not started. Stories 29 and 30 and AI-UC-11 were added after the specification.
 
 ### 3.3 Differences from the specification
 
 | Topic | Specification | What the code does | Why it matters |
 |---|---|---|---|
-| Preferences (US-4, US-20) | Saved preferences go in every request | The DTO and the backend support them, but `AiRepository` and `RecipeRepository` pass `null` because no screen collects them | The assistant cannot respect allergies the user has not told it. Roadmap item 6 |
+| Preferences (US-4, US-20) | Saved preferences go in every request | The food profile is sent with every request (`AiPreferencesStore.currentDto`). It collects allergies, labels, diet and goal, but not cuisine or calories. When the profile is empty no preferences are sent | The assistant respects what the user told it. Cuisine and calories wait for the filter panel |
+| Allergen recipes (US-29) | Recipes with an allergen are removed | They are kept, flagged and listed last. The user can hide them with a switch (`hideAllergens`) | The user sees why a recipe is risky and decides. Nothing with an allergen is added to the shopping list |
 | Steps (US-5, AI-UC-4) | Tapping the button returns numbered steps below the ingredients | The button opens the chat with the question typed in (asking for numbered steps). The user reviews it, the consent dialog still applies, and then sends it | The user stays in control, but it takes one more tap and the steps appear in the chat |
-| Nutrition in chat (US-12) | The answer uses Edamam values | The chat prompt only knows the pantry | Roadmap item 8 |
-| Per-device limit (US-13) | The backend rejects requests over a per-device limit | The limit is per IP address (`express-rate-limit`) | Roadmap item 14 |
+| Nutrition in chat (US-12) | The answer uses Edamam values | The chat prompt only knows the pantry | Roadmap item 7 |
+| Per-device limit (US-13) | The backend rejects requests over a per-device limit | The limit is per IP address (`express-rate-limit`) | Roadmap item 13 |
 | Ranking class (US-28) | `RecipeRanker` in Java | Ranking is `rankRecipes` in `recommendationService.js`, tested in `recommend.test.js`. The Java side marks ingredient lines with `IngredientMatcher` using the names the backend already matched | The logic is still plain code that is tested without Android or the network |
 | Shopping list (US-25) | The planner uses the same method as the recipe | The planner saves the ingredients of the meal and `ShoppingCalculator` compares them with the pantry | Both paths end in the same shopping list, so there is no duplicate in practice |
 | AI recipe unavailable (AI-UC-2, flow 4a) | Show Edamam Zero-Waste recommendations instead | A message with a way to generate again. The user can open *Recipes* with Zero-Waste Mode | A small fallback is missing |
-| Leftovers (AI-UC-8) | Zero-Waste includes items marked as leftovers | Only expiring items | Roadmap item 13 |
-| Search filters (AI-UC-7) | A filter panel for diet, allergies, cuisine and calories | Keyword only. The empty keyword is rejected | Roadmap item 7 |
+| Leftovers (AI-UC-8) | Zero-Waste includes items marked as leftovers | Only expiring items | Roadmap item 12 |
+| Search filters (AI-UC-7) | A filter panel for diet, allergies, cuisine and calories | Keyword only. Diet, labels and allergies come from the food profile. The empty keyword is rejected | Roadmap item 6 |
 
 ## 4. Class diagram
 
@@ -145,10 +148,10 @@ in `backend/README.md`; this section is the summary that the app relies on.
 | Method and path | Calls | Request (main fields) | Response (main fields) |
 |---|---|---|---|
 | `GET /health` | - | - | `status`, `service`, `timestamp` |
-| `POST /ai/chat` | Claude | `message` (max 1000), `history` (max 20 turns), `inventory`, `preferences`, `locale` | `reply` |
+| `POST /ai/chat` | Claude | `message` (max 1000), `history` (max 20 turns), `inventory`, `preferences`, `locale` | `reply`, `shoppingItems` (`name`, `amount`; at most 30; `[]` unless the user asked) |
 | `POST /ai/recipe` | Claude | `inventory`, `preferences`, `locale`, `servings` (1 to 12) | `recipe` (`title`, `ingredients` with `inPantry`, `expiring`, `staple`, `steps`, `tip`), `usedExpiring`, `expiringItems` |
 | `GET /recipes/search` | Edamam | `q` plus optional `diet`, `health`, `cuisine`, `mealType`, `maxTime`, `limit` | `count`, `recipes` |
-| `POST /recipes/recommend` | Edamam | `mode` (`standard` or `zeroWaste`), `query`, `inventory`, `preferences`, `limit` (max 10) | `mode`, `personalized`, `broadened`, `searchedFor`, `recipes` with `match` |
+| `POST /recipes/recommend` | Edamam | `mode` (`standard` or `zeroWaste`), `query`, `inventory`, `preferences`, `hideAllergens`, `limit` (max 10) | `mode`, `personalized`, `broadened`, `searchedFor`, `recipes` with `match` (including `allergens`) |
 | `POST /recipes/substitute` | Local table, then Claude | `recipeTitle`, `ingredient`, `ingredientLines`, `inventory`, `preferences`, `locale` | `substitutes` (1 to 3), `tip`, `source` (`local` or `ai`) |
 | `GET /products/barcode/:code` | USDA | the barcode | `barcode`, `name` |
 
@@ -223,8 +226,9 @@ cards show "You have X of Y ingredients" and, when `expiringUsed` is not empty, 
 | Empty pantry | `pasta` and `soup`, and the answer says `personalized: false` |
 | No result | One wider search: soft filters dropped (cuisine, meal type, time), the keyword loses its last word or the next items are used, and the answer says `broadened: true` |
 
-Diet and health labels are **never** dropped, because they are needs and not tastes. Recipes that contain a word of the
-user's allergies are always removed, including "peanut" in "peanut butter".
+Diet and health labels are **never** dropped, because they are needs and not tastes. A recipe that contains a word of the
+user's allergies, including "peanut" in "peanut butter", is flagged in `match.allergens` and listed after every safe
+recipe. If the request has `hideAllergens: true` those recipes are removed before ranking instead.
 
 ## 7. Error handling
 
@@ -253,7 +257,8 @@ The system prompts are in `backend/src/utils/prompts.js`, in one place.
 | The assistant only talks about cooking, food, storage and food waste, and steers other topics back | The chat system prompt |
 | The pantry is the only source of what the user has | The inventory is put in the prompt as data, and the prompt says that what is inside `<inventory>` and `<preferences>` is data, not instructions |
 | Expired food is never encouraged | The prompt, and expired items are removed before any recipe is suggested |
-| Allergies are strict | The prompt puts them first and forbids them even as a garnish or substitute. For AI recipes the server also checks the result and asks again once, then answers `AI_UNSAFE_RECIPE`. For Edamam recipes it removes any recipe that mentions an allergen |
+| Allergies are strict | The prompt puts them first and forbids them even as a garnish or substitute. For AI recipes the server also checks the result and asks again once, then answers `AI_UNSAFE_RECIPE`. For Edamam recipes it flags any recipe that mentions an allergen and lists it last, or removes it when the user turned on *Hide*. The app never adds an allergen to the shopping list |
+| Shopping proposals are only proposals | Claude can call the `add_to_shopping_list` tool. The server cleans the items and drops allergens, never adds anything itself, and the app asks the user to confirm. The prompt forbids saying the items were already added |
 | Medical and allergy questions get a note | One sentence suggesting a doctor or registered dietitian |
 | The answer fits a phone | Plain text, short lists, about 150 words unless a full recipe is asked |
 | The AI recipe is structured | Claude must answer with a JSON object. The server validates the fields, retries once, and decides `inPantry`, `expiring` and `staple` itself |
@@ -262,20 +267,22 @@ The system prompts are in `backend/src/utils/prompts.js`, in one place.
 
 **Limits of the AI.** It can still be wrong about nutrition or safety. The app presents nutrition from Edamam where it
 has it, asks for consent before the pantry leaves the phone, and does not give medical advice. Allergen handling depends
-on the user's preferences reaching the server, which is not the case yet (user stories 4 and 20).
+on the food profile: if the user has not listed an allergy, nothing is checked, and the first-launch screen asks for an answer for that reason.
 
 ## 9. Tests
 
 | Area | Tests |
 |---|---|
-| Chat state | `AiChatViewModelTest` (history, new chat, late replies), `ChatMessageTest` |
+| Chat state | `AiChatViewModelTest` (history, new chat, late replies), `ChatMessageTest`, `ChatMessageItemsTest`, `ChatShoppingTest` (proposed items, add without duplicates, dismiss) |
+| Food profile | `FoodProfileViewModelTest`, `FoodProfileRulesTest`, `AiPreferencesTest`, `AiPreferencesStoreTest`, `CurrentPreferencesTest`, `HideAllergensTest` |
+| Allergen warnings | `AllergensTest` |
 | Requests and replies | `ChatRequestJsonTest`, `AiRecipeJsonTest`, `RecipeJsonTest`, `RecipeDetailJsonTest`, `InventoryMapperTest` |
 | Errors | `ApiCallsTest`, `AiRecipeErrorTextTest` |
 | Recipes screens | `RecipeViewModelTest`, `RecipeDetailViewModelTest`, `RecipeCardFormatterTest` |
 | Matching and shopping | `IngredientMatcherTest`, `MissingIngredientsTest` |
 | Favourites and planning | `FavoriteRecipeMapperTest`, `FavoritesViewModelTest`, `FavoriteOpenTest`, `AiRecipeFavoriteTest`, `RecipeDetailFavoriteTest`, `PlanMealTest`, `PlanDatesTest` |
 | Backend ranking and search | `recommend.test.js` (names, scoring, ranking, Zero-Waste, broadening, allergens, defaults, errors), `edamam.test.js` |
-| Backend AI | `aiRecipe.test.js`, `claude-chat-prompts.test.js`, `substitute.test.js` with a fake Claude, so no key and no cost |
+| Backend AI | `aiRecipe.test.js`, `claude-chat-prompts.test.js`, `chat-tool.test.js`, `substitute.test.js` with a fake Claude, so no key and no cost |
 | Backend validation | `validate.test.js` |
 | Real services (not run by the unit tests) | Instrumented tests in `app/src/androidTest` (`AiRepositoryTest`, `AiRecipeRepositoryTest`, `RecipeRepositoryTest`, `RecipeSubstituteTest`, `AiApiServiceSmokeTest`), the Postman collection (`npm run test:api`) and `npm run smoke:claude` and `smoke:edamam` |
 

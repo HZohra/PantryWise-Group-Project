@@ -6,7 +6,6 @@ Every diagram of the documentation is a PNG image, so the Markdown files do not 
 |---|---|
 | `img/` | The PNG files used by the documents. Named `<document>-<number>.png`, in order of appearance |
 | `src/` | The Mermaid source of each PNG (`<document>-<number>.mmd`) |
-| `img/ai-engine.png` | The whole AI engine class diagram on one image (no source file is kept) |
 
 ## Regenerate
 

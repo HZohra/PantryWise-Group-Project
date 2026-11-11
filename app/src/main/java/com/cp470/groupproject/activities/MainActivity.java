@@ -11,6 +11,8 @@ import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -40,6 +42,9 @@ import com.cp470.groupproject.data.preferences.AiPreferencesStore;
 import com.cp470.groupproject.ui.profile.FoodProfileActivity;
 
 public class MainActivity extends AppCompatActivity {
+
+    private NotificationPermissionHelper notificationPermission;
+    private ActivityResultLauncher<Intent> profileLauncher;
 
     /** debug-only screen, referenced by name because it is not compiled into release builds */
     private static final String DEV_TOOLS_CLASS = "com.cp470.groupproject.ui.dev.DevToolsActivity";
@@ -99,9 +104,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.wasteSummaryButton).setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, WasteSummaryActivity.class)));
 
-        // the launcher must be registered while the activity is being created, so the helper is
-        // built here; the expiration reminders need the permission on android 13 and later
-        new NotificationPermissionHelper(this).ensurePermission();
+        // the launchers must be registered while the activity is being created, so they are built
+        // here. the permission is asked at the end of onCreate, or when the first-time food
+        // profile screen closes, so the two dialogs never appear on top of each other
+        notificationPermission = new NotificationPermissionHelper(this);
+        profileLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> notificationPermission.ensurePermission());
 
         // opens the add food form already in scan mode, so a scanned product ends up in the pantry
         findViewById(R.id.scannerButton).setOnClickListener(v ->
@@ -190,9 +199,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // the food profile is asked once, the first time the app is opened
-        // (later it opens after the first sign-in, if the team adds accounts)
-        if (savedInstanceState == null && !AiPreferencesStore.from(this).isSetupDone()) {
-            startActivity(FoodProfileActivity.newIntent(this, true));
+        // (later it opens after the first sign-in, if the team adds accounts). the notification
+        // permission is asked after it; if the screen is already open (rotation) its result
+        // callback asks it when it closes
+        if (AiPreferencesStore.from(this).isSetupDone()) {
+            notificationPermission.ensurePermission();
+        } else if (savedInstanceState == null) {
+            profileLauncher.launch(FoodProfileActivity.newIntent(this, true));
         }
     }
 

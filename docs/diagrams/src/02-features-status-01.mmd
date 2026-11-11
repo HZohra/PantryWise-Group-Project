@@ -7,8 +7,12 @@ flowchart TD
     AddFood --> Scan[ScannerActivity]
     Main --> Detail["ItemDetailActivity<br/>(tap a food item)"]
     Main --> Settings[SettingsActivity]
+    Main -. "first launch" .-> Profile["FoodProfileActivity<br/>(food profile)"]
+    Settings --> Profile
     Main --> AI[AiAssistantActivity]
+    AI --> Profile
     Main --> Recipes[RecipesActivity]
+    Recipes --> Profile
     Main --> Favs[FavoritesActivity]
     Recipes --> RDetail[RecipeDetailActivity]
     Recipes --> AIRecipe[AiRecipeActivity]

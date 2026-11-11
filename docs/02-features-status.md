@@ -105,8 +105,10 @@ sample data and runs the expiration check on demand. It is not part of release b
 | Add the missing ingredients of a recipe to the shopping list | `MissingIngredients` | Implemented | `MissingIngredientsTest`, `ShoppingAddMissingTest` |
 | Clear errors with retry, and no crash on a bad reply | `AiErrorText`, `RecipeErrorText`, `ApiCalls` | Implemented | `ApiCallsTest`, `AiRecipeErrorTextTest` |
 | Answers in Spanish when the app is in Spanish | `AiRepository` (sends the language tag) | Implemented | `ChatRequestJsonTest` |
-| Dietary preferences and allergies | backend accepts them | Partial | the app does not have a preferences screen yet and sends no preferences |
-| Recipe filters (diet, cuisine, calories) | backend accepts them | Partial | there is no filter panel in the app |
+| Food profile (name, allergies, "must be" labels, diet, fitness goal). Asked on the first launch, editable from Settings, the Recipes toolbar and the chat menu. Sent with every AI and recipe request | `FoodProfileActivity`, `FoodProfileViewModel`, `AiPreferences`, `AiPreferencesStore`, `FoodProfileRules` | Implemented | `FoodProfileViewModelTest`, `FoodProfileRulesTest`, `AiPreferencesTest`, `AiPreferencesStoreTest`, `CurrentPreferencesTest` |
+| Allergen warnings: recipes with an allergen are flagged and listed last (or hidden with a switch), the details show a banner and substitutes, and nothing with an allergen is added to the shopping list | `Allergens`, `RecipeAdapter`, `RecipeDetailActivity`, backend `recipeService` | Implemented | `AllergensTest`, `HideAllergensTest`, backend `recommend.test.js` |
+| The chat can propose shopping-list items. The user confirms on a card, no duplicates are added | `AiChatViewModel`, `ChatMessageAdapter`, backend `chatService` (tool `add_to_shopping_list`) | Implemented | `ChatShoppingTest`, `ChatMessageItemsTest`, backend `chat-tool.test.js` |
+| Recipe filters (diet, cuisine, calories) | backend accepts them | Partial | there is no filter panel in the app. The diet and labels of the food profile are sent, but cuisine and calories cannot be chosen |
 | Chat answers that use Edamam nutrition values | - | Partial | nutrition is shown on the recipe screen, but the chat does not receive it |
 
 ### Backend
@@ -133,8 +135,9 @@ sample data and runs the expiration check on demand. It is not part of release b
 
 ## 2.4 Known limitations
 
-- There is no preferences screen, so dietary preferences and allergies are not sent to the assistant and recipes cannot
-  be filtered by diet, cuisine or calories. See the [roadmap](04-roadmap.md).
+- Recipes cannot be filtered by cuisine or calories from the app (there is no filter panel), although the backend
+  supports both. See the [roadmap](04-roadmap.md).
+- The food profile is stored only on the phone. There are no accounts, so a new install asks for it again.
 - The barcode lookup needs the backend to be running with a `USDA_API_KEY` in `backend/.env` (`DEMO_KEY` works but is rate limited).
 - The AI, recipe and barcode features need the backend to be running. In release builds the backend address is a placeholder
   (`example.invalid`), so those features only work in debug builds until the backend is hosted.

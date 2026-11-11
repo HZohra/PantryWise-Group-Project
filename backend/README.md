@@ -164,7 +164,10 @@ so they can be matched against the pantry; the rest of the text follows the loca
 ```
 
 - `message`: required, max 1000 characters. `history`: max 20 messages, each max 2000 characters.
-- Response: `{ "reply": "..." }`
+- Response: `{ "reply": "...", "shoppingItems": [ { "name": "garlic", "amount": "2 cloves" } ] }`.
+  `shoppingItems` is `[]` unless the user asked to add things to their shopping list. Claude proposes them through
+  the `add_to_shopping_list` tool; the server never adds anything: it lowercases the names, removes duplicates, keeps
+  at most 30 and drops anything that matches the user's allergies, and the app asks the user to confirm.
 
 ### POST `/ai/recipe`
 
@@ -266,6 +269,8 @@ for later (e.g. in favourites) and expect them to keep working.
 - `mode`: `standard` (default) or `zeroWaste` (only recipes that use food expiring soon).
 - `query`: optional. Without it, the server searches for the most urgent pantry items.
 - `limit`: 1 to 10 (default 5). An empty inventory is allowed (the server suggests common dishes).
+- `hideAllergens`: optional boolean, default `false`. When `false`, recipes that contain one of the user's allergies are
+  kept, flagged in `match.allergens` and listed after every safe recipe. When `true` they are removed before ranking.
 
 Response:
 
@@ -279,12 +284,12 @@ Response:
   "recipes": [
     { "...Recipe fields": "...",
       "match": { "score": 0.67, "haveCount": 2, "totalCount": 3,
-                 "have": ["chicken", "spinach"], "missing": ["garlic"], "expiringUsed": ["spinach"] } }
+                 "have": ["chicken", "spinach"], "missing": ["garlic"], "expiringUsed": ["spinach"], "allergens": [] } }
   ]
 }
 ```
 
-- Recipes are sorted best match first.
+- Recipes are sorted best match first. Recipes with an allergen come last (see `hideAllergens`).
 - `broadened: true` means the filters were too strict, so cuisine, meal type and time were dropped.
 - `personalized: false` means there was nothing in the pantry to search for, so defaults were used.
 

@@ -119,7 +119,8 @@ emulator, and press *Run*. The app opens on the main screen, **PantryWise**.
 
 The APK is written to `app/build/outputs/apk/debug/`.
 
-On the first launch, allow notifications when the system asks. Camera permission is requested the first time the
+On the first launch the app first shows the **food profile** screen (name and an answer about allergies are required),
+and when it closes the system asks to allow notifications. Camera permission is requested the first time the
 scanner opens.
 
 ## 3.7 Developer tools (debug builds only)
@@ -149,11 +150,11 @@ marked as consumed or wasted do not appear in alerts.
 
 | Task | Command | Expected result |
 |---|---|---|
-| Android unit tests | `.\gradlew.bat testDebugUnitTest` | 341 tests, 0 failures. Report in `app/build/reports/tests/testDebugUnitTest/index.html` |
+| Android unit tests | `.\gradlew.bat testDebugUnitTest` | 382 tests, 0 failures. Report in `app/build/reports/tests/testDebugUnitTest/index.html` |
 | One test class | `.\gradlew.bat testDebugUnitTest --tests "*ClassName"` | |
 | Lint | `.\gradlew.bat lintDebug` | 0 errors. Report in `app/build/reports/lint-results-debug.html` |
 | Javadoc | `.\gradlew.bat generateJavadoc` | HTML in `app/doc/javadoc/` (not committed) |
-| Backend tests | `cd backend; npm test` | 71 tests, 0 failures, no keys or network needed (the runner prints 74 because three test files are empty) |
+| Backend tests | `cd backend; npm test` | 80 tests, 0 failures, no keys or network needed (the runner prints 83 because three test files are empty) |
 | Backend smoke tests | `npm run smoke:claude`, `npm run smoke:edamam` | Call the real services with your keys |
 | Backend API collection | `npm run test:api` | Runs the Postman collection against a running server |
 

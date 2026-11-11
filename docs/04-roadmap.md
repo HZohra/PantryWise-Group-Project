@@ -18,39 +18,36 @@ days, **L** more than three days. The suggested owner follows the current areas 
 
 | # | Item | Why | Priority | Effort | Suggested owner |
 |---|---|---|---|---|---|
-| 6 | **Preferences screen** (diet, allergies, cuisine, fitness goal) saved in `SharedPreferences` and sent in every AI and recipe request | The backend already supports it. The app sends no preferences, so allergies are never respected by the assistant | High | M | Tahmina and Zohra |
-| 7 | **Recipe filter panel** (diet, cuisine, calories) that uses the saved preferences by default | Completes use case "Search and filter recipes" | Medium | M | Zohra |
-| 8 | Use Edamam nutrition values in chat answers about a recipe | Completes the user story "Ask about nutrition". Nutrition is already shown on the recipe screen | Medium | M | Zohra |
-| 9 | Scanner: show a Snackbar with a **Retry** action on a network error instead of a toast | The assignment asks for it, and it matches the rest of the app | Medium | S | Isha |
-| 10 | **Saved frequent items** for faster food entry | Part of the scanner assignment, not started | Medium | M | Isha |
-| 11 | Banner on the main screen with the items that need attention today | Brings the expiration alert inside the app | Low | S | Tahmina |
-| 12 | Let the user choose the time of the daily reminder and the warning window (now fixed at 09:00 and 3 days) | Gives control over the notification | Low | M | Aitor |
-| 13 | Mark leftovers explicitly so Zero-Waste Mode can use them | The mode uses expiring items only | Low | M | Zohra |
+| 6 | **Recipe filter panel** (diet, cuisine, calories) that starts from the saved food profile | Completes use case "Search and filter recipes" | Medium | M | Zohra |
+| 7 | Use Edamam nutrition values in chat answers about a recipe | Completes the user story "Ask about nutrition". Nutrition is already shown on the recipe screen | Medium | M | Zohra |
+| 8 | Scanner: show a Snackbar with a **Retry** action on a network error instead of a toast | The assignment asks for it, and it matches the rest of the app | Medium | S | Isha |
+| 9 | **Saved frequent items** for faster food entry | Part of the scanner assignment, not started | Medium | M | Isha |
+| 10 | Banner on the main screen with the items that need attention today | Brings the expiration alert inside the app | Low | S | Tahmina |
+| 11 | Let the user choose the time of the daily reminder and the warning window (now fixed at 09:00 and 3 days) | Gives control over the notification | Low | M | Aitor |
+| 12 | Mark leftovers explicitly so Zero-Waste Mode can use them | The mode uses expiring items only | Low | M | Zohra |
 
 ## 4.3 Technical debt
 
 | # | Item | Why | Priority | Effort |
 |---|---|---|---|---|
-| 14 | Rate limit per device instead of per IP address | One device behind a shared network can block the others | Medium | S |
-| 15 | Remove the remaining fixed colours and sizes in the add-food form and finish a review of the dark theme on every screen | Only the main, add-food and detail screens use colour resources with a night variant | Medium | M |
-| 16 | Replace `app/doc/ClassDiagram.puml`, which was generated automatically and is out of date, with the diagrams of this folder | It still lists classes that no longer exist | Medium | S |
-| 17 | Split `PantryRepository` (about 500 lines) by area, keeping a single entry point for the screens | It mixes inventory, history, shopping list, meal plan and favourites | Low | M |
-| 18 | Add a continuous integration job that runs `testDebugUnitTest`, `lintDebug` and `npm test` on every pull request | Prevents a broken `develop` | Medium | M |
-| 19 | Make the instrumented AI tests run against a fake backend | They need a running server and an emulator today | Low | M |
-| 20 | Accessibility review with TalkBack (content descriptions, focus order, text scaling) | Touch targets are 48 dp, but the screens were not tested with a screen reader | Low | M |
+| 13 | Rate limit per device instead of per IP address | One device behind a shared network can block the others | Medium | S |
+| 14 | Remove the remaining fixed colours and sizes in the add-food form and finish a review of the dark theme on every screen | Only the main, add-food and detail screens use colour resources with a night variant | Medium | M |
+| 15 | Split `PantryRepository` (about 500 lines) by area, keeping a single entry point for the screens | It mixes inventory, history, shopping list, meal plan and favourites | Low | M |
+| 16 | Add a continuous integration job that runs `testDebugUnitTest`, `lintDebug` and `npm test` on every pull request | Prevents a broken `develop` | Medium | M |
+| 17 | Make the instrumented AI tests run against a fake backend | They need a running server and an emulator today | Low | M |
+| 18 | Accessibility review with TalkBack (content descriptions, focus order, text scaling) | Touch targets are 48 dp, but the screens were not tested with a screen reader | Low | M |
 
 ## 4.4 Longer term
 
 | # | Item | Notes |
 |---|---|---|
-| 21 | Host the backend (any small Node hosting service) and put the real HTTPS address in the release build. The release build currently points to `example.invalid`, so the AI and recipe screens only work in debug builds | The local backend is the official way to run the project for now |
-| 22 | Accounts and cloud sync, so a household shares one pantry across phones | Requires a server-side database |
-| 23 | More languages beyond English and Spanish | All strings are already in resource files |
-| 24 | Home screen widget with the items that expire today | Reuses the expiration checker |
-| 25 | Tablet and landscape layouts | The layouts are designed for portrait phones |
+| 19 | Host the backend (any small Node hosting service) and put the real HTTPS address in the release build. The release build currently points to `example.invalid`, so the AI and recipe screens only work in debug builds | The local backend is the official way to run the project for now |
+| 20 | Accounts and cloud sync, so a household shares one pantry across phones | Requires a server-side database |
+| 21 | More languages beyond English and Spanish | All strings are already in resource files |
+| 22 | Home screen widget with the items that expire today | Reuses the expiration checker |
+| 23 | Tablet and landscape layouts | The layouts are designed for portrait phones |
 
 ## 4.5 Order of work
 
-1. Items 1 to 5 first: they make the delivery complete and demonstrable.
-2. Then item 6: it closes the biggest gap (allergy safety).
-3. The rest can be taken in any order according to the time left.
+1. Items 1 to 5 first: they make the delivery complete and demonstrable. The food profile and allergy safety, which were the biggest gap, are already done.
+2. The rest can be taken in any order according to the time left.

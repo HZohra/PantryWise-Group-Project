@@ -63,15 +63,24 @@ classDiagram
     }
     class ChatResponse {
         +String reply
+        +List shoppingItems
+    }
+    class ChatShoppingItemDto {
+        +String name
+        +String amount
     }
     class AiRecipeRequest
     class AiRecipeResponse
     class AiRecipeDto
     class AiRecipeIngredientDto
-    class RecommendRequest
+    class RecommendRequest {
+        +boolean hideAllergens
+    }
     class RecommendResponse
     class RecipeDto
-    class MatchDto
+    class MatchDto {
+        +List allergens
+    }
     class NutritionDto
     class SubstituteRequest
     class SubstituteResponse
@@ -94,6 +103,7 @@ classDiagram
     ChatRequest o-- PreferencesDto
     AiApiService ..> ChatRequest
     AiApiService ..> ChatResponse
+    ChatResponse *-- ChatShoppingItemDto
     AiApiService ..> AiRecipeRequest
     AiApiService ..> AiRecipeResponse
     AiApiService ..> RecommendRequest

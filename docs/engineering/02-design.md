@@ -101,6 +101,14 @@ Javadoc of each class is the description. Generate the full HTML with `gradlew g
 | `StockSummary` | Query result row: total stock of one normalized ingredient in one unit |
 | `WasteStats` | Immutable aggregate of the waste metrics shown on the waste summary screen |
 
+### `data/preferences`
+
+| Type | Responsibility |
+|---|---|
+| `AiPreferences` | The user's allergies, "must be" labels, diet and fitness goal, cleaned with the same rules as the backend (immutable, plain Java) |
+| `AiPreferencesStore` | Keeps the food profile and the "hide allergens" switch in a SharedPreferences file and gives the current values to every request |
+| `FoodProfileRules` | What the food profile screen requires before saving: a valid name and an answer about allergies |
+
 ### `data/remote`
 
 | Type | Responsibility |
@@ -123,7 +131,8 @@ Javadoc of each class is the description. Generate the full HTML with `gradlew g
 | `ApiErrorResponse` | Every backend error looks like {"error":{"code":"...","message":"...","details":[...]}} |
 | `ChatMessageDto` | One turn of the conversation sent to the backend: {"role":"user"/"assistant","content":"..."} |
 | `ChatRequest` | Body of POST /api/v1/ai/chat |
-| `ChatResponse` | Body of a successful POST /api/v1/ai/chat: {"reply":"..."} |
+| `ChatResponse` | Body of a successful POST /api/v1/ai/chat: {"reply":"...","shoppingItems":[...]} |
+| `ChatShoppingItemDto` | One shopping-list item proposed by the assistant: {"name":"garlic","amount":"2 cloves"} |
 | `ExpiringItemDto` | A pantry item a recipe would use up before it spoils: {"name":"spinach","daysUntilExpiry":1} |
 | `HealthResponse` | Body of GET /api/v1/health: {"status":"ok","service":"...","timestamp":"..."} |
 | `InventoryItemDto` | One pantry item as the backend expects it |
@@ -185,7 +194,8 @@ Javadoc of each class is the description. Generate the full HTML with `gradlew g
 | `AiRecipeErrorText` | Turns an AiError from POST /ai/recipe into a localized message |
 | `AiRecipeViewModel` | State and logic for the AI recipe screen (MVVM: no Views here) |
 | `ChatLauncher` | Opens the AI chat with a message already typed in the input box (not sent), so the user can review it and the consent dialog still applies (US-6) |
-| `ChatMessage` | One bubble in the AI chat (UI model, immutable) |
+| `Allergens` | Turns the allergens that the backend found in a recipe into text and finds the ingredient line that contains each one |
+| `ChatMessage` | One bubble in the AI chat (UI model, immutable). An assistant reply can carry proposed shopping-list items and their state (pending, added, dismissed) |
 | `ChatMessageAdapter` | Shows the chat as bubbles: user messages on the right, assistant replies on the left |
 | `FavoriteAdapter` | Favourite recipes as cards: photo (or a placeholder), title, "servings · time · source" and a heart to remove it |
 | `FavoriteRecipeMapper` | Builds the FavoriteRecipe that is saved when the user taps the heart, from an Edamam recipe or from an AI recipe, and turns a saved Edamam favourite back into a RecipeDto for Recipe details |
@@ -230,12 +240,19 @@ Javadoc of each class is the description. Generate the full HTML with `gradlew g
 | `MealPlannerAdapter` | Adapter of the planner: one card per day with its four meal slots |
 | `MealPlannerViewModel` | State and actions of the meal planner |
 
+### `ui/profile`
+
+| Type | Responsibility |
+|---|---|
+| `FoodProfileActivity` | Food profile screen: name, allergies (required answer), "must be" labels, diet and goal. Opens on the first launch and from Settings, the Recipes toolbar and the chat menu |
+| `FoodProfileViewModel` | State and validation of the food profile form (MVVM: no Views here) |
+
 ### `ui/settings`
 
 | Type | Responsibility |
 |---|---|
 | `DisplayPreferences` | Theme and text size, kept in SharedPreferences |
-| `SettingsActivity` | Settings screen: theme and text size |
+| `SettingsActivity` | Settings screen: theme and text size, and a button to the food profile |
 
 ### `ui/shoppinglist`
 
@@ -394,7 +411,7 @@ false`), which is why the calculator also skips ingredients already on the list 
 ### 5.3 A chat request
 
 What `AiRepository.sendChatMessage` sends to the backend when the demo pantry exists and the user asked
-"What can I cook with the milk?" (the history is empty and no preferences are sent yet).
+"What can I cook with the milk?" (the history is empty and the food profile has no allergies, labels, diet or goal, so no preferences are sent).
 
 ![A chat request diagram](../diagrams/img/02-design-09.png)
 

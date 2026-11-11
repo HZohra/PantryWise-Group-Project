@@ -5,12 +5,15 @@ flowchart TD
     consent -->|"yes"| dialog["Consent dialog: message and pantry will be sent to an AI service"]
     dialog -->|"Cancel"| keep(["Nothing is sent, the text stays in the box"])
     dialog -->|"Continue"| build
-    consent -->|"no"| build["Build the request:<br/>message, last turns of the chat,<br/>pantry (name, quantity, unit, days left),<br/>language"]
+    consent -->|"no"| build["Build the request:<br/>message, last turns of the chat,<br/>pantry (name, quantity, unit, days left),<br/>food profile, language"]
     build --> post["POST /api/v1/ai/chat"]
-    post --> be["Backend: validate, rate limit,<br/>build the system prompt with the pantry"]
+    post --> be["Backend: validate, rate limit,<br/>build the system prompt with the pantry<br/>and the food profile"]
     be --> claude["Claude writes the reply"]
     claude --> ok{"Answer?"}
     ok -->|"reply"| show["Show the reply, keep it in the chat history"]
+    show --> items{"Items proposed for the shopping list?"}
+    items -->|"yes"| card["Confirm card: Add or Dismiss.<br/>Add saves them without duplicates"]
+    items -->|"no"| endok(["Done"])
     ok -->|"error"| err{"Error type"}
     err -->|"rate limit"| snack1["Snackbar: the assistant is busy, try again in a minute"]
     err -->|"network or timeout or unavailable"| snack2["Snackbar with Retry"]

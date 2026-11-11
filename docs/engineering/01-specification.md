@@ -27,7 +27,7 @@ assistant (see [AI engine](04-ai-engine.md)).
 | USDA FoodData Central | External | Gives the product name of a barcode (through the backend) |
 
 **In scope:** pantry inventory, barcode scanning, expiration reminders, waste statistics, shopping list, weekly meal
-planner, settings, English and Spanish.
+planner, food profile, settings, English and Spanish.
 
 **Out of scope for this delivery:** accounts and cloud sync, several households, price tracking, tablet layouts, and
 a hosted backend (see the [roadmap](../04-roadmap.md)).
@@ -52,6 +52,7 @@ a hosted backend (see the [roadmap](../04-roadmap.md)).
 | UC-10 | Plan a meal | Household member | Implemented |
 | UC-11 | Generate the shopping list from the plan | Household member | Implemented |
 | UC-12 | Change appearance and read the help | Household member | Implemented |
+| UC-13 | Set up the food profile | Household member | Implemented |
 
 ### UC-01 Browse and search the pantry
 
@@ -197,6 +198,18 @@ a hosted backend (see the [roadmap](../04-roadmap.md)).
 | **Postcondition** | The preferences are kept in `SharedPreferences` |
 | **Evidence** | manual |
 
+### UC-13 Set up the food profile
+
+| | |
+|---|---|
+| **Actor** | Household member |
+| **Precondition** | None. The screen opens by itself the first time the app is launched |
+| **Trigger** | First launch, or the user taps *Food profile* in Settings, in the Recipes toolbar or in the chat menu |
+| **Main flow** | 1. The user types a name. 2. The user adds allergies as words, or ticks "I have no food allergies" (one of the two is required). 3. Optionally the user ticks "must be" labels (for example vegetarian, gluten-free), a diet and a fitness goal. 4. The user taps *Save*. 5. The profile is kept on the phone and the app asks for the notification permission |
+| **Alternate flows** | A. The name is empty or has digits or symbols: the field shows an error and nothing is saved. B. Allergies are unanswered: the screen asks for an answer. C. An invalid allergy (digits, too long) is refused and the screen says why. D. From Settings or the toolbars the user edits an existing profile and the next request uses the new values |
+| **Postcondition** | Every AI and recipe request carries the allergies, labels, diet and goal. Recipes with an allergen are flagged |
+| **Evidence** | `FoodProfileViewModelTest`, `FoodProfileRulesTest`, `AiPreferencesTest`, `AiPreferencesStoreTest`, `CurrentPreferencesTest`; manual |
+
 ## 3. User stories and tasks
 
 Each story has acceptance criteria and the technical tasks that implement it. Stories are grouped by area.
@@ -268,7 +281,14 @@ Each story has acceptance criteria and the technical tasks that implement it. St
 | S-31 | As a user, I want the app to look right on a modern phone | Window insets applied on every screen (edge-to-edge) | `WindowInsetsHelper` | Implemented |
 | S-32 | As a user, I want the app to keep working when a permission or the network is missing | No crash; clear messages | all screens | Implemented |
 
-The 27 stories of the AI assistant and the recipes (AI-US 1 to 27) are in [AI engine](04-ai-engine.md).
+### 3.8 Food profile
+
+| ID | Story | Acceptance criteria | Tasks | Status |
+|---|---|---|---|---|
+| S-33 | As a user, I want to tell the app about my allergies and diet once, so that recipes and the assistant respect them | Shown on the first launch; a name and an answer about allergies are required; invalid values are explained; the profile survives a restart | `FoodProfileActivity`, `FoodProfileViewModel`, `FoodProfileRules`, `AiPreferencesStore` | Implemented |
+| S-34 | As a user, I want to change my food profile later | Reachable from Settings, the Recipes toolbar and the chat menu; the next AI or recipe request uses the new values | `SettingsActivity`, `RecipesActivity`, `AiAssistantActivity` | Implemented |
+
+The 30 stories of the AI assistant and the recipes (AI-US 1 to 30) are in [AI engine](04-ai-engine.md).
 
 ## 4. State diagrams
 
@@ -286,7 +306,7 @@ reported by the daily check.
 
 ![Notification permission diagram](../diagrams/img/01-specification-03.png)
 
-The permission is requested when the main screen opens. Without it the check still runs and simply shows nothing.
+The permission is requested when the main screen opens, or, on the first launch, right after the food profile screen closes, so the two never appear together. Without it the check still runs and simply shows nothing.
 
 ### 4.3 Shopping list item
 
@@ -339,6 +359,6 @@ The activity diagram of the chat (consent, request, answer, error and retry) is 
 | Rotation | Typed text and the selected state survive a rotation | `onSaveInstanceState`, ViewModels | Manual |
 | Accessibility | Content descriptions on icon buttons, 48 dp targets | Layout attributes | Manual (no TalkBack review yet, see the [roadmap](../04-roadmap.md)) |
 | Maintainability | One entry point per data source, pure helpers, Javadoc on public classes, one logical change per commit | Package rules, `generateJavadoc`, project conventions | [Design](02-design.md) |
-| Testability | Logic runs on the JVM without a device; dependencies are injected | Pure classes, constructor injection, Mockito and Robolectric | 341 Android and 71 backend unit tests |
+| Testability | Logic runs on the JVM without a device; dependencies are injected | Pure classes, constructor injection, Mockito and Robolectric | 382 Android and 80 backend unit tests |
 | Performance | A pantry of hundreds of items lists without delay. The AI accepts at most 200 items | Indexed queries, `RecyclerView`, request limits | Manual |
 | Reliability of the daily check | Runs even if the app is closed, once a day, and retries on failure | WorkManager unique periodic work, up to three attempts | `ExpirationSchedulerTest` |

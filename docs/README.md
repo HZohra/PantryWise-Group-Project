@@ -28,7 +28,7 @@ built. It was written for the Wilfrid Laurier course **CP470 - Android Programmi
   **Partial** (some acceptance criteria are missing) and **Planned** (not started).
 - Classes are named by their simple name (for example `PantryRepository`) so the text survives refactors.
   The Javadoc of the code can be generated with `gradlew generateJavadoc` (see [Getting started](03-getting-started.md)).
-- The documents describe the branch `feature/integration-followup` on top of commit `0fba295`, checked against the code and the tests on 2026-11-11 (341 Android and 71 backend unit tests passing).
+- The documents describe the branch `feature/integration-followup` on top of `develop` at commit `829f161` (pull request #9 included), checked against the code and the tests on 2026-11-11 (382 Android and 80 backend unit tests passing).
 
 ## Folder layout
 
