@@ -36,6 +36,12 @@
             android:name=".ui.ai.FavoritesActivity"
             android:exported="true"
             tools:replace="android:exported" />
+
+        <!-- Member 5, debug only: lets adb open the food profile screen. -->
+        <activity
+            android:name=".ui.profile.FoodProfileActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
     </application>
 
 </manifest>
