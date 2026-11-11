@@ -1,0 +1,19 @@
+flowchart LR
+    subgraph pc["Developer computer (Windows)"]
+        studio["Android Studio<br/>Gradle build"]
+        node["Node backend<br/>localhost:3000 (or PORT)"]
+        envfile[("backend/.env<br/>all API keys")]
+        adbtool["adb reverse<br/>tcp:3000 to tcp:PORT"]
+    end
+    subgraph emu["Emulator or phone"]
+        apk["PantryWise debug app"]
+        sqlite[("SQLite<br/>pantry database")]
+    end
+    net(("Internet"))
+
+    studio -->|"installs APK"| apk
+    envfile -.->|"read at start"| node
+    apk -->|"http://localhost:3000/api/v1/"| adbtool
+    adbtool --> node
+    node -->|"HTTPS"| net
+    apk --- sqlite

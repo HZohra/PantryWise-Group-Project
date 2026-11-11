@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:id="@+id/root" xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,8 +12,9 @@
 
         <Button
             android:id="@+id/settingsBackButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/content_description_back"
             android:text="←"
             android:textSize="28sp"
             android:gravity="center"
@@ -21,7 +23,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Settings"
+            android:text="@string/settings_title"
             android:textSize="28sp"
             android:textStyle="bold"
             android:layout_marginTop="16dp"
@@ -30,7 +32,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="App Theme"
+            android:text="@string/settings_app_theme"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -43,26 +45,26 @@
                 android:id="@+id/themeSystem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="System Default" />
+                android:text="@string/settings_theme_system" />
 
             <RadioButton
                 android:id="@+id/themeLight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Light Mode" />
+                android:text="@string/settings_theme_light" />
 
             <RadioButton
                 android:id="@+id/themeDark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dark Mode" />
+                android:text="@string/settings_theme_dark" />
 
         </RadioGroup>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Display Text Size"
+            android:text="@string/settings_text_size"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginTop="24dp" />
@@ -80,7 +82,7 @@
             android:id="@+id/textSizeValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="16sp"
+            android:text="@string/settings_text_size_value"
             android:textSize="16sp"
             android:gravity="center" />
 
@@ -88,7 +90,7 @@
             android:id="@+id/saveSettingsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save Settings"
+            android:text="@string/settings_save"
             android:layout_marginTop="24dp" />
 
     </LinearLayout>

@@ -11,6 +11,13 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-app.listen(config.port, () => {                                         // CHANGED: PORT → config.port
+// Express 5 passes listen errors (EACCES, EADDRINUSE...) to this callback; without checking it the
+// server printed "running" and then exited silently.
+app.listen(config.port, (err) => {                                      // CHANGED: PORT → config.port
+  if (err) {
+    console.error(`Cannot listen on port ${config.port}: ${err.code} ${err.message}`);
+    console.error('Set another PORT in backend/.env (on Windows some ports are reserved: see "netsh interface ipv4 show excludedportrange protocol=tcp").');
+    process.exit(1);
+  }
   console.log(`PantryWise backend running at http://localhost:${config.port}`);
 });

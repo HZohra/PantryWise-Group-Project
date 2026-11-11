@@ -53,9 +53,8 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
 
         holder.foodName.setText(item.name);
 
-        holder.foodQuantity.setText(
-                "Quantity: " + item.quantity + " " + item.unit
-        );
+        holder.foodQuantity.setText(holder.itemView.getContext()
+                .getString(R.string.food_quantity_line, String.valueOf(item.quantity), item.unit));
 
         Freshness freshness = ExpiryUtils.classify(
                 item.expirationDate,

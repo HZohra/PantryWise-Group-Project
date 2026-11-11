@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cp470.groupproject.R;
+import com.cp470.groupproject.util.WindowInsetsHelper;
 import com.cp470.groupproject.data.entity.FoodItem;
 import com.cp470.groupproject.data.entity.StorageLocation;
 import com.cp470.groupproject.data.model.ItemStatus;
@@ -58,6 +59,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
+        WindowInsetsHelper.applySystemBarPadding(findViewById(R.id.root));
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
         DisplayPreferences.applyTextSize(this);
@@ -150,7 +152,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     txtExpirationDate.setText(
                             format.format(expirationDate));
                 } else {
-                    txtExpirationDate.setText("No expiration date selected");
+                    txtExpirationDate.setText(R.string.form_no_expiration_selected);
                 }
             }
         });
@@ -178,7 +180,7 @@ public class ItemDetailActivity extends AppCompatActivity {
             String unit = edtUnit.getText().toString().trim();
 
             if (name.isEmpty()) {
-                edtName.setError("Enter a food name");
+                edtName.setError(getString(R.string.form_error_name));
                 return;
             }
 
@@ -189,7 +191,7 @@ public class ItemDetailActivity extends AppCompatActivity {
             }
 
             if (unit.isEmpty()) {
-                edtUnit.setError("Enter a unit");
+                edtUnit.setError(getString(R.string.form_error_unit));
                 return;
             }
 

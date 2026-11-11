@@ -1,0 +1,43 @@
+classDiagram
+    class PantryWiseApp {
+        +onCreate()
+    }
+    class ExpirationScheduler {
+        +scheduleDaily(nowMs, zone)
+        +schedulePeriodic(name, delay, interval, unit, policy)
+        +runNow()
+        +cancel(name)
+    }
+    class ExpirationWorker {
+        +doWork() Result
+    }
+    class ExpirationChecker {
+        +run(now) int
+    }
+    class NotificationHelper {
+        +createChannel()
+        +showExpirationNotification(expired, soon, now)
+    }
+    class NotificationPermissionHelper {
+        +isGranted(context) boolean
+        +openNotificationSettings(context)
+    }
+    class ExpiryUtils {
+        +classify(expirationDate, now, days)$ Freshness
+    }
+    class ExpirationTiming {
+        +delayUntilNextHour(now, hour, zone)$ long
+    }
+    class PantryRepository
+    class ShoppingListActivity
+
+    PantryWiseApp --> NotificationHelper : creates the channel
+    PantryWiseApp --> ExpirationScheduler : schedules the daily check
+    ExpirationScheduler ..> ExpirationWorker : enqueues
+    ExpirationScheduler --> ExpirationTiming
+    ExpirationWorker --> ExpirationChecker
+    ExpirationChecker --> PantryRepository : active items
+    ExpirationChecker --> ExpiryUtils
+    ExpirationChecker --> NotificationHelper
+    NotificationHelper ..> ShoppingListActivity : tap opens it, with the parent stack
+    ShoppingListActivity ..> NotificationPermissionHelper

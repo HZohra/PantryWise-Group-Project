@@ -1,0 +1,21 @@
+<resources>
+    <!-- Barcode scanner screen -->
+    <string name="scanner_manual_entry_button">Introducir código manualmente</string>
+    <string name="scanner_manual_dialog_title">Introducir código manualmente</string>
+    <string name="scanner_manual_hint">Introduce el código (8, 12, 13 o 14 dígitos)</string>
+    <string name="scanner_action_search">Buscar</string>
+    <string name="scanner_action_cancel">Cancelar</string>
+    <string name="scanner_back_button">Volver</string>
+    <string name="scanner_action_continue">Continuar</string>
+    <string name="scanner_product_found">Producto encontrado: %1$s</string>
+    <string name="scanner_camera_permission_title">Se necesita permiso de cámara</string>
+    <string name="scanner_camera_permission_message">PantryWise necesita acceder a la cámara para escanear códigos de barras e identificar los productos automáticamente.</string>
+    <string name="scanner_camera_permission_denied">Se necesita el permiso de cámara para escanear códigos de barras</string>
+
+    <!-- Barcode lookup errors -->
+    <string name="scanner_error_invalid_barcode_scan">Código no válido. Escanea un código UPC o EAN válido.</string>
+    <string name="scanner_error_invalid_barcode_manual">Introduce un código válido (8, 12, 13 o 14 dígitos)</string>
+    <string name="scanner_error_lookup_failed">No se pudo obtener la información del producto. Inténtalo de nuevo.</string>
+    <string name="scanner_error_not_in_database">Producto no encontrado en la base de datos de USDA. Introdúcelo manualmente.</string>
+    <string name="scanner_error_network">Error de red. Inténtalo de nuevo.</string>
+</resources>

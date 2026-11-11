@@ -1,0 +1,29 @@
+sequenceDiagram
+    actor U as User
+    participant AF as AddFoodActivity
+    participant SC as ScannerActivity
+    participant VM as BarcodeViewModel
+    participant BE as Backend
+    participant US as USDA
+    participant R as PantryRepository
+
+    U->>AF: taps Scan barcode
+    AF->>SC: launch for a result
+    SC->>U: asks the camera permission (explanation dialog first)
+    U-->>SC: allows
+    SC->>SC: ML Kit reads the barcode
+    SC->>VM: lookupProduct(barcode)
+    VM->>VM: validate 8, 12, 13 or 14 digits
+    VM->>BE: GET /products/barcode/{code}
+    BE->>US: foods/search, branded foods
+    US-->>BE: candidate products
+    BE->>BE: accept only an exact barcode match
+    BE-->>VM: name
+    VM-->>SC: productName (LiveData)
+    SC-->>AF: result OK with the product name
+    AF->>AF: fills the food name field
+    U->>AF: completes quantity, place, date and taps Save
+    AF->>R: insertFoodItem(item)
+    R->>R: normalizedName = IngredientNormalizer(name)
+    R-->>AF: new id (background thread)
+    AF-->>U: toast Saved, screen closes

@@ -11,6 +11,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.TaskStackBuilder;
 
 import com.cp470.groupproject.R;
 import com.cp470.groupproject.data.entity.FoodItem;
@@ -86,10 +87,12 @@ public class NotificationHelper {
                     context.getString(R.string.notif_more_lines, lines.size() - MAX_LINES));
         }
 
-        // explicit intent: open the shopping list when the notification is tapped
-        PendingIntent open = PendingIntent.getActivity(context, 0,
-                ShoppingListActivity.newIntent(context),
-                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        // explicit intent: open the shopping list when the notification is tapped. the task stack
+        // builder adds the parent declared in the manifest (MainActivity) underneath it, so "back"
+        // goes to the main screen instead of whatever screen the app had open before
+        PendingIntent open = TaskStackBuilder.create(context)
+                .addNextIntentWithParentStack(ShoppingListActivity.newIntent(context))
+                .getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification)

@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Invalid : code is not 8, 12, 13 or 14 digits
+    Idle --> Loading : valid code
+    Loading --> Found : name received
+    Loading --> NotInDatabase : backend answers 404
+    Loading --> LookupFailed : other backend error
+    Loading --> NetworkError : no connection
+    Found --> [*] : scanner returns the name
+    Invalid --> Idle : scan or type again
+    NotInDatabase --> Idle : scan or type again
+    LookupFailed --> Idle : scan or type again
+    NetworkError --> Idle : scan or type again

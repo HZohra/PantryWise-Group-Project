@@ -1,0 +1,30 @@
+sequenceDiagram
+    actor U as User
+    participant A as AiAssistantActivity
+    participant VM as AiChatViewModel
+    participant R as AiRepository
+    participant P as PantryRepository
+    participant BE as Backend
+    participant C as Claude
+
+    U->>A: Send
+    A->>VM: needsConsent()
+    alt first message
+        A->>U: consent dialog
+        U-->>A: Continue
+        A->>VM: giveConsent()
+    end
+    A->>VM: sendMessage(text)
+    VM->>VM: add the user bubble, loading = true
+    VM->>R: sendChatMessage(text, history)
+    R->>P: getActiveItemsSync() (background thread)
+    P-->>R: items
+    R->>R: InventoryMapper: sort by urgency, at most 200, clamp lengths
+    R->>BE: POST /ai/chat (message, history, inventory, locale)
+    BE->>BE: validate and rate limit
+    BE->>C: system prompt (rules and pantry) and messages
+    C-->>BE: reply
+    BE-->>R: reply
+    R-->>VM: result (postValue)
+    VM-->>A: messages and loading = false
+    A-->>U: new bubble

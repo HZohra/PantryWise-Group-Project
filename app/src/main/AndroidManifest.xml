@@ -13,7 +13,7 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <!-- lets the AI assistant call the PantryWise backend and the scanner call USDA FoodData Central -->
+    <!-- lets the AI assistant call the PantryWise backend and the scanner look up barcodes (the backend calls USDA FoodData Central) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- android 11+ hides other apps unless declared: needed so resolveActivity() sees apps that

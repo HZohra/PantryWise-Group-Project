@@ -1,7 +1,6 @@
 
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -22,27 +21,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Read USDA API key from local.properties
-        val localProperties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-
-        if (localPropertiesFile.exists()) {
-            localPropertiesFile.inputStream().use {
-                localProperties.load(it)
-            }
-        }
-
-        val usdaApiKey = providers.gradleProperty("USDA_API_KEY")
-            .orElse(localProperties.getProperty("USDA_API_KEY", ""))
-            .get()
-
-        // Make the USDA API key available through BuildConfig
-        buildConfigField(
-            "String",
-            "USDA_API_KEY",
-            "\"${usdaApiKey.replace("\\", "\\\\").replace("\"", "\\\"")}\""
-        )
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -152,7 +130,8 @@ tasks.register<Javadoc>("generateJavadoc") {
     })
 
     // Use the full classpath resolved by the Java compilation task
-    classpath = javaCompileTask.get().classpath
+    // the compiled classes are added too because generated classes such as BuildConfig only exist there
+    classpath = javaCompileTask.get().classpath + files(javaCompileTask.get().destinationDirectory)
 
     // Configure Javadoc output
     (options as StandardJavadocDocletOptions).apply {

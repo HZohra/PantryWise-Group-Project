@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> NotRequired : Android 12 or older
+    [*] --> Unknown : Android 13 or newer, first start
+    Unknown --> Explaining : Android recommends an explanation
+    Unknown --> SystemDialog : no explanation needed
+    Explaining --> SystemDialog : user taps Allow
+    Explaining --> Unknown : user taps Not now
+    SystemDialog --> Granted : user allows
+    SystemDialog --> Denied : user refuses
+    Denied --> Hint : snackbar offers Settings
+    Hint --> Granted : user enables it in system settings
+    Granted --> [*] : alerts are shown
+    Denied --> [*] : alerts are silently skipped
+    NotRequired --> [*] : alerts are shown

@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor U as User
+    participant IA as ItemDetailActivity
+    participant VM as ItemDetailViewModel
+    participant R as PantryRepository
+    participant DB as Room
+    participant WA as WasteSummaryActivity
+
+    U->>IA: taps Consumed, Wasted, Expired or Donated
+    IA->>VM: recordDisposition(disposition)
+    VM->>R: recordDisposition(item, disposition, callback)
+    R->>DB: begin transaction
+    R->>DB: insert ConsumptionHistory.fromFoodItem(...)
+    R->>DB: update food item status
+    R->>DB: commit
+    R-->>VM: history id (background thread)
+    VM-->>IA: operation result event (postValue)
+    IA-->>U: toast, and the screen closes if the operation succeeded
+    U->>WA: opens the waste summary
+    WA->>R: getWasteStats(since)
+    R-->>WA: WasteStats (counts per disposition and waste rate)

@@ -1,0 +1,33 @@
+<resources>
+    <!-- Main screen navigation hub -->
+    <string name="nav_shopping_list">Shopping List</string>
+    <string name="nav_meal_planner">Meal Planner</string>
+    <string name="nav_waste_summary">Waste Summary</string>
+    <string name="nav_ai_assistant">AI Assistant</string>
+    <string name="nav_recipes">Recipes</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="content_description_help">Help</string>
+    <string name="content_description_settings">Settings</string>
+    <string name="content_description_dev_tools">Developer tools</string>
+    <string name="dev_tools_label">DEV</string>
+
+    <string name="main_title">PantryWise</string>
+    <string name="main_subtitle">Your kitchen, organized.</string>
+    <string name="main_search_hint">Search your food...</string>
+    <string name="main_section_quick_access">QUICK ACCESS</string>
+    <string name="main_section_discover">DISCOVER</string>
+    <string name="main_section_storage">MY STORAGE</string>
+
+    <!-- Help guide dialog -->
+    <string name="help_title">PantryWise Help Guide</string>
+    <string name="help_close">Close</string>
+    <string name="help_guide">WELCOME TO PANTRYWISE\n\n1. ADD FOOD\nTap Add Food to enter a food name, quantity, unit, storage location and expiration date. You can also scan a barcode to fill in the name.\n\n2. STORAGE LOCATIONS\nUse Fridge, Freezer and Pantry to view the food stored in each place.\n\n3. SEARCH FOOD\nUse the search bar to find food items in the selected location.\n\n4. EXPIRATION STATUS\nFresh: the food is not close to expiring.\nUse Soon: the food expires within 3 days.\nExpired: the expiration date has passed.\nEvery morning PantryWise sends one reminder about what needs attention.\n\n5. EDIT FOOD\nTap a food item to edit its details or record what happened to it: consumed, wasted, expired or donated.\n\n6. RECIPES AND AI\nFind recipes, ask the AI assistant what to cook with what is about to expire, and save your favorites.\n\n7. MEAL PLANNER AND SHOPPING LIST\nPlan meals for the week. The shopping list only adds the ingredients you do not have yet, and you can share it.\n\n8. WASTE STATS\nSee how much food you consumed, wasted, or donated.</string>
+
+    <!-- Add food: barcode scanning and messages -->
+    <string name="action_scan_barcode">Scan barcode</string>
+    <string name="add_food_fill_all">Please fill in all fields</string>
+    <string name="add_food_invalid_quantity">Enter a valid quantity</string>
+    <string name="add_food_quantity_positive">Quantity must be greater than zero</string>
+    <string name="add_food_saved">Food item saved</string>
+    <string name="content_description_back">Back</string>
+</resources>

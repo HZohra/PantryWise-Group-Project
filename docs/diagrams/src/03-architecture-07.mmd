@@ -1,0 +1,16 @@
+flowchart LR
+    scan["Scanner<br/>or manual form"] --> inv[("Inventory<br/>FoodItem")]
+    inv --> exp["Expiration check<br/>daily 09:00"]
+    exp -->|"notification"| shoplist
+    inv -->|"expiring items,<br/>after consent"| ai["AI assistant<br/>and AI recipe"]
+    inv -->|"pantry ranking"| rec["Recipes<br/>(Edamam)"]
+    ai --> fav[("Favourite recipes")]
+    rec --> fav
+    fav -->|"plan this meal"| plan[("Meal plan")]
+    rec -->|"plan this meal"| plan
+    plan -->|"generate"| calc["ShoppingCalculator<br/>needs minus stock"]
+    inv -->|"stock"| calc
+    calc --> shoplist[("Shopping list")]
+    shoplist -->|"share"| share["Share sheet<br/>ACTION_SEND"]
+    inv -->|"consume, waste,<br/>expire, donate"| hist[("Consumption history")]
+    hist --> stats["Waste summary"]

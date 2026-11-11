@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:id="@+id/root" xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -15,7 +16,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="start"
-            android:backgroundTint="#E8EEF5"
+            android:backgroundTint="@color/main_surface"
             android:gravity="center"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -25,10 +26,10 @@
             android:minHeight="0dp"
             android:padding="0dp"
             android:text="←"
-            android:textColor="#263B50"
+            android:textColor="@color/main_text"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:contentDescription="Back" />
+            android:contentDescription="@string/content_description_back" />
 
         <TextView
             android:id="@+id/txtItemName"
@@ -42,13 +43,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Food name" />
+            android:text="@string/form_food_name_label" />
 
         <EditText
             android:id="@+id/edtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter food name"
+            android:hint="@string/form_food_name_hint"
             android:inputType="textCapSentences" />
 
         <TextView
@@ -66,19 +67,19 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Unit" />
+            android:text="@string/form_unit_label" />
 
         <EditText
             android:id="@+id/edtUnit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="e.g. kg, pieces, litres"
+            android:hint="@string/form_unit_hint_detail"
             android:inputType="text" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Storage location" />
+            android:text="@string/form_storage_location_label" />
 
         <Spinner
             android:id="@+id/spinnerLocation"
@@ -90,19 +91,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="12dp"
-            android:text="No expiration date selected" />
+            android:text="@string/form_no_expiration_selected" />
 
         <Button
             android:id="@+id/btnSelectExpirationDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Change expiration date" />
+            android:text="@string/form_change_expiration" />
 
         <Button
             android:id="@+id/btnUpdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save Changes" />
+            android:text="@string/form_save_changes" />
 
         <TextView
             android:layout_width="match_parent"
