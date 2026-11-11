@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pantalla de favoritos (Team Member 5, 6.1). -->
+<resources>
+    <string name="ai_fav_title">Favoritos</string>
+    <string name="ai_fav_empty">Aún no tienes favoritos. Toca ♥ en una receta para guardarla.</string>
+    <string name="ai_fav_ai_label">Receta con IA</string>
+    <string name="ai_fav_undo">Deshacer</string>
+</resources>
