@@ -6,7 +6,8 @@ import java.util.List;
 
 /**
  * One recipe as the backend returns it (normalized from Edamam).
- * The image URL is signed and expires after about an hour: show it, never store it.
+ * The image URL is signed and expires after about an hour. Favourites keep it anyway so it shows
+ * right after saving; once it has expired the favourites screen shows a placeholder.
  */
 public class RecipeDto {
     /** "edamam:<id>" (shared format with the favourites and meal-plan tables). */
