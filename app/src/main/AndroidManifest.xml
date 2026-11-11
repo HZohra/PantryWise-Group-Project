@@ -2,6 +2,34 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- required from android 13 to show notifications (expiration alerts) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Required for barcode scanning -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Camera is optional because users can enter barcodes manually -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <!-- lets the AI assistant call the PantryWise backend and the scanner call USDA FoodData Central -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- android 11+ hides other apps unless declared: needed so resolveActivity() sees apps that
+         can receive the shared shopping list -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="text/plain" />
+        </intent>
+        <!-- lets resolveActivity() see a maps app for the "find stores nearby" button -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+    </queries>
+
     <application
         android:name=".PantryWiseApp"
         android:allowBackup="true"
@@ -23,13 +51,9 @@
             </intent-filter>
         </activity>
 
+        <!-- Inventory (Team Member 1) -->
         <activity
             android:name=".ui.itemdetail.ItemDetailActivity"
-            android:exported="false"
-            android:parentActivityName=".activities.MainActivity" />
-
-        <activity
-            android:name=".ui.wastesummary.WasteSummaryActivity"
             android:exported="false"
             android:parentActivityName=".activities.MainActivity" />
 
@@ -43,6 +67,69 @@
             android:exported="false"
             android:parentActivityName=".activities.MainActivity" />
 
+        <!-- Waste summary (Team Member 2) -->
+        <activity
+            android:name=".ui.wastesummary.WasteSummaryActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <!-- Shopping list and meal planner (Team Member 4) -->
+        <activity
+            android:name=".ui.shoppinglist.ShoppingListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CP470GroupProject.Shopping"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
+            android:name=".ui.mealplanner.MealPlannerActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/Theme.CP470GroupProject.Shopping" />
+
+        <!-- Barcode scanning screen (Team Member 3) -->
+        <activity
+            android:name=".scanner.ScannerActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <!-- AI assistant, recipes and favourites (Team Member 5) -->
+        <activity
+            android:name=".ui.ai.AiAssistantActivity"
+            android:exported="false"
+            android:label="@string/ai_chat_title"
+            android:parentActivityName=".activities.MainActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.ai.RecipesActivity"
+            android:exported="false"
+            android:label="@string/ai_recipes_title"
+            android:parentActivityName=".activities.MainActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.ai.RecipeDetailActivity"
+            android:exported="false"
+            android:label="@string/ai_detail_title"
+            android:parentActivityName=".ui.ai.RecipesActivity" />
+
+        <activity
+            android:name=".ui.ai.AiRecipeActivity"
+            android:exported="false"
+            android:label="@string/ai_gen_title"
+            android:parentActivityName=".ui.ai.RecipesActivity" />
+
+        <activity
+            android:name=".ui.ai.FavoritesActivity"
+            android:exported="false"
+            android:label="@string/ai_fav_title"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
+            android:name=".ui.ai.SavedRecipeActivity"
+            android:exported="false"
+            android:label="@string/ai_gen_title"
+            android:parentActivityName=".ui.ai.FavoritesActivity" />
     </application>
 
 </manifest>
