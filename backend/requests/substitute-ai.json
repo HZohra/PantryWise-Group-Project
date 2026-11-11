@@ -1,0 +1,11 @@
+{
+  "recipeTitle": "Hummus",
+  "ingredient": "tahini",
+  "ingredientLines": ["1 can chickpeas", "1/4 cup tahini", "1 lemon", "1 clove garlic"],
+  "locale": "es",
+  "inventory": [
+    { "name": "peanut butter", "quantity": 1, "unit": "jar", "daysUntilExpiry": null },
+    { "name": "olive oil", "quantity": 1, "unit": "bottle", "daysUntilExpiry": null }
+  ],
+  "preferences": { "allergies": ["peanut"] }
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/ai_item_gap"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="@dimen/ai_recipe_card_corner">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Photo from Glide, or the placeholder; the description is set from code -->
+        <ImageView
+            android:id="@+id/ai_fav_image"
+            android:layout_width="@dimen/ai_recipe_image_size"
+            android:layout_height="@dimen/ai_recipe_image_size"
+            android:background="?attr/colorSurfaceVariant"
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/ai_bubble_padding">
+
+            <TextView
+                android:id="@+id/ai_fav_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                tools:text="Creamy yogurt porridge" />
+
+            <TextView
+                android:id="@+id/ai_fav_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ai_recipe_text_gap"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="1 serving · 4 min · BBC Good Food" />
+        </LinearLayout>
+
+        <!-- Removes the recipe (Undo in the Snackbar) -->
+        <ImageButton
+            android:id="@+id/ai_fav_remove"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="@dimen/ai_item_gap"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/ai_fav_remove"
+            android:src="@drawable/ic_favorite" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

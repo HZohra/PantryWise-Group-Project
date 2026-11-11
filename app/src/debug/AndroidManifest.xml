@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- debug builds only: developer tools screen. it is not part of the release app -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- networkSecurityConfig (Member 5): allows http to the local backend at 10.0.2.2, debug builds only -->
+    <application android:networkSecurityConfig="@xml/network_security_config">
+        <!-- no LAUNCHER filter on purpose: open it with a run configuration or
+             adb shell am start -n com.cp470.groupproject/.ui.dev.DevToolsActivity -->
+        <activity
+            android:name=".ui.dev.DevToolsActivity"
+            android:exported="true"
+            android:label="Member 4 tests" />
+
+        <!-- Member 5, debug only: lets adb open the AI screen until navigation exists.
+             The release build keeps exported="false" from the main manifest. -->
+        <activity
+            android:name=".ui.ai.AiAssistantActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+
+        <!-- Member 5, debug only: same for the Recipes screen. -->
+        <activity
+            android:name=".ui.ai.RecipesActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+
+        <!-- Member 5, debug only: same for the AI recipe screen. -->
+        <activity
+            android:name=".ui.ai.AiRecipeActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+
+        <!-- Member 5, debug only: same for the Favourites screen. -->
+        <activity
+            android:name=".ui.ai.FavoritesActivity"
+            android:exported="true"
+            tools:replace="android:exported" />
+    </application>
+
+</manifest>

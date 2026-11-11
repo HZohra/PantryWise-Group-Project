@@ -1,0 +1,11 @@
+{
+  "recipeTitle": "Spinach Omelette",
+  "ingredient": "milk",
+  "ingredientLines": ["3 eggs", "1/4 cup milk", "1 cup spinach", "1 tbsp butter"],
+  "inventory": [
+    { "name": "plain yogurt", "quantity": 1, "unit": "cup", "daysUntilExpiry": 3 },
+    { "name": "eggs", "quantity": 6, "unit": "pcs", "daysUntilExpiry": 10 },
+    { "name": "spinach", "quantity": 1, "unit": "bag", "daysUntilExpiry": 1 },
+    { "name": "butter", "quantity": 200, "unit": "g", "daysUntilExpiry": 20 }
+  ]
+}

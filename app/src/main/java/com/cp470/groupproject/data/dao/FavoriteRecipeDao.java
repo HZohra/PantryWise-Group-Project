@@ -5,8 +5,12 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
 import com.cp470.groupproject.data.entity.FavoriteRecipe;
+import com.cp470.groupproject.data.entity.FavoriteRecipeIngredient;
+import com.cp470.groupproject.data.entity.FavoriteRecipeStep;
+import com.cp470.groupproject.data.model.FavoriteRecipeWithIngredients;
 
 import java.util.List;
 
@@ -29,13 +33,37 @@ public interface FavoriteRecipeDao {
     @Query("DELETE FROM favorite_recipes WHERE recipeId = :recipeId")
     int deleteByRecipeId(String recipeId);
 
-    /** favorites, most recently saved first */
-    @Query("SELECT * FROM favorite_recipes ORDER BY savedAt DESC")
-    LiveData<List<FavoriteRecipe>> observeAll();
+    /**
+     * adds the ingredient rows of a favorite (their {@code favoriteId} must already be set).
+     * background thread only
+     */
+    @Insert
+    void insertIngredients(List<FavoriteRecipeIngredient> ingredients);
 
-    /** snapshot of the favorites. background thread only */
+    /**
+     * adds the cooking steps of a favorite (their {@code favoriteId} must already be set).
+     * background thread only
+     */
+    @Insert
+    void insertSteps(List<FavoriteRecipeStep> steps);
+
+    /** favorites with their ingredients, most recently saved first */
+    @Transaction
     @Query("SELECT * FROM favorite_recipes ORDER BY savedAt DESC")
-    List<FavoriteRecipe> getAllSync();
+    LiveData<List<FavoriteRecipeWithIngredients>> observeAll();
+
+    /** snapshot of the favorites with their ingredients. background thread only */
+    @Transaction
+    @Query("SELECT * FROM favorite_recipes ORDER BY savedAt DESC")
+    List<FavoriteRecipeWithIngredients> getAllSync();
+
+    /**
+     * one favorite with its ingredients and steps, or null if it is not saved.
+     * background thread only
+     */
+    @Transaction
+    @Query("SELECT * FROM favorite_recipes WHERE recipeId = :recipeId")
+    FavoriteRecipeWithIngredients getByRecipeIdSync(String recipeId);
 
     /** emits 1 if the recipe is saved, otherwise 0 */
     @Query("SELECT COUNT(*) FROM favorite_recipes WHERE recipeId = :recipeId")

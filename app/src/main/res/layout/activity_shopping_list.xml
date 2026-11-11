@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="@string/title_shopping_list" />
+
+    <!-- shown only while the notifications of the app are turned off -->
+    <LinearLayout
+        android:id="@+id/bannerNotifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceVariant"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/notif_disabled_message"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnBannerSettings"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/notif_action_open_settings" />
+    </LinearLayout>
+
+    <!-- the course asks for a GridLayout here: name spans the 4 columns, then qty / unit / store -->
+    <GridLayout
+        android:id="@+id/formGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/edtName"
+            style="@style/PantryWise.Field"
+            android:layout_columnSpan="4"
+            android:layout_columnWeight="1"
+            android:hint="@string/shopping_hint_name"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="textCapSentences" />
+
+        <EditText
+            android:id="@+id/edtQty"
+            style="@style/PantryWise.Field"
+            android:layout_columnWeight="1"
+            android:hint="@string/shopping_hint_qty"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/edtUnit"
+            style="@style/PantryWise.Field"
+            android:layout_columnWeight="1"
+            android:hint="@string/shopping_hint_unit"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/edtStore"
+            style="@style/PantryWise.Field"
+            android:layout_columnSpan="2"
+            android:layout_columnWeight="2"
+            android:hint="@string/shopping_hint_store"
+            android:importantForAutofill="no"
+            android:inputType="textCapWords" />
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="2"
+            android:layout_columnWeight="1"
+            android:text="@string/shopping_action_add" />
+
+        <Button
+            android:id="@+id/btnGenerate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="2"
+            android:layout_columnWeight="1"
+            android:text="@string/shopping_action_generate" />
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/txtSummary"
+        style="@style/PantryWise.SectionTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/txtEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="@string/shopping_empty"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</LinearLayout>

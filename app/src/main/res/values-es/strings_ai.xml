@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spanish strings for the AI assistant and recipe screens (Team Member 5). -->
+<resources>
+
+    <!-- Pantalla de chat -->
+    <string name="ai_chat_title">Asistente de cocina</string>
+    <string name="ai_chat_input_hint">Pregunta sobre cocina o tu despensa…</string>
+    <string name="ai_chat_send">Enviar</string>
+    <string name="ai_chat_new_chat">Nuevo chat</string>
+    <string name="ai_chat_welcome">¡Hola! Pregúntame qué cocinar con tus alimentos, cómo aprovechar lo que está por caducar o con qué sustituir un ingrediente que te falta.</string>
+    <string name="ai_chat_thinking">El asistente está pensando…</string>
+    <string name="ai_chat_you">Tú</string>
+    <string name="ai_chat_assistant">Asistente</string>
+    <string name="ai_chat_message_a11y">%1$s: %2$s</string>
+    <string name="ai_chat_cleared">Nuevo chat iniciado</string>
+
+    <!-- Diálogo de consentimiento (US-6) -->
+    <string name="ai_consent_title">¿Usar el asistente de IA?</string>
+    <string name="ai_consent_message">Para responder, se enviarán a un servicio de IA tu mensaje y una lista de los productos de tu despensa (nombres, cantidades y fechas de caducidad). Si cancelas, no se envía nada.</string>
+    <string name="ai_consent_continue">Continuar</string>
+    <string name="ai_consent_cancel">Cancelar</string>
+
+    <!-- Errores (según AiError.code) -->
+    <string name="ai_error_network">No se puede conectar con el asistente. Revisa tu conexión.</string>
+    <string name="ai_error_timeout">El asistente tardó demasiado en responder.</string>
+    <string name="ai_error_rate_limited">El asistente está ocupado. Inténtalo de nuevo en un minuto.</string>
+    <string name="ai_error_rate_limited_seconds">El asistente está ocupado. Inténtalo de nuevo en %1$d segundos.</string>
+    <string name="ai_error_unavailable">El asistente no está disponible en este momento.</string>
+    <string name="ai_error_message_too_long">Tu mensaje es demasiado largo (máximo %1$d caracteres).</string>
+    <string name="ai_error_generic">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="ai_retry">Reintentar</string>
+
+    <!-- Pantalla de recetas (5.6) -->
+    <string name="ai_recipes_title">Recetas</string>
+    <string name="ai_recipes_search_hint">Busca recetas o ingredientes</string>
+    <string name="ai_recipes_zero_waste">Modo Cero Desperdicio</string>
+    <string name="ai_recipes_zero_waste_hint">Solo recetas que usan alimentos que caducan pronto</string>
+    <plurals name="ai_recipes_have_count">
+        <item quantity="one">Tienes %1$d de %2$d ingrediente</item>
+        <item quantity="other">Tienes %1$d de %2$d ingredientes</item>
+    </plurals>
+    <string name="ai_recipes_uses_expiring">Usa lo que caduca: %1$s</string>
+    <string name="ai_recipes_minutes">%1$d min</string>
+    <string name="ai_recipes_image_description">Foto de %1$s</string>
+
+    <!-- Avisos y estados vacíos -->
+    <string name="ai_recipes_empty_pantry">Añade alimentos a tu despensa para recibir sugerencias personalizadas.</string>
+    <string name="ai_recipes_broadened">No hubo coincidencias exactas; aquí tienes recetas parecidas.</string>
+    <string name="ai_recipes_nothing_expiring">No hay nada por caducar; aquí tienes tus sugerencias habituales.</string>
+    <string name="ai_recipes_no_results">No se encontraron recetas. Prueba otra palabra o menos filtros.</string>
+    <string name="ai_recipes_search_empty">Escribe algo para buscar.</string>
+
+    <!-- Errores de recetas -->
+    <string name="ai_recipes_error_network">No se pueden cargar las recetas. Revisa tu conexión.</string>
+    <string name="ai_recipes_error_busy">Demasiadas búsquedas. Inténtalo de nuevo en un momento.</string>
+    <string name="ai_recipes_error_generic">No se pudieron cargar las recetas. Inténtalo de nuevo.</string>
+
+    <!-- Detalle de receta (5.7) -->
+    <string name="ai_detail_title">Receta</string>
+    <plurals name="ai_detail_servings">
+        <item quantity="one">%1$d porción</item>
+        <item quantity="other">%1$d porciones</item>
+    </plurals>
+    <string name="ai_detail_source">De %1$s</string>
+    <string name="ai_detail_ask_assistant">Preguntar al asistente cómo prepararla</string>
+    <string name="ai_detail_view_original">Ver receta original</string>
+    <string name="ai_detail_no_browser">Ninguna app del teléfono puede abrir el enlace.</string>
+    <string name="ai_detail_ingredients">Ingredientes</string>
+    <string name="ai_detail_in_pantry">En la despensa</string>
+    <string name="ai_detail_missing">Falta</string>
+    <string name="ai_detail_find_substitute">Buscar sustituto</string>
+    <string name="ai_detail_nutrition">Nutrición por porción</string>
+    <string name="ai_detail_nutrition_whole">Nutrición (receta completa)</string>
+    <string name="ai_detail_calories">Calorías</string>
+    <string name="ai_detail_protein">Proteína</string>
+    <string name="ai_detail_carbs">Carbohidratos</string>
+    <string name="ai_detail_fat">Grasa</string>
+    <string name="ai_detail_kcal">%1$d kcal</string>
+    <string name="ai_detail_grams">%1$d g</string>
+    <!-- Se envía al chat con "Preguntar al asistente cómo prepararla" -->
+    <string name="ai_detail_ask_prompt">¿Cómo preparo \"%1$s\"? Dame los pasos numerados. Ingredientes:\n%2$s</string>
+
+    <!-- Hoja de sustitutos (5.7) -->
+    <string name="ai_sub_title">En lugar de %1$s</string>
+    <string name="ai_sub_loading">Buscando sustitutos…</string>
+    <string name="ai_sub_source_local">Sugerencia rápida</string>
+    <string name="ai_sub_source_ai">Sugerido por la IA</string>
+    <string name="ai_sub_in_pantry">Lo tienes</string>
+    <string name="ai_sub_none">No se encontró un sustituto seguro.</string>
+
+    <!-- Receta con IA a partir de lo que caduca (5.8) -->
+    <string name="ai_gen_button">Crear una receta con lo que caduca</string>
+    <string name="ai_gen_title">Receta con IA</string>
+    <string name="ai_gen_loading">Creando una receta con tus alimentos…</string>
+    <string name="ai_gen_made_for">Pensada para aprovechar: %1$s</string>
+    <string name="ai_gen_nothing_expiring">No hay nada por caducar; esta idea usa lo que tienes.</string>
+    <string name="ai_gen_note">Creada por IA. Revisa las etiquetas por si hay alérgenos.</string>
+    <string name="ai_gen_expiring">Caduca pronto</string>
+    <string name="ai_gen_steps">Pasos</string>
+    <string name="ai_gen_tip">Consejo: %1$s</string>
+    <string name="ai_gen_try_another">Probar otra</string>
+    <string name="ai_gen_try_again">Intentar de nuevo</string>
+    <string name="ai_gen_error_failed">No se pudo crear una receta. Inténtalo de nuevo.</string>
+    <string name="ai_gen_error_unsafe">No se pudo crear una receta sin tus alérgenos. Inténtalo de nuevo.</string>
+    <string name="ai_gen_error_empty_pantry">Primero añade a tu despensa algún alimento que no esté caducado.</string>
+    <string name="ai_consent_recipe_message">Para crear una receta, se enviará a un servicio de IA una lista de los productos de tu despensa (nombres, cantidades y fechas de caducidad). Si cancelas, no se envía nada.</string>
+
+    <!-- Corazón de favoritos (6.1) -->
+    <string name="ai_fav_add">Guardar en favoritos</string>
+    <string name="ai_fav_remove">Quitar de favoritos</string>
+    <string name="ai_fav_saved">Guardada en favoritos</string>
+    <string name="ai_fav_removed">Quitada de favoritos</string>
+
+</resources>

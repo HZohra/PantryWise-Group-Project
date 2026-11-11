@@ -1,0 +1,24 @@
+{
+  "name": "pantrywise-backend",
+  "version": "1.0.0",
+  "description": "PantryWise AI assistant and recipe API",
+  "private": true,
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "smoke:claude": "node scripts/smokeClaude.js",
+    "smoke:edamam": "node scripts/smokeEdamam.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "try:ranking": "node scripts/tryRanking.js",
+    "test:api": "npx newman run postman/PantryWise.postman_collection.json"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.3"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "message": "What can I cook tonight?",
+  "locale": "es",
+  "inventory": [
+    { "name": "chicken", "quantity": 500, "unit": "g", "daysUntilExpiry": 1 },
+    { "name": "rice", "quantity": 1, "unit": "kg", "daysUntilExpiry": null }
+  ]
+}

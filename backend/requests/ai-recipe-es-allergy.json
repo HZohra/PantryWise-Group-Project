@@ -1,0 +1,10 @@
+{
+  "locale": "es",
+  "inventory": [
+    { "name": "peanut butter", "quantity": 1, "unit": "jar", "daysUntilExpiry": 1 },
+    { "name": "banana", "quantity": 3, "unit": "pcs", "daysUntilExpiry": 1 },
+    { "name": "greek yogurt", "quantity": 2, "unit": "cups", "daysUntilExpiry": 2 },
+    { "name": "oats", "quantity": 500, "unit": "g" }
+  ],
+  "preferences": { "allergies": ["peanut"] }
+}

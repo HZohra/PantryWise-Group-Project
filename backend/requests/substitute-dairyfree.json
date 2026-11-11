@@ -1,0 +1,12 @@
+{
+  "recipeTitle": "Creamy Mushroom Pasta",
+  "ingredient": "heavy cream",
+  "ingredientLines": ["250 g pasta", "200 g mushrooms", "1 cup heavy cream", "2 cloves garlic", "1/2 cup parmesan"],
+  "inventory": [
+    { "name": "oat milk", "quantity": 1, "unit": "L", "daysUntilExpiry": 5 },
+    { "name": "cashews", "quantity": 200, "unit": "g", "daysUntilExpiry": 60 },
+    { "name": "butter", "quantity": 200, "unit": "g", "daysUntilExpiry": 10 },
+    { "name": "cheddar cheese", "quantity": 1, "unit": "block", "daysUntilExpiry": 15 }
+  ],
+  "preferences": { "health": ["dairy-free"] }
+}
